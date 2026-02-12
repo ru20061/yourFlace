@@ -1,0 +1,8 @@
+from app.common.base_crud import BaseCRUD
+from app.subscription.subscription_cancellations.models import SubscriptionCancellation
+from app.subscription.subscription_cancellations.schemas import SubscriptionCancellationCreate, SubscriptionCancellationUpdate
+
+class CRUDSubscriptionCancellation(BaseCRUD[SubscriptionCancellation, SubscriptionCancellationCreate, SubscriptionCancellationUpdate]):
+    pass
+
+subscription_cancellation_crud = CRUDSubscriptionCancellation(SubscriptionCancellation)

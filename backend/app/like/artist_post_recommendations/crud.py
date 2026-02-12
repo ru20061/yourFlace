@@ -1,0 +1,8 @@
+from app.common.base_crud import BaseCRUD
+from app.like.artist_post_recommendations.models import ArtistPostRecommendation
+from app.like.artist_post_recommendations.schemas import ArtistPostRecommendationCreate, ArtistPostRecommendationUpdate
+
+class CRUDArtistPostRecommendation(BaseCRUD[ArtistPostRecommendation, ArtistPostRecommendationCreate, ArtistPostRecommendationUpdate]):
+    pass
+
+artist_post_recommendation_crud = CRUDArtistPostRecommendation(ArtistPostRecommendation)
