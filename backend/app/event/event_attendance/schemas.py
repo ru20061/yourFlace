@@ -1,22 +1,23 @@
 from pydantic import BaseModel, ConfigDict
 from typing import Optional
-from datetime import datetime, date
-from decimal import Decimal
+from datetime import datetime
 
 class EventAttendanceBase(BaseModel):
-    pass
+    event_id: int
+    participant_id: int
+    checked_in_by: Optional[int] = None
 
 class EventAttendanceCreate(EventAttendanceBase):
     pass
 
 class EventAttendanceUpdate(BaseModel):
-    pass
+    checked_in_by: Optional[int] = None
 
 class EventAttendanceResponse(EventAttendanceBase):
     model_config = ConfigDict(from_attributes=True)
-    
+
     id: int
-    created_at: datetime
+    checked_in_at: datetime
 
 class EventAttendanceList(BaseModel):
     items: list[EventAttendanceResponse]

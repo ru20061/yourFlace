@@ -1,10 +1,10 @@
 from pydantic import BaseModel, ConfigDict
-from typing import Optional
-from datetime import datetime, date
-from decimal import Decimal
+from datetime import datetime
 
 class ChatPinBase(BaseModel):
-    pass
+    chat_room_id: int
+    chat_message_id: int
+    pinned_by: int
 
 class ChatPinCreate(ChatPinBase):
     pass
@@ -14,7 +14,7 @@ class ChatPinUpdate(BaseModel):
 
 class ChatPinResponse(ChatPinBase):
     model_config = ConfigDict(from_attributes=True)
-    
+
     id: int
     created_at: datetime
 

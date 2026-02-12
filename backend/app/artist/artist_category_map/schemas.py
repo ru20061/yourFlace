@@ -1,10 +1,9 @@
 from pydantic import BaseModel, ConfigDict
-from typing import Optional
-from datetime import datetime, date
-from decimal import Decimal
+from datetime import datetime
 
 class ArtistCategoryMapBase(BaseModel):
-    pass
+    artist_id: int
+    category_id: int
 
 class ArtistCategoryMapCreate(ArtistCategoryMapBase):
     pass
@@ -14,7 +13,7 @@ class ArtistCategoryMapUpdate(BaseModel):
 
 class ArtistCategoryMapResponse(ArtistCategoryMapBase):
     model_config = ConfigDict(from_attributes=True)
-    
+
     id: int
     created_at: datetime
 

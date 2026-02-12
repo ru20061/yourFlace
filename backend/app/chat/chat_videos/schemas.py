@@ -1,20 +1,26 @@
 from pydantic import BaseModel, ConfigDict
 from typing import Optional
-from datetime import datetime, date
-from decimal import Decimal
+from datetime import datetime
 
 class ChatVideoBase(BaseModel):
-    pass
+    chat_message_id: int
+    url: str
+    thumbnail_url: Optional[str] = None
+    duration_seconds: Optional[int] = None
+    size_bytes: Optional[int] = None
 
 class ChatVideoCreate(ChatVideoBase):
     pass
 
 class ChatVideoUpdate(BaseModel):
-    pass
+    url: Optional[str] = None
+    thumbnail_url: Optional[str] = None
+    duration_seconds: Optional[int] = None
+    size_bytes: Optional[int] = None
 
 class ChatVideoResponse(ChatVideoBase):
     model_config = ConfigDict(from_attributes=True)
-    
+
     id: int
     created_at: datetime
 

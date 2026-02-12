@@ -1,10 +1,9 @@
 from pydantic import BaseModel, ConfigDict
-from typing import Optional
-from datetime import datetime, date
-from decimal import Decimal
+from datetime import datetime
 
 class ChatReadReceiptBase(BaseModel):
-    pass
+    chat_message_id: int
+    user_id: int
 
 class ChatReadReceiptCreate(ChatReadReceiptBase):
     pass
@@ -14,9 +13,9 @@ class ChatReadReceiptUpdate(BaseModel):
 
 class ChatReadReceiptResponse(ChatReadReceiptBase):
     model_config = ConfigDict(from_attributes=True)
-    
+
     id: int
-    created_at: datetime
+    read_at: datetime
 
 class ChatReadReceiptList(BaseModel):
     items: list[ChatReadReceiptResponse]

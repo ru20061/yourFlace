@@ -1,10 +1,10 @@
 from pydantic import BaseModel, ConfigDict
 from typing import Optional
-from datetime import datetime, date
-from decimal import Decimal
+from datetime import datetime
 
 class ArtistPostRecommendationBase(BaseModel):
-    pass
+    artist_id: int
+    post_id: int
 
 class ArtistPostRecommendationCreate(ArtistPostRecommendationBase):
     pass
@@ -14,8 +14,9 @@ class ArtistPostRecommendationUpdate(BaseModel):
 
 class ArtistPostRecommendationResponse(ArtistPostRecommendationBase):
     model_config = ConfigDict(from_attributes=True)
-    
+
     id: int
+    search_text: Optional[str] = None
     created_at: datetime
 
 class ArtistPostRecommendationList(BaseModel):

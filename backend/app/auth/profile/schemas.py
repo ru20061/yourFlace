@@ -1,22 +1,34 @@
 from pydantic import BaseModel, ConfigDict
 from typing import Optional
 from datetime import datetime, date
-from decimal import Decimal
 
 class ProfileBase(BaseModel):
-    pass
+    full_name: Optional[str] = None
+    nickname: Optional[str] = None
+    birth_date: Optional[date] = None
+    gender: Optional[str] = None
+    phone: Optional[str] = None
+    profile_image: Optional[str] = None
 
 class ProfileCreate(ProfileBase):
-    pass
+    user_id: int
 
 class ProfileUpdate(BaseModel):
-    pass
+    full_name: Optional[str] = None
+    nickname: Optional[str] = None
+    birth_date: Optional[date] = None
+    gender: Optional[str] = None
+    phone: Optional[str] = None
+    profile_image: Optional[str] = None
 
 class ProfileResponse(ProfileBase):
     model_config = ConfigDict(from_attributes=True)
-    
+
     id: int
+    user_id: int
+    search_text: Optional[str] = None
     created_at: datetime
+    updated_at: datetime
 
 class ProfileList(BaseModel):
     items: list[ProfileResponse]

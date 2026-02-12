@@ -1,22 +1,26 @@
 from pydantic import BaseModel, ConfigDict
 from typing import Optional
-from datetime import datetime, date
-from decimal import Decimal
+from datetime import datetime
 
 class ManagerBase(BaseModel):
-    pass
+    user_id: int
+    artist_id: int
+    role: str = "manager"
+    status: str = "active"
 
 class ManagerCreate(ManagerBase):
     pass
 
 class ManagerUpdate(BaseModel):
-    pass
+    role: Optional[str] = None
+    status: Optional[str] = None
 
 class ManagerResponse(ManagerBase):
     model_config = ConfigDict(from_attributes=True)
-    
+
     id: int
     created_at: datetime
+    updated_at: datetime
 
 class ManagerList(BaseModel):
     items: list[ManagerResponse]

@@ -1,22 +1,27 @@
 from pydantic import BaseModel, ConfigDict
-from typing import Optional
-from datetime import datetime, date
-from decimal import Decimal
+from typing import Optional, Literal
+from datetime import datetime
 
 class SubscriptionBlacklistBase(BaseModel):
-    pass
+    actor_id: int
+    actor_role: Literal["artist", "manager"]
+    target_user_id: int
+    reason: Optional[str] = None
+    status: str = "active"
 
 class SubscriptionBlacklistCreate(SubscriptionBlacklistBase):
     pass
 
 class SubscriptionBlacklistUpdate(BaseModel):
-    pass
+    reason: Optional[str] = None
+    status: Optional[str] = None
 
 class SubscriptionBlacklistResponse(SubscriptionBlacklistBase):
     model_config = ConfigDict(from_attributes=True)
-    
+
     id: int
     created_at: datetime
+    updated_at: datetime
 
 class SubscriptionBlacklistList(BaseModel):
     items: list[SubscriptionBlacklistResponse]

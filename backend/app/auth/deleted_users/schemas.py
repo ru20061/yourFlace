@@ -1,22 +1,27 @@
 from pydantic import BaseModel, ConfigDict
 from typing import Optional
-from datetime import datetime, date
-from decimal import Decimal
+from datetime import datetime
 
 class DeletedUserBase(BaseModel):
-    pass
+    user_id: int
+    email: str
+    reason: Optional[str] = None
+    notes: Optional[str] = None
 
 class DeletedUserCreate(DeletedUserBase):
-    pass
+    scheduled_delete_at: Optional[datetime] = None
 
 class DeletedUserUpdate(BaseModel):
-    pass
+    reason: Optional[str] = None
+    notes: Optional[str] = None
+    scheduled_delete_at: Optional[datetime] = None
 
 class DeletedUserResponse(DeletedUserBase):
     model_config = ConfigDict(from_attributes=True)
-    
+
     id: int
-    created_at: datetime
+    deleted_at: datetime
+    scheduled_delete_at: Optional[datetime] = None
 
 class DeletedUserList(BaseModel):
     items: list[DeletedUserResponse]

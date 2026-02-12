@@ -1,22 +1,32 @@
 from pydantic import BaseModel, ConfigDict
 from typing import Optional
-from datetime import datetime, date
+from datetime import datetime
 from decimal import Decimal
 
 class SubscriptionCancellationBase(BaseModel):
-    pass
+    subscription_id: int
+    user_id: int
+    artist_id: int
+    reason_code: Optional[str] = None
+    reason_detail: Optional[str] = None
+    subscription_started_at: Optional[datetime] = None
+    refund_amount: Optional[Decimal] = None
+    is_refunded: bool = False
 
 class SubscriptionCancellationCreate(SubscriptionCancellationBase):
     pass
 
 class SubscriptionCancellationUpdate(BaseModel):
-    pass
+    reason_code: Optional[str] = None
+    reason_detail: Optional[str] = None
+    refund_amount: Optional[Decimal] = None
+    is_refunded: Optional[bool] = None
 
 class SubscriptionCancellationResponse(SubscriptionCancellationBase):
     model_config = ConfigDict(from_attributes=True)
-    
+
     id: int
-    created_at: datetime
+    cancelled_at: datetime
 
 class SubscriptionCancellationList(BaseModel):
     items: list[SubscriptionCancellationResponse]

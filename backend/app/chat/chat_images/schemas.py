@@ -1,10 +1,9 @@
 from pydantic import BaseModel, ConfigDict
-from typing import Optional
-from datetime import datetime, date
-from decimal import Decimal
+from datetime import datetime
 
 class ChatImageBase(BaseModel):
-    pass
+    chat_message_id: int
+    image_id: int
 
 class ChatImageCreate(ChatImageBase):
     pass
@@ -14,7 +13,7 @@ class ChatImageUpdate(BaseModel):
 
 class ChatImageResponse(ChatImageBase):
     model_config = ConfigDict(from_attributes=True)
-    
+
     id: int
     created_at: datetime
 

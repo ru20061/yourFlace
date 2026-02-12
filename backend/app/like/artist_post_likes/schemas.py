@@ -1,10 +1,10 @@
 from pydantic import BaseModel, ConfigDict
 from typing import Optional
-from datetime import datetime, date
-from decimal import Decimal
+from datetime import datetime
 
 class ArtistPostLikeBase(BaseModel):
-    pass
+    artist_id: int
+    post_id: int
 
 class ArtistPostLikeCreate(ArtistPostLikeBase):
     pass
@@ -14,8 +14,9 @@ class ArtistPostLikeUpdate(BaseModel):
 
 class ArtistPostLikeResponse(ArtistPostLikeBase):
     model_config = ConfigDict(from_attributes=True)
-    
+
     id: int
+    search_text: Optional[str] = None
     created_at: datetime
 
 class ArtistPostLikeList(BaseModel):

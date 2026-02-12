@@ -9,6 +9,7 @@ from app.core.cache import redis_client
 from app.core.storage import init_storage
 
 # 모든 라우터 임포트
+# Auth
 from app.auth.users.router import router as users_router
 from app.auth.user_settings.router import router as user_settings_router
 from app.auth.profile.router import router as profile_router
@@ -121,7 +122,7 @@ app.add_middleware(GZipMiddleware, minimum_size=1000)
 # API Routes
 API_V1_PREFIX = "/yourflace"
 
-# Auth
+# Auth (사용자 관리)
 app.include_router(users_router, prefix=f"{API_V1_PREFIX}/users", tags=["users"])
 app.include_router(user_settings_router, prefix=f"{API_V1_PREFIX}/user-settings", tags=["user-settings"])
 app.include_router(profile_router, prefix=f"{API_V1_PREFIX}/profiles", tags=["profiles"])

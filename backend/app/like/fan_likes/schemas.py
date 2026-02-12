@@ -1,10 +1,11 @@
 from pydantic import BaseModel, ConfigDict
 from typing import Optional
-from datetime import datetime, date
-from decimal import Decimal
+from datetime import datetime
 
 class FanLikeBase(BaseModel):
-    pass
+    subscription_id: int
+    target_type: str
+    target_id: int
 
 class FanLikeCreate(FanLikeBase):
     pass
@@ -14,8 +15,9 @@ class FanLikeUpdate(BaseModel):
 
 class FanLikeResponse(FanLikeBase):
     model_config = ConfigDict(from_attributes=True)
-    
+
     id: int
+    search_text: Optional[str] = None
     created_at: datetime
 
 class FanLikeList(BaseModel):

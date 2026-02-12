@@ -1,22 +1,32 @@
 from pydantic import BaseModel, ConfigDict
-from typing import Optional
-from datetime import datetime, date
-from decimal import Decimal
+from typing import Optional, Literal
+from datetime import datetime
 
 class ArtistBase(BaseModel):
-    pass
+    stage_name: str
+    notes: Optional[str] = None
+    profile_image: Optional[str] = None
+    cover_image: Optional[str] = None
+    status: Literal["active", "inactive"] = "active"
 
 class ArtistCreate(ArtistBase):
-    pass
+    user_id: int
 
 class ArtistUpdate(BaseModel):
-    pass
+    stage_name: Optional[str] = None
+    notes: Optional[str] = None
+    profile_image: Optional[str] = None
+    cover_image: Optional[str] = None
+    status: Optional[Literal["active", "inactive"]] = None
 
 class ArtistResponse(ArtistBase):
     model_config = ConfigDict(from_attributes=True)
-    
+
     id: int
+    user_id: int
+    search_text: Optional[str] = None
     created_at: datetime
+    updated_at: datetime
 
 class ArtistList(BaseModel):
     items: list[ArtistResponse]
