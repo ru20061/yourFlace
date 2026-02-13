@@ -1,0 +1,158 @@
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 200;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s, visibility 0.3s;
+}
+
+.sidebar-overlay.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: var(--sidebar-width);
+  height: 100vh;
+  background: var(--background);
+  z-index: 201;
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.sidebar.open {
+  transform: translateX(0);
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.sidebar-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-main);
+}
+
+.sidebar-close {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  font-size: 18px;
+  color: var(--text-secondary);
+  transition: background 0.2s;
+}
+
+.sidebar-close:hover {
+  background: var(--background-secondary);
+}
+
+/* 일반 유저: 구독한 아티스트 목록 */
+.sidebar-artist-list {
+  padding: 8px 0;
+}
+
+.sidebar-artist-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  transition: background 0.2s;
+}
+
+.sidebar-artist-item:hover {
+  background: var(--background-secondary);
+}
+
+.sidebar-artist-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--background-secondary);
+  border: 2px solid var(--color-main);
+  overflow: hidden;
+}
+
+.sidebar-artist-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.sidebar-artist-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.sidebar-artist-category {
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+/* 관리자: 검색 카테고리 목록 */
+.sidebar-category-list {
+  padding: 8px 0;
+}
+
+.sidebar-category-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  padding: 12px 16px 4px;
+}
+
+.sidebar-category-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  transition: color 0.2s, background 0.2s;
+}
+
+.sidebar-category-item:hover {
+  color: var(--color-main);
+  background: var(--background-secondary);
+}
+
+.sidebar-category-item.active {
+  color: var(--color-main);
+  font-weight: 600;
+}
+
+/* 사이드바 하단 섹션 */
+.sidebar-footer {
+  margin-top: auto;
+  padding: 16px;
+  border-top: 1px solid var(--border-color);
+}
+
+.sidebar-footer-link {
+  display: block;
+  font-size: 13px;
+  color: var(--text-tertiary);
+  padding: 6px 0;
+  transition: color 0.2s;
+}
+
+.sidebar-footer-link:hover {
+  color: var(--text-primary);
+}

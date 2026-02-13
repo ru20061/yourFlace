@@ -1,0 +1,102 @@
+.shop-page {
+  padding: 16px 0;
+}
+
+.shop-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+@media (min-width: 640px) {
+  .product-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.product-card {
+  background: var(--background);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.product-card:hover {
+  border-color: var(--color-main);
+  box-shadow: 0 4px 12px rgba(230, 102, 250, 0.1);
+}
+
+.product-image {
+  aspect-ratio: 1;
+  background: var(--background-secondary);
+  overflow: hidden;
+}
+
+.product-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s;
+}
+
+.product-card:hover .product-image img {
+  transform: scale(1.05);
+}
+
+.product-info {
+  padding: 10px;
+}
+
+.product-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.product-artist {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  margin-top: 2px;
+}
+
+.product-price {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--color-deep);
+  margin-top: 6px;
+}
+
+.product-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 8px;
+  margin-top: 4px;
+}
+
+.product-badge.sale {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--color-error);
+}
+
+.product-badge.limited {
+  background: rgba(230, 102, 250, 0.1);
+  color: var(--color-main);
+}
+
+.product-badge.soldout {
+  background: var(--background-secondary);
+  color: var(--text-tertiary);
+}

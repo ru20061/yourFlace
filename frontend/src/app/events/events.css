@@ -1,0 +1,105 @@
+.events-page {
+  padding: 16px 0;
+}
+
+.events-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+}
+
+.event-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.event-card {
+  background: var(--background);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+
+.event-card:hover {
+  border-color: var(--color-main);
+}
+
+.event-card-image {
+  aspect-ratio: 2 / 1;
+  background: linear-gradient(135deg, var(--color-main), var(--color-deep));
+  overflow: hidden;
+}
+
+.event-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.event-card-info {
+  padding: 14px;
+}
+
+.event-card-type {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-main);
+  text-transform: uppercase;
+}
+
+.event-card-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-top: 4px;
+}
+
+.event-card-date {
+  font-size: 13px;
+  color: var(--text-tertiary);
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.event-card-location {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.event-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12px;
+}
+
+.event-participants {
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+.event-register-btn {
+  padding: 6px 16px;
+  background: var(--color-main);
+  color: var(--text-inverse);
+  border-radius: 16px;
+  font-size: 13px;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.event-register-btn:hover {
+  background: var(--color-point);
+}
+
+.event-register-btn.closed {
+  background: var(--background-secondary);
+  color: var(--text-tertiary);
+  cursor: default;
+}

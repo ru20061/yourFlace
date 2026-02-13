@@ -1,0 +1,184 @@
+.search-page {
+  padding: 16px 0;
+}
+
+.search-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+}
+
+/* 검색바 */
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: var(--background-secondary);
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+
+.search-bar svg {
+  width: 18px;
+  height: 18px;
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+}
+
+.search-bar input {
+  flex: 1;
+  border: none;
+  background: none;
+  outline: none;
+  font-size: 15px;
+  color: var(--text-primary);
+}
+
+.search-bar input::placeholder {
+  color: var(--text-tertiary);
+}
+
+/* 캘린더 검색 UI */
+.search-calendar {
+  background: var(--background);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.search-calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.search-calendar-month {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.search-calendar-nav {
+  display: flex;
+  gap: 8px;
+}
+
+.search-calendar-nav button {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: var(--text-secondary);
+  transition: background 0.2s;
+}
+
+.search-calendar-nav button:hover {
+  background: var(--background-secondary);
+}
+
+.search-calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0;
+  margin-bottom: 4px;
+}
+
+.search-calendar-weekday {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  padding: 4px 0;
+}
+
+.search-calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.search-calendar-day {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 13px;
+  color: var(--text-primary);
+  transition: background 0.2s, color 0.2s;
+  cursor: pointer;
+  position: relative;
+}
+
+.search-calendar-day:hover {
+  background: var(--background-secondary);
+}
+
+.search-calendar-day.today {
+  font-weight: 700;
+  color: var(--color-main);
+}
+
+.search-calendar-day.selected {
+  background: var(--color-main);
+  color: var(--text-inverse);
+}
+
+.search-calendar-day.has-event::after {
+  content: "";
+  position: absolute;
+  bottom: 4px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--color-sub);
+}
+
+.search-calendar-day.other-month {
+  color: var(--text-tertiary);
+  opacity: 0.4;
+}
+
+/* 검색 필터 */
+.search-filters {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.search-filter-chip {
+  padding: 6px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+
+.search-filter-chip:hover,
+.search-filter-chip.active {
+  border-color: var(--color-main);
+  color: var(--color-main);
+  background: rgba(230, 102, 250, 0.06);
+}
+
+/* 검색 결과 */
+.search-results {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.search-result-section-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-top: 8px;
+}

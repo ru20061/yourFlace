@@ -1,0 +1,124 @@
+.admin-page {
+  padding: 16px 0;
+}
+
+.admin-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+}
+
+/* 관리자 대시보드 카드 */
+.admin-dashboard {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.admin-stat-card {
+  background: var(--background);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.admin-stat-label {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  font-weight: 600;
+}
+
+.admin-stat-value {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--color-deep);
+  margin-top: 4px;
+}
+
+.admin-stat-change {
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.admin-stat-change.up {
+  color: var(--color-success);
+}
+
+.admin-stat-change.down {
+  color: var(--color-error);
+}
+
+/* 관리자 메뉴 리스트 */
+.admin-menu-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.admin-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--background);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  transition: border-color 0.2s;
+}
+
+.admin-menu-item:hover {
+  border-color: var(--color-main);
+}
+
+.admin-menu-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(230, 102, 250, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-menu-icon svg {
+  width: 18px;
+  height: 18px;
+  color: var(--color-main);
+}
+
+.admin-menu-arrow {
+  margin-left: auto;
+  color: var(--text-tertiary);
+  font-size: 16px;
+}
+
+/* 관리자 테이블 공통 */
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.admin-table th {
+  text-align: left;
+  padding: 10px 12px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  border-bottom: 2px solid var(--border-color);
+  font-size: 12px;
+}
+
+.admin-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+.admin-table tr:hover td {
+  background: var(--background-secondary);
+}
