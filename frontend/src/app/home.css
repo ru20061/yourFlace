@@ -1,63 +1,143 @@
 .home-page {
   display: flex;
   flex-direction: column;
-}
-
-/* 카테고리 탭 - HEADER 바로 아래 MAIN 최상단 */
-.category-tabs {
-  display: flex;
-  gap: 0;
-  border-bottom: 1px solid var(--border-color);
-  position: sticky;
-  top: var(--header-height);
-  background: var(--background);
-  z-index: 50;
-}
-
-.category-tab {
-  flex: 1;
-  padding: 12px 8px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-tertiary);
-  border-bottom: 2px solid transparent;
-  transition: color 0.2s, border-color 0.2s;
-  text-align: center;
-  white-space: nowrap;
-}
-
-.category-tab:hover {
-  color: var(--text-secondary);
-}
-
-.category-tab.active {
-  color: var(--color-main);
-  border-bottom-color: var(--color-main);
-}
-
-/* 피드 컨테이너 */
-.feed-container {
   padding: 16px 0;
 }
 
-.feed-list {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+/* 섹션 헤더 */
+.home-section {
+  margin-bottom: 16px;
 }
 
-/* 갤러리 그리드 (아티스트 이미지) */
-.gallery-grid {
+.home-section.other {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border-color);
+}
+
+.home-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.home-title-sub {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.home-subtitle {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+/* 아티스트 선택 그리드 */
+.artist-selection-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 2px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
 }
 
-/* 비디오 리스트 */
-.video-list {
+@media (min-width: 640px) {
+  .artist-selection-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.artist-selection-card {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  align-items: center;
+  background: var(--background);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+  cursor: pointer;
+  text-align: center;
+  position: relative;
+}
+
+.artist-selection-card:hover {
+  border-color: var(--color-main);
+  box-shadow: 0 4px 16px rgba(230, 102, 250, 0.15);
+  transform: translateY(-2px);
+}
+
+.artist-selection-cover {
+  width: 100%;
+  height: 80px;
+  background: linear-gradient(135deg, var(--color-main), var(--color-deep));
+}
+
+.artist-selection-cover.other {
+  background: linear-gradient(135deg, var(--color-point), #6a5acd);
+}
+
+.artist-selection-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 3px solid var(--background);
+  background: var(--color-point);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: -28px;
+  position: relative;
+  z-index: 1;
+}
+
+.artist-selection-avatar.other {
+  background: #6a5acd;
+}
+
+.artist-selection-avatar-text {
+  font-size: 20px;
+  font-weight: 800;
+  color: white;
+}
+
+.artist-selection-info {
+  padding: 8px 12px 16px;
+}
+
+.artist-selection-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.artist-selection-category {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  margin-top: 2px;
+}
+
+.artist-selection-subs {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  margin-top: 4px;
+}
+
+/* 구독 배지 */
+.artist-selection-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 700;
+  z-index: 2;
+}
+
+.artist-selection-badge.subscribed {
+  background: rgba(230, 102, 250, 0.85);
+  color: white;
 }
 
 /* 빈 상태 */
@@ -66,4 +146,5 @@
   padding: 60px 20px;
   color: var(--text-tertiary);
   font-size: 14px;
+  line-height: 1.6;
 }

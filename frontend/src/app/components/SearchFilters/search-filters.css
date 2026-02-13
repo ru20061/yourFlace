@@ -1,0 +1,104 @@
+.advanced-filters {
+  padding: 16px 0;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.filter-section-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.filter-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.filter-tag-chip {
+  padding: 4px 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+
+.filter-tag-chip:hover {
+  border-color: var(--color-point);
+  color: var(--color-point);
+}
+
+.filter-tag-chip.active {
+  border-color: var(--color-point);
+  color: var(--color-point);
+  background: rgba(147, 112, 219, 0.1);
+}
+
+.filter-options {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.filter-chip {
+  padding: 6px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+
+.filter-chip:hover,
+.filter-chip.active {
+  border-color: var(--color-main);
+  color: var(--color-main);
+  background: rgba(230, 102, 250, 0.06);
+}
+
+.filter-date-range {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filter-date-range input {
+  flex: 1;
+  padding: 8px 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--text-primary);
+  background: var(--background);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.filter-date-range input:focus {
+  border-color: var(--color-main);
+}
+
+.filter-date-separator {
+  color: var(--text-tertiary);
+  font-size: 14px;
+}
+
+.filter-clear-btn {
+  align-self: flex-start;
+  padding: 8px 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.filter-clear-btn:hover {
+  border-color: #e74c3c;
+  color: #e74c3c;
+}

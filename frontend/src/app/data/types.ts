@@ -1,0 +1,159 @@
+// 백엔드 스키마 기반 TypeScript 인터페이스
+
+/** 백엔드 페이지네이션 응답 공통 형식 */
+export interface PaginatedResponse<T> {
+  items: T[];
+  total: number;
+  skip: number;
+  limit: number;
+}
+
+export interface Artist {
+  id: number;
+  user_id: number;
+  stage_name: string;
+  notes: string | null;
+  profile_image: string | null;
+  cover_image: string | null;
+  status: "active" | "inactive";
+  // 프론트 편의용 (API 응답에는 없고, category_map에서 조인)
+  category_id?: number;
+  search_text?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ArtistCategory {
+  id: number;
+  name: string;
+  description: string | null;
+  is_active: boolean;
+}
+
+export interface ArtistSocialLink {
+  id: number;
+  artist_id: number;
+  platform_name: string;
+  url: string;
+  display_name: string | null;
+  follower_count: number;
+  priority: number;
+  is_active: boolean;
+}
+
+export interface Subscription {
+  id: number;
+  fan_id: number;
+  artist_id: number;
+  fan_nickname: string | null;
+  fan_profile_image: string | null;
+  status: "subscribed" | "cancelled" | "expired";
+  payments_type: "free" | "paid";
+  start_date: string;
+  end_date: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Post {
+  id: number;
+  author_id: number;
+  author_type: "fan" | "artist";
+  content: string | null;
+  write_id: number;
+  write_role: "fan" | "artist" | "manager";
+  visibility: "public" | "subscribers" | "private";
+  is_visible: boolean;
+  is_artist_post: boolean;
+  published_date: string | null;
+  tags: string[] | null;
+  title_field: string | null;
+  created_at: string;
+  updated_at: string;
+  // 프론트 표시용 비정규화 필드
+  author_name?: string;
+  author_profile_image?: string;
+  // 기사형 포스트용 이미지 (텍스트 사이에 삽입)
+  images?: PostImage[];
+}
+
+export interface PostImage {
+  id: number;
+  url: string;
+  caption?: string;
+  width?: number;
+  height?: number;
+}
+
+export interface ArtistImage {
+  id: number;
+  artist_id: number;
+  image_id: number;
+  image_purpose: string | null;
+  published_date: string | null;
+  tags: string[] | null;
+  visibility: "public" | "subscribers" | "private";
+  is_visible: boolean;
+  created_at: string;
+  updated_at: string;
+  // 프론트 표시용
+  image_url: string;
+  thumbnail_url: string;
+}
+
+export interface ArtistVideo {
+  id: number;
+  artist_id: number;
+  url: string;
+  thumbnail_url: string | null;
+  title: string | null;
+  description: string | null;
+  duration_seconds: number | null;
+  published_date: string | null;
+  tags: string[] | null;
+  visibility: "public" | "subscribers" | "private";
+  is_visible: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ArtistCategoryMap {
+  id: number;
+  artist_id: number;
+  category_id: number;
+  created_at: string;
+}
+
+export interface Event {
+  id: number;
+  artist_id: number;
+  title: string;
+  description: string | null;
+  event_type: string | null;
+  event_date: string | null;
+  location: string | null;
+  max_participants: number | null;
+  current_participants: number;
+  status: "active" | "cancelled" | "completed" | "full";
+  created_at: string;
+  updated_at: string;
+}
+
+export interface SearchFilterState {
+  category: string;
+  tags: string[];
+  sortOrder: "latest" | "oldest" | "relevant";
+  dateRange: {
+    start: string | null;
+    end: string | null;
+  };
+  visibility: "all" | "public" | "subscribers";
+  query: string;
+}
+
+export interface SidebarArtist {
+  id: number;
+  name: string;
+  category?: string;
+  profileImage?: string;
+}
