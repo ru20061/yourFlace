@@ -7,6 +7,7 @@ from app.config import settings
 from app.database import engine
 from app.core.cache import redis_client
 from app.core.storage import init_storage
+from app.core.ws_manager import ws_manager
 
 # 모든 라우터 임포트
 # Auth
@@ -52,6 +53,7 @@ from app.chat.chat_videos.router import router as chat_videos_router
 from app.chat.chat_read_receipts.router import router as chat_read_receipts_router
 from app.chat.chat_pins.router import router as chat_pins_router
 from app.chat.chat_reports.router import router as chat_reports_router
+from app.chat.ws.router import router as chat_ws_router
 
 from app.payment.payments.router import router as payments_router
 from app.payment.payment_methods.router import router as payment_methods_router
@@ -100,6 +102,7 @@ async def lifespan(app: FastAPI):
     yield
     
     # Shutdown
+    await ws_manager.close()
     await redis_client.close()
     await engine.dispose()
 
@@ -170,6 +173,7 @@ app.include_router(chat_videos_router, prefix=f"{API_V1_PREFIX}/chat-videos", ta
 app.include_router(chat_read_receipts_router, prefix=f"{API_V1_PREFIX}/chat-read-receipts", tags=["chat-read-receipts"])
 app.include_router(chat_pins_router, prefix=f"{API_V1_PREFIX}/chat-pins", tags=["chat-pins"])
 app.include_router(chat_reports_router, prefix=f"{API_V1_PREFIX}/chat-reports", tags=["chat-reports"])
+app.include_router(chat_ws_router, prefix=f"{API_V1_PREFIX}/chat/ws", tags=["chat-ws"])
 
 # Payment
 app.include_router(payments_router, prefix=f"{API_V1_PREFIX}/payments", tags=["payments"])
