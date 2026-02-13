@@ -6,7 +6,7 @@ class ErrorLogBase(BaseModel):
     error_type: str
     message: Optional[str] = None
     stack_trace: Optional[str] = None
-    severity: Literal["low", "medium", "high", "critical"]
+    severity: Literal["info", "warning", "error", "critical", "low", "medium", "high"]
     source_module: Optional[str] = None
     user_id: Optional[int] = None
     resolved: Optional[bool] = False

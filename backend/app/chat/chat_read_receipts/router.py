@@ -6,7 +6,7 @@ from app.dependencies import get_current_user
 
 router = APIRouter()
 
-@router.post("/", response_model=schemas.ChatReadReceiptResponse, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=schemas.ChatReadReceiptResponse, status_code=status.HTTP_201_CREATED)
 async def create_chat_read_receipts(
     obj_in: schemas.ChatReadReceiptCreate,
     db: AsyncSession = Depends(get_db),
@@ -31,7 +31,7 @@ async def get_chat_read_receipts(
         )
     return obj
 
-@router.get("/", response_model=schemas.ChatReadReceiptList)
+@router.get("", response_model=schemas.ChatReadReceiptList)
 async def get_chat_read_receipts_list(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=100),

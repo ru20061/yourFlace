@@ -5,7 +5,7 @@ from datetime import datetime
 class NotificationBase(BaseModel):
     subscription_id: Optional[int] = None
     user_id: int
-    noti_type: Literal["post", "comment", "reply", "notice", "payment", "warning", "system"]
+    noti_type: Literal["content", "social", "event", "order", "chat", "post", "comment", "reply", "notice", "payment", "warning", "system"]
     source_id: Optional[int] = None
     source_type: Optional[str] = None
     event_type: Optional[str] = None

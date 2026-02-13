@@ -6,7 +6,7 @@ from app.dependencies import get_current_user
 
 router = APIRouter()
 
-@router.post("/", response_model=schemas.ProductImageResponse, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=schemas.ProductImageResponse, status_code=status.HTTP_201_CREATED)
 async def create_product_images(
     obj_in: schemas.ProductImageCreate,
     db: AsyncSession = Depends(get_db),
@@ -31,7 +31,7 @@ async def get_product_images(
         )
     return obj
 
-@router.get("/", response_model=schemas.ProductImageList)
+@router.get("", response_model=schemas.ProductImageList)
 async def get_product_images_list(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=100),

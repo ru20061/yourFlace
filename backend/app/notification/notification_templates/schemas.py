@@ -4,7 +4,7 @@ from datetime import datetime
 
 class NotificationTemplateBase(BaseModel):
     template_name: str
-    noti_type: Literal["post", "comment", "reply", "notice", "payment", "warning", "system"]
+    noti_type: Literal["content", "social", "event", "order", "chat", "post", "comment", "reply", "notice", "payment", "warning", "system"]
     title_template: Optional[str] = None
     message_template: Optional[str] = None
     is_active: Optional[bool] = True

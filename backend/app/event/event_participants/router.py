@@ -6,7 +6,7 @@ from app.dependencies import get_current_user
 
 router = APIRouter()
 
-@router.post("/", response_model=schemas.EventParticipantResponse, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=schemas.EventParticipantResponse, status_code=status.HTTP_201_CREATED)
 async def create_event_participants(
     obj_in: schemas.EventParticipantCreate,
     db: AsyncSession = Depends(get_db),
@@ -31,7 +31,7 @@ async def get_event_participants(
         )
     return obj
 
-@router.get("/", response_model=schemas.EventParticipantList)
+@router.get("", response_model=schemas.EventParticipantList)
 async def get_event_participants_list(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=100),

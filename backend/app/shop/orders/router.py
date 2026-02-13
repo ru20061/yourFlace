@@ -6,7 +6,7 @@ from app.dependencies import get_current_user
 
 router = APIRouter()
 
-@router.post("/", response_model=schemas.OrderResponse, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=schemas.OrderResponse, status_code=status.HTTP_201_CREATED)
 async def create_orders(
     obj_in: schemas.OrderCreate,
     db: AsyncSession = Depends(get_db),
@@ -31,7 +31,7 @@ async def get_orders(
         )
     return obj
 
-@router.get("/", response_model=schemas.OrderList)
+@router.get("", response_model=schemas.OrderList)
 async def get_orders_list(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=100),

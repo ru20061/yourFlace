@@ -3,7 +3,7 @@ from typing import Optional, Literal
 from datetime import datetime
 
 class ChatRoomBase(BaseModel):
-    room_type: Literal["fan", "artist", "group", "direct"]
+    room_type: Literal["fan", "artist", "group", "direct", "subscription"]
     artist_id: Optional[int] = None
     room_name: Optional[str] = None
     room_image: Optional[str] = None
@@ -13,7 +13,7 @@ class ChatRoomCreate(ChatRoomBase):
     pass
 
 class ChatRoomUpdate(BaseModel):
-    room_type: Optional[Literal["fan", "artist", "group", "direct"]] = None
+    room_type: Optional[Literal["fan", "artist", "group", "direct", "subscription"]] = None
     artist_id: Optional[int] = None
     room_name: Optional[str] = None
     room_image: Optional[str] = None

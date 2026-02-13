@@ -1,10 +1,10 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from contextlib import asynccontextmanager
 
 from app.config import settings
-from app.database import engine
+from app.database import engine, get_db
 from app.core.cache import redis_client
 from app.core.storage import init_storage
 from app.core.ws_manager import ws_manager
@@ -87,6 +87,8 @@ from app.stats.subscriber_chat_stats.router import router as subscriber_chat_sta
 from app.moderation.moderation_models.router import router as moderation_models_router
 from app.moderation.content_moderation.router import router as content_moderation_router
 
+from app.auth.auth_router import router as auth_router
+
 from app.admin.faq.router import router as faq_router
 from app.admin.banners.router import router as banners_router
 from app.admin.system_messages.router import router as system_messages_router
@@ -95,21 +97,35 @@ from app.admin.error_logs.router import router as error_logs_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup
-    await redis_client.initialize()
-    await init_storage()
-    
+    # Startup — Redis/Storage optional 처리 (개발 환경에서 없어도 기동 가능)
+    try:
+        await redis_client.initialize()
+    except Exception as e:
+        print(f"[WARNING] Redis 연결 실패 (채팅 기능 비활성화): {e}")
+
+    try:
+        await init_storage()
+    except Exception as e:
+        print(f"[WARNING] Storage 초기화 실패 (파일 업로드 비활성화): {e}")
+
     yield
-    
+
     # Shutdown
-    await ws_manager.close()
-    await redis_client.close()
+    try:
+        await ws_manager.close()
+    except Exception:
+        pass
+    try:
+        await redis_client.close()
+    except Exception:
+        pass
     await engine.dispose()
 
 app = FastAPI(
     title=settings.APP_NAME,
     version=settings.APP_VERSION,
     lifespan=lifespan,
+    redirect_slashes=False,
 )
 
 # Middleware
@@ -124,6 +140,9 @@ app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 # API Routes
 API_V1_PREFIX = "/yourflace"
+
+# Auth (인증)
+app.include_router(auth_router, prefix=f"{API_V1_PREFIX}/auth", tags=["auth"])
 
 # Auth (사용자 관리)
 app.include_router(users_router, prefix=f"{API_V1_PREFIX}/users", tags=["users"])
@@ -221,6 +240,25 @@ app.include_router(system_messages_router, prefix=f"{API_V1_PREFIX}/system-messa
 app.include_router(notices_router, prefix=f"{API_V1_PREFIX}/notices", tags=["notices"])
 app.include_router(error_logs_router, prefix=f"{API_V1_PREFIX}/error-logs", tags=["error-logs"])
 
+@app.get(f"{API_V1_PREFIX}/tags", tags=["tags"])
+async def get_all_tags(db=Depends(get_db)):
+    """posts, artist_images, artist_videos 테이블에서 고유 태그 목록을 반환"""
+    from sqlalchemy import text
+    query = text("""
+        SELECT DISTINCT tag
+        FROM (
+            SELECT jsonb_array_elements_text(tags) AS tag FROM posts WHERE tags IS NOT NULL
+            UNION
+            SELECT jsonb_array_elements_text(tags) AS tag FROM artist_images WHERE tags IS NOT NULL
+            UNION
+            SELECT jsonb_array_elements_text(tags) AS tag FROM artist_videos WHERE tags IS NOT NULL
+        ) t
+        ORDER BY tag
+    """)
+    result = await db.execute(query)
+    tags = [row[0] for row in result.fetchall()]
+    return tags
+
 @app.get("/health")
 async def health_check():
     return {
@@ -235,3 +273,7 @@ async def root():
         "version": settings.APP_VERSION,
         "docs": "/docs"
     }
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)

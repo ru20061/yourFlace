@@ -6,7 +6,7 @@ from app.dependencies import get_current_user
 
 router = APIRouter()
 
-@router.post("/", response_model=schemas.ChatPinResponse, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=schemas.ChatPinResponse, status_code=status.HTTP_201_CREATED)
 async def create_chat_pins(
     obj_in: schemas.ChatPinCreate,
     db: AsyncSession = Depends(get_db),
@@ -31,7 +31,7 @@ async def get_chat_pins(
         )
     return obj
 
-@router.get("/", response_model=schemas.ChatPinList)
+@router.get("", response_model=schemas.ChatPinList)
 async def get_chat_pins_list(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=100),

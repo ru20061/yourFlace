@@ -6,7 +6,7 @@ from app.dependencies import get_current_user
 
 router = APIRouter()
 
-@router.post("/", response_model=schemas.PaymentMethodResponse, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=schemas.PaymentMethodResponse, status_code=status.HTTP_201_CREATED)
 async def create_payment_methods(
     obj_in: schemas.PaymentMethodCreate,
     db: AsyncSession = Depends(get_db),
@@ -31,7 +31,7 @@ async def get_payment_methods(
         )
     return obj
 
-@router.get("/", response_model=schemas.PaymentMethodList)
+@router.get("", response_model=schemas.PaymentMethodList)
 async def get_payment_methods_list(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=100),

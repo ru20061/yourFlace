@@ -9,7 +9,7 @@ class SubscriptionPlanBase(BaseModel):
     price: Decimal
     currency: str = "KRW"
     billing_cycle: Literal["monthly", "yearly", "one-time"] = "monthly"
-    duration_days: int
+    duration_days: Optional[int] = None
     benefits: Optional[str] = None
     is_active: bool = True
 

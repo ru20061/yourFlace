@@ -6,7 +6,7 @@ from app.dependencies import get_current_user
 
 router = APIRouter()
 
-@router.post("/", response_model=schemas.ErrorLogResponse, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=schemas.ErrorLogResponse, status_code=status.HTTP_201_CREATED)
 async def create_error_logs(
     obj_in: schemas.ErrorLogCreate,
     db: AsyncSession = Depends(get_db),
@@ -31,7 +31,7 @@ async def get_error_logs(
         )
     return obj
 
-@router.get("/", response_model=schemas.ErrorLogList)
+@router.get("", response_model=schemas.ErrorLogList)
 async def get_error_logs_list(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=100),

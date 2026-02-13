@@ -7,7 +7,7 @@ class SystemLogBase(BaseModel):
     sender_id: Optional[int] = None
     receiver_id: Optional[int] = None
     channel: Optional[Literal["app", "push", "email", "sms"]] = None
-    status: Literal["success", "failed", "pending"]
+    status: Literal["success", "failed", "pending", "delivered"]
     error_message: Optional[str] = None
 
 class SystemLogCreate(SystemLogBase):

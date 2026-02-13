@@ -6,7 +6,7 @@ from app.dependencies import get_current_user
 
 router = APIRouter()
 
-@router.post("/", response_model=schemas.UserDeviceResponse, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=schemas.UserDeviceResponse, status_code=status.HTTP_201_CREATED)
 async def create_user_devices(
     obj_in: schemas.UserDeviceCreate,
     db: AsyncSession = Depends(get_db),
@@ -31,7 +31,7 @@ async def get_user_devices(
         )
     return obj
 
-@router.get("/", response_model=schemas.UserDeviceList)
+@router.get("", response_model=schemas.UserDeviceList)
 async def get_user_devices_list(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=100),

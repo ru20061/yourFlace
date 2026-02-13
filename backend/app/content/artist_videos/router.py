@@ -6,7 +6,7 @@ from app.dependencies import get_current_user
 
 router = APIRouter()
 
-@router.post("/", response_model=schemas.ArtistVideoResponse, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=schemas.ArtistVideoResponse, status_code=status.HTTP_201_CREATED)
 async def create_artist_videos(
     obj_in: schemas.ArtistVideoCreate,
     db: AsyncSession = Depends(get_db),
@@ -31,7 +31,7 @@ async def get_artist_videos(
         )
     return obj
 
-@router.get("/", response_model=schemas.ArtistVideoList)
+@router.get("", response_model=schemas.ArtistVideoList)
 async def get_artist_videos_list(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=100),

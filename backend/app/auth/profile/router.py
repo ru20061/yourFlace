@@ -6,7 +6,7 @@ from app.dependencies import get_current_user
 
 router = APIRouter()
 
-@router.post("/", response_model=schemas.ProfileResponse, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=schemas.ProfileResponse, status_code=status.HTTP_201_CREATED)
 async def create_profile(
     obj_in: schemas.ProfileCreate,
     db: AsyncSession = Depends(get_db),
@@ -31,7 +31,7 @@ async def get_profile(
         )
     return obj
 
-@router.get("/", response_model=schemas.ProfileList)
+@router.get("", response_model=schemas.ProfileList)
 async def get_profile_list(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=100),

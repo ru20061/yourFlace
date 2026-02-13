@@ -8,7 +8,7 @@ class OrderBase(BaseModel):
     order_number: str
     total_amount: Decimal
     currency: Optional[str] = "KRW"
-    status: Optional[Literal["pending", "confirmed", "processing", "shipped", "delivered", "cancelled"]] = "pending"
+    status: Optional[Literal["pending", "confirmed", "processing", "shipped", "delivered", "cancelled", "refunded"]] = "pending"
     payment_id: Optional[int] = None
     shipping_address_id: Optional[int] = None
     tracking_number: Optional[str] = None
@@ -17,7 +17,7 @@ class OrderCreate(OrderBase):
     pass
 
 class OrderUpdate(BaseModel):
-    status: Optional[Literal["pending", "confirmed", "processing", "shipped", "delivered", "cancelled"]] = None
+    status: Optional[Literal["pending", "confirmed", "processing", "shipped", "delivered", "cancelled", "refunded"]] = None
     payment_id: Optional[int] = None
     tracking_number: Optional[str] = None
     shipped_at: Optional[datetime] = None
