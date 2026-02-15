@@ -4,13 +4,14 @@ import { useState, useEffect } from "react";
 import Header from "./components/Header/Header";
 import Footer from "./components/Footer/Footer";
 import Sidebar from "./components/Sidebar/Sidebar";
+import ChatBubble from "./components/ChatBubble/ChatBubble";
 import { useAuth } from "../lib/auth-context";
 import { api } from "../lib/api";
 import type { Subscription, Artist, ArtistCategoryMap, ArtistCategory, PaginatedResponse, SidebarArtist } from "./data/types";
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { user, isLoggedIn, isLoading } = useAuth();
+  const { user, isLoggedIn, isLoading, logout } = useAuth();
   const [sidebarArtists, setSidebarArtists] = useState<SidebarArtist[]>([]);
 
   useEffect(() => {
@@ -82,6 +83,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
         isAdmin={false}
         isLoggedIn={isLoggedIn}
         onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
+        onLogout={logout}
       />
       <Sidebar
         isOpen={sidebarOpen}
@@ -92,7 +94,8 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
       <main className="app-main">
         {children}
       </main>
-      <Footer isSubscribed={sidebarArtists.length > 0} isAdmin={false} />
+      <Footer isLoggedIn={isLoggedIn} isAdmin={false} />
+      {isLoggedIn && <ChatBubble subscribedArtists={sidebarArtists} />}
     </div>
   );
 }

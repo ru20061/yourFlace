@@ -139,6 +139,19 @@ export interface Event {
   updated_at: string;
 }
 
+export interface Profile {
+  id: number;
+  user_id: number;
+  full_name: string | null;
+  nickname: string | null;
+  birth_date: string | null;
+  gender: string | null;
+  phone: string | null;
+  profile_image: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface SearchFilterState {
   category: string;
   tags: string[];
@@ -156,4 +169,92 @@ export interface SidebarArtist {
   name: string;
   category?: string;
   profileImage?: string;
+}
+
+export interface Notice {
+  id: number;
+  title: string;
+  message: string;
+  write_id: number;
+  write_role: string | null;
+  target_type: string | null;
+  target_id: number | null;
+  start_at: string | null;
+  end_at: string | null;
+  is_active: boolean;
+  search_text: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ChatRoom {
+  id: number;
+  room_type: string;
+  artist_id: number | null;
+  room_name: string | null;
+  room_image: string | null;
+  last_message_at: string | null;
+  status: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Magazine {
+  id: number;
+  title: string;
+  content: string;
+  summary: string | null;
+  thumbnail_url: string | null;
+  category: string | null;
+  artist_id: number | null;
+  write_id: number;
+  tags: string[] | null;
+  is_active: boolean;
+  view_count: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface MagazineImage {
+  id: number;
+  url: string;
+  width: number | null;
+  height: number | null;
+  sort_order: number;
+}
+
+export interface MagazineDetail extends Magazine {
+  images: MagazineImage[];
+}
+
+export interface NotificationSetting {
+  id: number;
+  subscription_id: number | null;
+  user_id: number;
+  source_type: string | null;
+  notify_all: boolean;
+  notify_post: boolean;
+  notify_comment: boolean;
+  notify_reply: boolean;
+  notify_notice: boolean;
+  notify_payment: boolean;
+  notify_warning: boolean;
+  receive_app: boolean;
+  receive_push: boolean;
+  receive_email: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ChatMessage {
+  id: number;
+  chat_room_id: number;
+  sender_id: number;
+  sender_type: string;
+  message_type: string;
+  content: string | null;
+  is_pinned: boolean;
+  status: string;
+  created_at: string;
+  updated_at: string;
 }

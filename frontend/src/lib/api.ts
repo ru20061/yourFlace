@@ -43,11 +43,23 @@ async function tryRefresh(): Promise<boolean> {
   }
 }
 
+/** 경로에서 쿼리 앞 trailing slash 제거 (/subscriptions/?skip=0 → /subscriptions?skip=0) */
+function normalizePath(path: string): string {
+  const qIdx = path.indexOf("?");
+  if (qIdx === -1) {
+    return path.endsWith("/") ? path.slice(0, -1) : path;
+  }
+  const base = path.slice(0, qIdx);
+  const query = path.slice(qIdx);
+  return (base.endsWith("/") ? base.slice(0, -1) : base) + query;
+}
+
 /** API fetch 래퍼 (JWT 자동 첨부 + 401 시 refresh) */
 export async function apiFetch<T = unknown>(
   path: string,
   options: RequestInit = {},
 ): Promise<T> {
+  const normalizedPath = normalizePath(path);
   const token = getAccessToken();
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
@@ -57,14 +69,14 @@ export async function apiFetch<T = unknown>(
     headers["Authorization"] = `Bearer ${token}`;
   }
 
-  let res = await fetch(`${API_BASE}${path}`, { ...options, headers });
+  let res = await fetch(`${API_BASE}${normalizedPath}`, { ...options, headers });
 
   // 401 → refresh 시도 후 재요청
   if (res.status === 401 && token) {
     const refreshed = await tryRefresh();
     if (refreshed) {
       headers["Authorization"] = `Bearer ${getAccessToken()}`;
-      res = await fetch(`${API_BASE}${path}`, { ...options, headers });
+      res = await fetch(`${API_BASE}${normalizedPath}`, { ...options, headers });
     }
   }
 

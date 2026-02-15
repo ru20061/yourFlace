@@ -9,7 +9,7 @@
   margin-bottom: 16px;
 }
 
-.home-section.other {
+.home-section.news-section {
   margin-top: 32px;
   padding-top: 24px;
   border-top: 1px solid var(--border-color);
@@ -147,4 +147,63 @@
   color: var(--text-tertiary);
   font-size: 14px;
   line-height: 1.6;
+}
+
+/* Flace News 그리드 */
+.news-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.news-card {
+  background: var(--background);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 16px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  position: relative;
+}
+
+.news-card:hover {
+  border-color: var(--color-main);
+  box-shadow: 0 2px 12px rgba(230, 102, 250, 0.1);
+}
+
+.news-card-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  background: linear-gradient(135deg, var(--color-main), var(--color-point));
+  color: white;
+  margin-bottom: 8px;
+}
+
+.news-card-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+
+.news-card-content {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 10px;
+}
+
+.news-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.news-card-date {
+  font-size: 12px;
+  color: var(--text-tertiary);
 }

@@ -14,9 +14,18 @@
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background: var(--background-secondary);
+  background: var(--color-point);
   border: 3px solid var(--color-main);
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profile-avatar-text {
+  font-size: 28px;
+  font-weight: 800;
+  color: white;
 }
 
 .profile-avatar img {
@@ -147,4 +156,309 @@
 
 .profile-save-btn:hover {
   background: var(--color-point);
+}
+
+.profile-save-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 성별 선택 버튼 */
+.profile-gender-options {
+  display: flex;
+  gap: 8px;
+}
+
+.profile-gender-btn {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: var(--background);
+  transition: all 0.2s;
+}
+
+.profile-gender-btn:hover {
+  border-color: var(--color-main);
+  color: var(--color-main);
+}
+
+.profile-gender-btn.active {
+  border-color: var(--color-main);
+  background: var(--color-main);
+  color: var(--text-inverse);
+}
+
+/* 구독별 프로필 설정 페이지 헤더 */
+.profile-sub-page-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0 16px;
+}
+
+.profile-sub-back {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  color: var(--text-primary);
+  transition: background 0.2s;
+}
+
+.profile-sub-back:hover {
+  background: var(--background-secondary);
+}
+
+.profile-sub-page-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.profile-sub-desc {
+  font-size: 13px;
+  color: var(--text-tertiary);
+  margin-top: 4px;
+}
+
+.profile-sub-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.profile-sub-item {
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  padding: 14px;
+  background: var(--background);
+}
+
+.profile-sub-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.profile-sub-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--color-point);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: white;
+}
+
+.profile-sub-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-sub-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.profile-sub-artist {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.profile-sub-nickname {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.profile-sub-edit-btn {
+  padding: 6px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.profile-sub-edit-btn:hover {
+  border-color: var(--color-main);
+  color: var(--color-main);
+}
+
+.profile-sub-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border-color);
+}
+
+/* 구독 메타 정보 (유료/무료 뱃지 + 날짜) */
+.sub-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  padding-left: 56px;
+}
+
+.sub-badge {
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.sub-badge.free {
+  background: var(--background-secondary);
+  color: var(--text-secondary);
+}
+
+.sub-badge.paid {
+  background: rgba(230, 102, 250, 0.12);
+  color: var(--color-main);
+}
+
+.sub-meta-date {
+  font-size: 11px;
+  color: var(--text-tertiary);
+}
+
+/* 이미지 미리보기 */
+.sub-image-preview {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid var(--border-color);
+  align-self: center;
+}
+
+.sub-image-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 알림 설정 */
+.sub-notif-section {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border-color);
+}
+
+.sub-notif-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+}
+
+.sub-notif-row.sub-notif-detail {
+  padding-left: 16px;
+}
+
+.sub-notif-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.sub-notif-detail .sub-notif-label {
+  font-weight: 400;
+  color: var(--text-secondary);
+}
+
+/* 토글 스위치 */
+.sub-toggle {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  border-radius: 12px;
+  background: var(--border-color);
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.sub-toggle.on {
+  background: var(--color-main);
+}
+
+.sub-toggle.small {
+  width: 36px;
+  height: 20px;
+  border-radius: 10px;
+}
+
+.sub-toggle-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s;
+}
+
+.sub-toggle.on .sub-toggle-thumb {
+  transform: translateX(20px);
+}
+
+.sub-toggle.small .sub-toggle-thumb {
+  width: 16px;
+  height: 16px;
+}
+
+.sub-toggle.small.on .sub-toggle-thumb {
+  transform: translateX(16px);
+}
+
+.sub-toggle:disabled {
+  opacity: 0.5;
+}
+
+/* 구독 해지 버튼 */
+.sub-cancel-btn {
+  margin-top: 14px;
+  padding: 10px;
+  width: 100%;
+  border: 1px solid var(--color-danger, #ef4444);
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-danger, #ef4444);
+  background: transparent;
+  transition: all 0.2s;
+}
+
+.sub-cancel-btn:hover {
+  background: var(--color-danger, #ef4444);
+  color: white;
+}
+
+.sub-cancel-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }

@@ -1,28 +1,202 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useAuth } from "../../lib/auth-context";
+import { api } from "../../lib/api";
+import type { Profile, PaginatedResponse } from "../data/types";
 import "./profile.css";
 
 export default function ProfilePage() {
+  const { user, isLoading: authLoading, refreshUser } = useAuth();
+
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  // 프로필 편집 모드
+  const [editing, setEditing] = useState(false);
+  const [form, setForm] = useState({
+    nickname: "",
+    full_name: "",
+    phone: "",
+    gender: "",
+    birth_date: "",
+    profile_image: "",
+  });
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    (async () => {
+      try {
+        const profilesRes = await api.get<PaginatedResponse<Profile>>(
+          `/profiles?skip=0&limit=100`
+        );
+        const myProfile = profilesRes.items.find((p) => p.user_id === user.id) ?? null;
+        setProfile(myProfile);
+      } catch {
+        // 실패 시 무시
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [user]);
+
+  const startEditing = () => {
+    setForm({
+      nickname: profile?.nickname ?? user?.nickname ?? "",
+      full_name: profile?.full_name ?? "",
+      phone: profile?.phone ?? "",
+      gender: profile?.gender ?? "",
+      birth_date: profile?.birth_date ?? "",
+      profile_image: profile?.profile_image ?? user?.profile_image ?? "",
+    });
+    setEditing(true);
+  };
+
+  const cancelEditing = () => {
+    setEditing(false);
+  };
+
+  const saveProfile = async () => {
+    if (!profile) return;
+    setSaving(true);
+    try {
+      const updated = await api.patch<Profile>(`/profiles/${profile.id}`, {
+        nickname: form.nickname || null,
+        full_name: form.full_name || null,
+        phone: form.phone || null,
+        gender: form.gender || null,
+        birth_date: form.birth_date || null,
+        profile_image: form.profile_image || null,
+      });
+      setProfile(updated);
+      await refreshUser();
+      setEditing(false);
+    } catch {
+      alert("프로필 저장에 실패했습니다");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (authLoading || loading) {
+    return (
+      <div className="profile-page">
+        <div className="feed-empty">로딩 중...</div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="profile-page">
+        <div className="feed-empty">로그인 후 이용해주세요</div>
+      </div>
+    );
+  }
+
   return (
     <div className="profile-page">
       {/* 프로필 헤더 */}
       <div className="profile-header">
-        <div className="profile-avatar" />
-        <div className="profile-name">닉네임</div>
-        <div className="profile-email">email@example.com</div>
-        <button className="profile-edit-btn">프로필 수정</button>
+        <div className="profile-avatar">
+          {user.profile_image ? (
+            <img src={user.profile_image} alt="프로필" />
+          ) : (
+            <span className="profile-avatar-text">
+              {(user.nickname ?? user.email)[0].toUpperCase()}
+            </span>
+          )}
+        </div>
+        <div className="profile-name">{user.nickname ?? "닉네임 없음"}</div>
+        <div className="profile-email">{user.email}</div>
+        <button className="profile-edit-btn" onClick={editing ? cancelEditing : startEditing}>
+          {editing ? "취소" : "프로필 수정"}
+        </button>
       </div>
+
+      {/* 프로필 수정 폼 */}
+      {editing && (
+        <div className="profile-form">
+          <div className="profile-form-group">
+            <label className="profile-form-label">닉네임</label>
+            <input
+              className="profile-form-input"
+              value={form.nickname}
+              onChange={(e) => setForm((f) => ({ ...f, nickname: e.target.value }))}
+              placeholder="닉네임을 입력하세요"
+            />
+          </div>
+          <div className="profile-form-group">
+            <label className="profile-form-label">이름</label>
+            <input
+              className="profile-form-input"
+              value={form.full_name}
+              onChange={(e) => setForm((f) => ({ ...f, full_name: e.target.value }))}
+              placeholder="이름을 입력하세요"
+            />
+          </div>
+          <div className="profile-form-group">
+            <label className="profile-form-label">전화번호</label>
+            <input
+              className="profile-form-input"
+              value={form.phone}
+              onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
+              placeholder="010-0000-0000"
+            />
+          </div>
+          <div className="profile-form-group">
+            <label className="profile-form-label">성별</label>
+            <div className="profile-gender-options">
+              {["male", "female", "other"].map((g) => (
+                <button
+                  key={g}
+                  type="button"
+                  className={`profile-gender-btn ${form.gender === g ? "active" : ""}`}
+                  onClick={() => setForm((f) => ({ ...f, gender: g }))}
+                >
+                  {g === "male" ? "남성" : g === "female" ? "여성" : "기타"}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="profile-form-group">
+            <label className="profile-form-label">생년월일</label>
+            <input
+              type="date"
+              className="profile-form-input"
+              value={form.birth_date}
+              onChange={(e) => setForm((f) => ({ ...f, birth_date: e.target.value }))}
+            />
+          </div>
+          <div className="profile-form-group">
+            <label className="profile-form-label">프로필 이미지 URL</label>
+            <input
+              className="profile-form-input"
+              value={form.profile_image}
+              onChange={(e) => setForm((f) => ({ ...f, profile_image: e.target.value }))}
+              placeholder="https://example.com/image.jpg"
+            />
+          </div>
+          <button className="profile-save-btn" onClick={saveProfile} disabled={saving}>
+            {saving ? "저장 중..." : "저장"}
+          </button>
+        </div>
+      )}
 
       {/* 메뉴 */}
       <nav className="profile-menu">
-        <Link href="/subscriptions" className="profile-menu-item">
+        <Link href="/profile/subscriptions" className="profile-menu-item">
           <div className="profile-menu-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
+              <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M23 21v-2a4 4 0 00-3-3.87" />
+              <path d="M16 3.13a4 4 0 010 7.75" />
             </svg>
           </div>
-          내 구독
+          구독별 프로필 설정
           <span className="profile-menu-arrow">&gt;</span>
         </Link>
         <Link href="/orders" className="profile-menu-item">

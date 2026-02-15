@@ -1,0 +1,111 @@
+.magazine-detail-page {
+  padding: 0;
+}
+
+/* 썸네일 커버 */
+.magazine-cover {
+  width: 100%;
+  height: 240px;
+  background: linear-gradient(135deg, var(--color-main), var(--color-deep));
+  overflow: hidden;
+}
+
+.magazine-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 메타 정보 */
+.magazine-meta {
+  padding: 20px 16px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.magazine-category-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  background: linear-gradient(135deg, var(--color-main), var(--color-point));
+  color: white;
+}
+
+.magazine-date {
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+.magazine-views {
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+.magazine-meta-dot {
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+/* 제목 */
+.magazine-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.4;
+  padding: 12px 16px 0;
+}
+
+/* 본문 */
+.magazine-body {
+  padding: 16px;
+}
+
+.magazine-content {
+  font-size: 15px;
+  color: var(--text-primary);
+  line-height: 1.8;
+  white-space: pre-wrap;
+}
+
+/* 본문 이미지 */
+.magazine-images {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.magazine-image-item {
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+
+.magazine-image-item img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* 태그 */
+.magazine-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 0 16px 20px;
+}
+
+.magazine-tag {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  background: var(--background-secondary);
+  border: 1px solid var(--border-color);
+}
