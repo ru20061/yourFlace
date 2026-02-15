@@ -36,9 +36,8 @@ async def get_notices_list(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=100),
     db: AsyncSession = Depends(get_db),
-    current_user = Depends(get_current_user)
 ):
-    """목록 조회"""
+    """목록 조회 (공개)"""
     items = await crud.notice_crud.get_multi(db, skip=skip, limit=limit)
     total = await crud.notice_crud.count(db)
     

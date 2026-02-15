@@ -10,7 +10,7 @@ from pathlib import Path
 from datetime import date, datetime, timedelta
 from decimal import Decimal
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from sqlalchemy import text
 from app.database import engine, Base, AsyncSessionLocal
@@ -111,6 +111,8 @@ from app.admin.banners.models import Banner
 from app.admin.system_messages.models import SystemMessage
 from app.admin.notices.models import Notice
 from app.admin.error_logs.models import ErrorLog
+from app.admin.magazines.models import Magazine
+from app.admin.magazine_images.models import MagazineImage
 
 
 # ============================================================
@@ -787,6 +789,35 @@ async def seed_data():
         print("  [OK] Admin (faq, banners, system_messages, notices, error_logs)")
 
         # ================================================================
+        # 15. MAGAZINE — magazines
+        # ================================================================
+        magazines = [
+            Magazine(id=1, title="루나, 첫 단독 콘서트 2만 관객 매진 성공",            content="지난 금요일 잠실 올림픽경기장에서 열린 루나의 첫 번째 단독 콘서트 '별빛 아래서'가 2만 관객을 가득 채우며 성공적으로 막을 내렸습니다. 데뷔 3년 만에 이룬 단독 콘서트는 루나의 성장을 보여주는 무대였습니다.", summary="루나의 첫 단독 콘서트가 2만 석 매진을 기록하며 성황리에 마무리되었습니다.", thumbnail_url="/placeholder/concert1.jpg", category="공연",      artist_id=1, write_id=8, tags=["콘서트", "루나", "매진"], is_active=True, view_count=1520),
+            Magazine(id=2, title="하루, 세계 댄스 대회 금상 수상 쾌거",               content="하루가 세계적인 댄스 대회 'World Dance Championship 2026'에서 현대무용 부문 금상을 수상했습니다. 한국 댄서 최초로 해당 부문에서 금상을 차지하며 큰 주목을 받고 있습니다.", summary="하루가 WDC 2026 현대무용 부문 금상을 수상했습니다.", thumbnail_url="/placeholder/dance1.jpg", category="수상",      artist_id=2, write_id=8, tags=["하루", "수상", "댄스대회"], is_active=True, view_count=980),
+            Magazine(id=3, title="소율, 첫 개인전 '꿈의 색채' 3월 개최",              content="일러스트레이터 소율의 첫 개인전 '꿈의 색채'가 서울 성수동 갤러리에서 오는 3월 1일부터 31일까지 한 달간 개최됩니다. 이번 전시에서는 '도시의 밤' 시리즈를 포함한 30여 점의 신작이 공개될 예정입니다.", summary="소율 작가의 첫 개인전이 성수동 갤러리에서 열립니다.", thumbnail_url="/placeholder/art1.jpg", category="전시",      artist_id=3, write_id=8, tags=["소율", "개인전", "갤러리"], is_active=True, view_count=650),
+            Magazine(id=4, title="yourFlace, 아티스트와 팬을 잇는 새로운 플랫폼 정식 오픈", content="팬과 아티스트를 더 가깝게 연결하는 플랫폼 yourFlace가 정식 오픈했습니다. 구독 기반의 독점 콘텐츠, 실시간 채팅, 굿즈 쇼핑 등 다양한 기능을 통해 팬과 아티스트 간의 소통을 지원합니다.", summary="yourFlace 플랫폼이 정식 오픈했습니다.", thumbnail_url="/placeholder/banner1.jpg", category="플랫폼",    artist_id=None, write_id=8, tags=["yourFlace", "오픈", "플랫폼"], is_active=True, view_count=2100),
+            Magazine(id=5, title="제이, 새 믹스테이프 '야간비행' 발매 예고",            content="래퍼 제이가 새 믹스테이프 '야간비행'의 발매를 예고했습니다. 총 8트랙으로 구성되며 다양한 프로듀서와의 협업이 포함되어 있어 팬들의 기대를 모으고 있습니다.", summary="제이의 새 믹스테이프 '야간비행'이 곧 발매됩니다.", thumbnail_url="/placeholder/concert2.jpg", category="음악",      artist_id=5, write_id=8, tags=["제이", "믹스테이프", "신보"], is_active=True, view_count=430),
+        ]
+        db.add_all(magazines)
+        await db.flush()
+
+        magazine_images = [
+            MagazineImage(id=1, magazine_id=1, image_id=1,  sort_order=0),
+            MagazineImage(id=2, magazine_id=1, image_id=2,  sort_order=1),
+            MagazineImage(id=3, magazine_id=2, image_id=3,  sort_order=0),
+            MagazineImage(id=4, magazine_id=2, image_id=4,  sort_order=1),
+            MagazineImage(id=5, magazine_id=3, image_id=5,  sort_order=0),
+            MagazineImage(id=6, magazine_id=3, image_id=6,  sort_order=1),
+            MagazineImage(id=7, magazine_id=4, image_id=10, sort_order=0),
+            MagazineImage(id=8, magazine_id=4, image_id=11, sort_order=1),
+            MagazineImage(id=9, magazine_id=5, image_id=1,  sort_order=0),
+        ]
+        db.add_all(magazine_images)
+        await db.flush()
+
+        print("  [OK] Magazine (magazines, magazine_images)")
+
+        # ================================================================
         # COMMIT
         # ================================================================
         await db.commit()
@@ -812,6 +843,7 @@ async def seed_data():
         print("  Fan Likes       8건 / Recommendations 3건")
         print("  FAQ             7건 / Banners 3건 / Notices 3건")
         print("  Moderation      2 models / 3 results")
+        print("  Magazines       5건")
         print("  + settings, addresses, devices, stats, logs 등")
 
 
@@ -848,6 +880,7 @@ async def reset_sequences():
             ("moderation_models", 10), ("content_moderation", 10),
             ("faq", 10), ("banners", 10), ("system_messages", 10),
             ("notices", 10), ("error_logs", 10),
+            ("magazines", 10), ("magazine_images", 20),
         ]
         for table, next_val in tables:
             try:

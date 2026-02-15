@@ -20,7 +20,6 @@ async def create_artist_category_map(
 async def get_artist_category_map(
     id: int,
     db: AsyncSession = Depends(get_db),
-    current_user = Depends(get_current_user)
 ):
     """단건 조회"""
     obj = await crud.artist_category_map_crud.get(db, id)
@@ -36,7 +35,6 @@ async def get_artist_category_map_list(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=100),
     db: AsyncSession = Depends(get_db),
-    current_user = Depends(get_current_user)
 ):
     """목록 조회"""
     items = await crud.artist_category_map_crud.get_multi(db, skip=skip, limit=limit)

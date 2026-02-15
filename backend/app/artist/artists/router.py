@@ -20,7 +20,6 @@ async def create_artists(
 async def get_artists(
     id: int,
     db: AsyncSession = Depends(get_db),
-    current_user = Depends(get_current_user)
 ):
     """단건 조회"""
     obj = await crud.artist_crud.get(db, id)
@@ -34,9 +33,8 @@ async def get_artists(
 @router.get("", response_model=schemas.ArtistList)
 async def get_artists_list(
     skip: int = Query(0, ge=0),
-    limit: int = Query(100, ge=1, le=100),
+    limit: int = Query(100, ge=1, le=200),
     db: AsyncSession = Depends(get_db),
-    current_user = Depends(get_current_user)
 ):
     """목록 조회"""
     items = await crud.artist_crud.get_multi(db, skip=skip, limit=limit)

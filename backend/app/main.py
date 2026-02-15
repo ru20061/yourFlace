@@ -94,6 +94,8 @@ from app.admin.banners.router import router as banners_router
 from app.admin.system_messages.router import router as system_messages_router
 from app.admin.notices.router import router as notices_router
 from app.admin.error_logs.router import router as error_logs_router
+from app.admin.magazines.router import router as magazines_router
+from app.admin.magazine_images.router import router as magazine_images_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -239,6 +241,8 @@ app.include_router(banners_router, prefix=f"{API_V1_PREFIX}/banners", tags=["ban
 app.include_router(system_messages_router, prefix=f"{API_V1_PREFIX}/system-messages", tags=["system-messages"])
 app.include_router(notices_router, prefix=f"{API_V1_PREFIX}/notices", tags=["notices"])
 app.include_router(error_logs_router, prefix=f"{API_V1_PREFIX}/error-logs", tags=["error-logs"])
+app.include_router(magazines_router, prefix=f"{API_V1_PREFIX}/magazines", tags=["magazines"])
+app.include_router(magazine_images_router, prefix=f"{API_V1_PREFIX}/magazine-images", tags=["magazine-images"])
 
 @app.get(f"{API_V1_PREFIX}/tags", tags=["tags"])
 async def get_all_tags(db=Depends(get_db)):
