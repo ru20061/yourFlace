@@ -8,6 +8,7 @@ class Magazine(Base):
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     title = Column(String(255), nullable=False)
+    slug = Column(String(280), unique=True, nullable=True, index=True)
     content = Column(Text, nullable=False)
     summary = Column(String(500), nullable=True)
     thumbnail_url = Column(String(255), nullable=True)

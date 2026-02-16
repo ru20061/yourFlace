@@ -15,6 +15,7 @@ class UserAddress(Base):
     base_address = Column(String(255), nullable=False)
     detail_address = Column(String(255), nullable=True)
     is_default = Column(Boolean, default=False)
+    status = Column(String(10), default='A', server_default='A', nullable=False)
     memo = Column(String(255), nullable=True)
     created_at = Column(TIMESTAMP, server_default=func.now(), nullable=False)
     updated_at = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now(), nullable=False)

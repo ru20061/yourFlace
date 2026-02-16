@@ -40,6 +40,17 @@ class PostResponse(PostBase):
     created_at: datetime
     updated_at: datetime
 
+class PostWithAuthor(PostResponse):
+    """포스트 + 구독 닉네임"""
+    author_name: Optional[str] = None
+    author_profile_image: Optional[str] = None
+
+class PostListWithAuthor(BaseModel):
+    items: list[PostWithAuthor]
+    total: int
+    skip: int
+    limit: int
+
 class PostList(BaseModel):
     items: list[PostResponse]
     total: int

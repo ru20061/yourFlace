@@ -1,10 +1,47 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Query
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import get_db
 from app.auth.user_settings import crud, schemas
+from app.auth.user_settings.models import UserSetting
 from app.dependencies import get_current_user
 
 router = APIRouter()
+
+
+@router.get("/me", response_model=schemas.UserSettingResponse)
+async def get_my_settings(
+    db: AsyncSession = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    """내 설정 조회 (없으면 기본값으로 자동 생성)"""
+    result = await db.execute(
+        select(UserSetting).where(UserSetting.user_id == current_user.id)
+    )
+    obj = result.scalar_one_or_none()
+    if not obj:
+        create_data = schemas.UserSettingCreate(user_id=current_user.id)
+        obj = await crud.user_setting_crud.create(db, create_data)
+    return obj
+
+
+@router.patch("/me", response_model=schemas.UserSettingResponse)
+async def update_my_settings(
+    obj_in: schemas.UserSettingUpdate,
+    db: AsyncSession = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    """내 설정 저장 (없으면 자동 생성 후 업데이트)"""
+    result = await db.execute(
+        select(UserSetting).where(UserSetting.user_id == current_user.id)
+    )
+    obj = result.scalar_one_or_none()
+    if not obj:
+        create_data = schemas.UserSettingCreate(user_id=current_user.id)
+        obj = await crud.user_setting_crud.create(db, create_data)
+    obj = await crud.user_setting_crud.update(db, obj.id, obj_in)
+    return obj
+
 
 @router.post("", response_model=schemas.UserSettingResponse, status_code=status.HTTP_201_CREATED)
 async def create_user_settings(

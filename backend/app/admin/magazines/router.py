@@ -6,6 +6,7 @@ from app.admin.magazines import crud, schemas
 from app.admin.magazines.models import Magazine
 from app.admin.magazine_images.models import MagazineImage
 from app.content.images.models import Image
+from app.core.slug import generate_slug
 from app.dependencies import get_current_user
 
 router = APIRouter()
@@ -21,6 +22,53 @@ async def get_public_magazines(
     items = await crud.magazine_crud.get_multi(db, skip=skip, limit=limit, filters=filters)
     total = await crud.magazine_crud.count(db, filters=filters)
     return schemas.MagazineList(items=items, total=total, skip=skip, limit=limit)
+
+@router.get("/public/by-slug/{slug}", response_model=schemas.MagazineDetailResponse)
+async def get_public_magazine_by_slug(
+    slug: str,
+    db: AsyncSession = Depends(get_db),
+):
+    """slug로 공개 매거진 상세 조회 (이미지 포함, 인증 불필요)"""
+    result = await db.execute(
+        select(Magazine).where(Magazine.slug == slug, Magazine.is_active == True)
+    )
+    magazine = result.scalar_one_or_none()
+    if not magazine:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Magazine not found")
+
+    stmt = (
+        select(MagazineImage.id, MagazineImage.sort_order, Image.url, Image.width, Image.height)
+        .join(Image, MagazineImage.image_id == Image.id)
+        .where(MagazineImage.magazine_id == magazine.id)
+        .order_by(MagazineImage.sort_order)
+    )
+    img_result = await db.execute(stmt)
+    images = [
+        {"id": row.id, "url": row.url, "width": row.width, "height": row.height, "sort_order": row.sort_order}
+        for row in img_result.fetchall()
+    ]
+
+    # view_count 증가
+    magazine.view_count = (magazine.view_count or 0) + 1
+    await db.flush()
+
+    return schemas.MagazineDetailResponse(
+        id=magazine.id,
+        title=magazine.title,
+        slug=magazine.slug,
+        content=magazine.content,
+        summary=magazine.summary,
+        thumbnail_url=magazine.thumbnail_url,
+        category=magazine.category,
+        artist_id=magazine.artist_id,
+        write_id=magazine.write_id,
+        tags=magazine.tags,
+        is_active=magazine.is_active,
+        view_count=magazine.view_count,
+        created_at=magazine.created_at,
+        updated_at=magazine.updated_at,
+        images=images,
+    )
 
 @router.get("/public/{id}", response_model=schemas.MagazineDetailResponse)
 async def get_public_magazine_detail(
@@ -47,6 +95,7 @@ async def get_public_magazine_detail(
     return schemas.MagazineDetailResponse(
         id=magazine.id,
         title=magazine.title,
+        slug=magazine.slug,
         content=magazine.content,
         summary=magazine.summary,
         thumbnail_url=magazine.thumbnail_url,
@@ -69,6 +118,22 @@ async def create_magazine(
 ):
     """생성"""
     obj = await crud.magazine_crud.create(db, obj_in)
+    # slug 자동 생성
+    if not obj.slug:
+        base_slug = generate_slug(obj.title)
+        result = await db.execute(
+            select(Magazine.slug).where(Magazine.slug.like(f"{base_slug}%"))
+        )
+        existing = [r[0] for r in result.fetchall() if r[0]]
+        slug = base_slug
+        if slug in existing:
+            counter = 2
+            while f"{slug}-{counter}" in existing:
+                counter += 1
+            slug = f"{slug}-{counter}"
+        obj.slug = slug
+        await db.flush()
+        await db.refresh(obj)
     return obj
 
 @router.get("/{id}", response_model=schemas.MagazineResponse)
@@ -112,6 +177,22 @@ async def update_magazine(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Magazine not found",
         )
+    # title 변경 시 slug 재생성
+    if obj_in.title:
+        base_slug = generate_slug(obj_in.title)
+        result = await db.execute(
+            select(Magazine.slug).where(Magazine.slug.like(f"{base_slug}%"), Magazine.id != id)
+        )
+        existing = [r[0] for r in result.fetchall() if r[0]]
+        slug = base_slug
+        if slug in existing:
+            counter = 2
+            while f"{slug}-{counter}" in existing:
+                counter += 1
+            slug = f"{slug}-{counter}"
+        obj.slug = slug
+        await db.flush()
+        await db.refresh(obj)
     return obj
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -121,8 +202,7 @@ async def delete_magazine(
     current_user=Depends(get_current_user),
 ):
     """삭제"""
-    from sqlalchemy import update as sql_update, delete as sql_delete
-    from app.admin.magazines.models import Magazine
+    from sqlalchemy import update as sql_update
     from datetime import datetime
 
     obj = await crud.magazine_crud.get(db, id)

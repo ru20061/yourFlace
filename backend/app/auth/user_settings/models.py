@@ -12,6 +12,7 @@ class UserSetting(Base):
     theme = Column(String(20), default='light')
     show_profile = Column(Boolean, default=True)
     show_birth_date = Column(Boolean, default=True)
+    show_activity_status = Column(Boolean, default=True)
     receive_system_notice = Column(Boolean, default=True)
     receive_system_app = Column(Boolean, default=True)
     receive_system_push = Column(Boolean, default=True)

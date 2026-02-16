@@ -1,8 +1,8 @@
 """
-모든 테이블에 시드 데이터를 삽입하는 스크립트
+DB 테이블 생성 + 시드 데이터 삽입 스크립트
 사용법 (프로젝트 루트에서):
-  python -m backend.scripts.seed          # 시드 데이터만 삽입
-  python -m backend.scripts.seed --reset  # 테이블 리셋 후 삽입
+  python -m backend.scripts.seed          # 테이블 생성 + 시드 데이터 삽입
+  python -m backend.scripts.seed --reset  # 테이블 전체 리셋 후 삽입
 """
 import sys
 import asyncio
@@ -15,6 +15,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from sqlalchemy import text
 from app.database import engine, Base, AsyncSessionLocal
 from app.core.security import get_password_hash
+from app.core.slug import generate_slug
 
 # ── 모든 모델 임포트 ──
 # Auth
@@ -206,12 +207,12 @@ async def seed_data():
         await db.flush()
 
         artists = [
-            Artist(id=1, user_id=2, stage_name="루나", notes="음악으로 세상을 밝히는 아티스트", status="active"),
-            Artist(id=2, user_id=3, stage_name="하루", notes="춤으로 하루를 채우는 댄서",       status="active"),
-            Artist(id=3, user_id=4, stage_name="소율", notes="그림으로 이야기를 전하는 일러스트레이터", status="active"),
-            Artist(id=4, user_id=5, stage_name="민서", notes="연기로 감동을 주는 배우",         status="active"),
-            Artist(id=5, user_id=6, stage_name="제이", notes="힙합으로 세상을 흔드는 래퍼",     status="active"),
-            Artist(id=6, user_id=7, stage_name="유리", notes="현대무용의 새로운 지평을 여는 댄서", status="active"),
+            Artist(id=1, user_id=2, stage_name="루나", slug=generate_slug("루나"), notes="음악으로 세상을 밝히는 아티스트", status="active"),
+            Artist(id=2, user_id=3, stage_name="하루", slug=generate_slug("하루"), notes="춤으로 하루를 채우는 댄서",       status="active"),
+            Artist(id=3, user_id=4, stage_name="소율", slug=generate_slug("소율"), notes="그림으로 이야기를 전하는 일러스트레이터", status="active"),
+            Artist(id=4, user_id=5, stage_name="민서", slug=generate_slug("민서"), notes="연기로 감동을 주는 배우",         status="active"),
+            Artist(id=5, user_id=6, stage_name="제이", slug=generate_slug("제이"), notes="힙합으로 세상을 흔드는 래퍼",     status="active"),
+            Artist(id=6, user_id=7, stage_name="유리", slug=generate_slug("유리"), notes="현대무용의 새로운 지평을 여는 댄서", status="active"),
         ]
         db.add_all(artists)
         await db.flush()
@@ -792,11 +793,11 @@ async def seed_data():
         # 15. MAGAZINE — magazines
         # ================================================================
         magazines = [
-            Magazine(id=1, title="루나, 첫 단독 콘서트 2만 관객 매진 성공",            content="지난 금요일 잠실 올림픽경기장에서 열린 루나의 첫 번째 단독 콘서트 '별빛 아래서'가 2만 관객을 가득 채우며 성공적으로 막을 내렸습니다. 데뷔 3년 만에 이룬 단독 콘서트는 루나의 성장을 보여주는 무대였습니다.", summary="루나의 첫 단독 콘서트가 2만 석 매진을 기록하며 성황리에 마무리되었습니다.", thumbnail_url="/placeholder/concert1.jpg", category="공연",      artist_id=1, write_id=8, tags=["콘서트", "루나", "매진"], is_active=True, view_count=1520),
-            Magazine(id=2, title="하루, 세계 댄스 대회 금상 수상 쾌거",               content="하루가 세계적인 댄스 대회 'World Dance Championship 2026'에서 현대무용 부문 금상을 수상했습니다. 한국 댄서 최초로 해당 부문에서 금상을 차지하며 큰 주목을 받고 있습니다.", summary="하루가 WDC 2026 현대무용 부문 금상을 수상했습니다.", thumbnail_url="/placeholder/dance1.jpg", category="수상",      artist_id=2, write_id=8, tags=["하루", "수상", "댄스대회"], is_active=True, view_count=980),
-            Magazine(id=3, title="소율, 첫 개인전 '꿈의 색채' 3월 개최",              content="일러스트레이터 소율의 첫 개인전 '꿈의 색채'가 서울 성수동 갤러리에서 오는 3월 1일부터 31일까지 한 달간 개최됩니다. 이번 전시에서는 '도시의 밤' 시리즈를 포함한 30여 점의 신작이 공개될 예정입니다.", summary="소율 작가의 첫 개인전이 성수동 갤러리에서 열립니다.", thumbnail_url="/placeholder/art1.jpg", category="전시",      artist_id=3, write_id=8, tags=["소율", "개인전", "갤러리"], is_active=True, view_count=650),
-            Magazine(id=4, title="yourFlace, 아티스트와 팬을 잇는 새로운 플랫폼 정식 오픈", content="팬과 아티스트를 더 가깝게 연결하는 플랫폼 yourFlace가 정식 오픈했습니다. 구독 기반의 독점 콘텐츠, 실시간 채팅, 굿즈 쇼핑 등 다양한 기능을 통해 팬과 아티스트 간의 소통을 지원합니다.", summary="yourFlace 플랫폼이 정식 오픈했습니다.", thumbnail_url="/placeholder/banner1.jpg", category="플랫폼",    artist_id=None, write_id=8, tags=["yourFlace", "오픈", "플랫폼"], is_active=True, view_count=2100),
-            Magazine(id=5, title="제이, 새 믹스테이프 '야간비행' 발매 예고",            content="래퍼 제이가 새 믹스테이프 '야간비행'의 발매를 예고했습니다. 총 8트랙으로 구성되며 다양한 프로듀서와의 협업이 포함되어 있어 팬들의 기대를 모으고 있습니다.", summary="제이의 새 믹스테이프 '야간비행'이 곧 발매됩니다.", thumbnail_url="/placeholder/concert2.jpg", category="음악",      artist_id=5, write_id=8, tags=["제이", "믹스테이프", "신보"], is_active=True, view_count=430),
+            Magazine(id=1, title="루나, 첫 단독 콘서트 2만 관객 매진 성공",            slug=generate_slug("루나 첫 단독 콘서트 2만 관객 매진 성공"), content="지난 금요일 잠실 올림픽경기장에서 열린 루나의 첫 번째 단독 콘서트 '별빛 아래서'가 2만 관객을 가득 채우며 성공적으로 막을 내렸습니다. 데뷔 3년 만에 이룬 단독 콘서트는 루나의 성장을 보여주는 무대였습니다.", summary="루나의 첫 단독 콘서트가 2만 석 매진을 기록하며 성황리에 마무리되었습니다.", thumbnail_url="/placeholder/concert1.jpg", category="공연",      artist_id=1, write_id=8, tags=["콘서트", "루나", "매진"], is_active=True, view_count=1520),
+            Magazine(id=2, title="하루, 세계 댄스 대회 금상 수상 쾌거",               slug=generate_slug("하루 세계 댄스 대회 금상 수상 쾌거"), content="하루가 세계적인 댄스 대회 'World Dance Championship 2026'에서 현대무용 부문 금상을 수상했습니다. 한국 댄서 최초로 해당 부문에서 금상을 차지하며 큰 주목을 받고 있습니다.", summary="하루가 WDC 2026 현대무용 부문 금상을 수상했습니다.", thumbnail_url="/placeholder/dance1.jpg", category="수상",      artist_id=2, write_id=8, tags=["하루", "수상", "댄스대회"], is_active=True, view_count=980),
+            Magazine(id=3, title="소율, 첫 개인전 '꿈의 색채' 3월 개최",              slug=generate_slug("소율 첫 개인전 꿈의 색채 3월 개최"), content="일러스트레이터 소율의 첫 개인전 '꿈의 색채'가 서울 성수동 갤러리에서 오는 3월 1일부터 31일까지 한 달간 개최됩니다. 이번 전시에서는 '도시의 밤' 시리즈를 포함한 30여 점의 신작이 공개될 예정입니다.", summary="소율 작가의 첫 개인전이 성수동 갤러리에서 열립니다.", thumbnail_url="/placeholder/art1.jpg", category="전시",      artist_id=3, write_id=8, tags=["소율", "개인전", "갤러리"], is_active=True, view_count=650),
+            Magazine(id=4, title="yourFlace, 아티스트와 팬을 잇는 새로운 플랫폼 정식 오픈", slug=generate_slug("yourflace 아티스트와 팬을 잇는 새로운 플랫폼 정식 오픈"), content="팬과 아티스트를 더 가깝게 연결하는 플랫폼 yourFlace가 정식 오픈했습니다. 구독 기반의 독점 콘텐츠, 실시간 채팅, 굿즈 쇼핑 등 다양한 기능을 통해 팬과 아티스트 간의 소통을 지원합니다.", summary="yourFlace 플랫폼이 정식 오픈했습니다.", thumbnail_url="/placeholder/banner1.jpg", category="플랫폼",    artist_id=None, write_id=8, tags=["yourFlace", "오픈", "플랫폼"], is_active=True, view_count=2100),
+            Magazine(id=5, title="제이, 새 믹스테이프 '야간비행' 발매 예고",            slug=generate_slug("제이 새 믹스테이프 야간비행 발매 예고"), content="래퍼 제이가 새 믹스테이프 '야간비행'의 발매를 예고했습니다. 총 8트랙으로 구성되며 다양한 프로듀서와의 협업이 포함되어 있어 팬들의 기대를 모으고 있습니다.", summary="제이의 새 믹스테이프 '야간비행'이 곧 발매됩니다.", thumbnail_url="/placeholder/concert2.jpg", category="음악",      artist_id=5, write_id=8, tags=["제이", "믹스테이프", "신보"], is_active=True, view_count=430),
         ]
         db.add_all(magazines)
         await db.flush()
@@ -899,13 +900,13 @@ async def reset_sequences():
 
 async def main():
     import argparse
-    parser = argparse.ArgumentParser(description="yourFlace 시드 데이터")
-    parser.add_argument("--reset", action="store_true", help="테이블 전체 리셋 후 시드 삽입")
+    parser = argparse.ArgumentParser(description="yourFlace DB 초기화 + 시드 데이터")
+    parser.add_argument("--reset", action="store_true", help="테이블 전체 리셋 후 삽입")
     args = parser.parse_args()
 
     print()
     print("=" * 55)
-    print("  yourFlace Seed Data")
+    print("  yourFlace DB Init + Seed")
     print("=" * 55)
     print()
 
@@ -919,11 +920,12 @@ async def main():
             await conn.run_sync(Base.metadata.drop_all)
         print("[OK] 모든 테이블 삭제")
 
-        async with engine.begin() as conn:
-            await conn.run_sync(Base.metadata.create_all)
-        table_count = len(Base.metadata.tables)
-        print(f"[OK] 테이블 {table_count}개 생성")
-        print()
+    # 테이블 생성 (이미 존재하는 테이블은 스킵)
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    table_count = len(Base.metadata.tables)
+    print(f"[OK] 테이블 {table_count}개 확인/생성")
+    print()
 
     print("[시드 데이터 삽입 중...]")
     await seed_data()

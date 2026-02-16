@@ -1,6 +1,7 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Query
 from pydantic import BaseModel, EmailStr
-from typing import Optional
+from typing import Optional, Literal
+from datetime import date
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
@@ -25,6 +26,15 @@ class RegisterRequest(BaseModel):
     email: EmailStr
     password: str
     nickname: Optional[str] = None
+    full_name: Optional[str] = None
+    birth_date: Optional[date] = None
+    gender: Optional[Literal["male", "female"]] = None
+    phone: Optional[str] = None
+
+
+class CheckEmailResponse(BaseModel):
+    available: bool
+    message: str
 
 
 class LoginRequest(BaseModel):
@@ -50,6 +60,20 @@ class MeResponse(BaseModel):
 
 
 # ── Endpoints ──
+
+@router.get("/check-email", response_model=CheckEmailResponse)
+async def check_email(
+    email: EmailStr = Query(..., description="중복 확인할 이메일"),
+    db: AsyncSession = Depends(get_db),
+):
+    """이메일 중복 확인"""
+    result = await db.execute(
+        select(User).where(User.email == email)
+    )
+    if result.scalar_one_or_none():
+        return CheckEmailResponse(available=False, message="이미 등록된 이메일입니다")
+    return CheckEmailResponse(available=True, message="사용 가능한 이메일입니다")
+
 
 @router.post("/register", response_model=TokenResponse)
 async def register(body: RegisterRequest, db: AsyncSession = Depends(get_db)):
@@ -78,6 +102,10 @@ async def register(body: RegisterRequest, db: AsyncSession = Depends(get_db)):
     profile = Profile(
         user_id=user.id,
         nickname=body.nickname,
+        full_name=body.full_name,
+        birth_date=body.birth_date,
+        gender=body.gender,
+        phone=body.phone,
     )
     db.add(profile)
     await db.flush()

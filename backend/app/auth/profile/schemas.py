@@ -1,12 +1,12 @@
 from pydantic import BaseModel, ConfigDict
-from typing import Optional
+from typing import Optional, Literal
 from datetime import datetime, date
 
 class ProfileBase(BaseModel):
     full_name: Optional[str] = None
     nickname: Optional[str] = None
     birth_date: Optional[date] = None
-    gender: Optional[str] = None
+    gender: Optional[Literal["male", "female"]] = None
     phone: Optional[str] = None
     profile_image: Optional[str] = None
 
@@ -17,7 +17,7 @@ class ProfileUpdate(BaseModel):
     full_name: Optional[str] = None
     nickname: Optional[str] = None
     birth_date: Optional[date] = None
-    gender: Optional[str] = None
+    gender: Optional[Literal["male", "female"]] = None
     phone: Optional[str] = None
     profile_image: Optional[str] = None
 

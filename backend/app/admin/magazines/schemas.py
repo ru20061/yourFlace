@@ -30,6 +30,7 @@ class MagazineResponse(MagazineBase):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
+    slug: Optional[str] = None
     view_count: int
     created_at: datetime
     updated_at: datetime

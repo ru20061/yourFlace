@@ -36,6 +36,17 @@ class ArtistImageResponse(ArtistImageBase):
     created_at: datetime
     updated_at: datetime
 
+class ArtistImageWithAuthor(ArtistImageResponse):
+    """아티스트 이미지 + 구독 닉네임"""
+    author_name: Optional[str] = None
+    author_profile_image: Optional[str] = None
+
+class ArtistImageListWithAuthor(BaseModel):
+    items: list[ArtistImageWithAuthor]
+    total: int
+    skip: int
+    limit: int
+
 class ArtistImageList(BaseModel):
     items: list[ArtistImageResponse]
     total: int

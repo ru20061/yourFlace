@@ -24,6 +24,7 @@ class ArtistResponse(ArtistBase):
 
     id: int
     user_id: int
+    slug: Optional[str] = None
     search_text: Optional[str] = None
     created_at: datetime
     updated_at: datetime

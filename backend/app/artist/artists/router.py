@@ -1,7 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
 from app.database import get_db
 from app.artist.artists import crud, schemas
+from app.artist.artists.models import Artist
+from app.core.slug import generate_slug
 from app.dependencies import get_current_user
 
 router = APIRouter()
@@ -14,6 +17,39 @@ async def create_artists(
 ):
     """생성"""
     obj = await crud.artist_crud.create(db, obj_in)
+    # slug 자동 생성
+    if not obj.slug:
+        base_slug = generate_slug(obj.stage_name)
+        result = await db.execute(
+            select(Artist.slug).where(Artist.slug.like(f"{base_slug}%"))
+        )
+        existing = [r[0] for r in result.fetchall() if r[0]]
+        slug = base_slug
+        if slug in existing:
+            counter = 2
+            while f"{slug}-{counter}" in existing:
+                counter += 1
+            slug = f"{slug}-{counter}"
+        obj.slug = slug
+        await db.flush()
+        await db.refresh(obj)
+    return obj
+
+@router.get("/by-slug/{slug}", response_model=schemas.ArtistResponse)
+async def get_artist_by_slug(
+    slug: str,
+    db: AsyncSession = Depends(get_db),
+):
+    """slug로 단건 조회"""
+    result = await db.execute(
+        select(Artist).where(Artist.slug == slug, Artist.status != "D")
+    )
+    obj = result.scalar_one_or_none()
+    if not obj:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Artist not found"
+        )
     return obj
 
 @router.get("/{id}", response_model=schemas.ArtistResponse)
@@ -39,7 +75,7 @@ async def get_artists_list(
     """목록 조회"""
     items = await crud.artist_crud.get_multi(db, skip=skip, limit=limit)
     total = await crud.artist_crud.count(db)
-    
+
     return schemas.ArtistList(
         items=items,
         total=total,
@@ -61,6 +97,22 @@ async def update_artists(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Artist not found"
         )
+    # stage_name 변경 시 slug 재생성
+    if obj_in.stage_name and obj_in.stage_name != obj.stage_name:
+        base_slug = generate_slug(obj_in.stage_name)
+        result = await db.execute(
+            select(Artist.slug).where(Artist.slug.like(f"{base_slug}%"), Artist.id != id)
+        )
+        existing = [r[0] for r in result.fetchall() if r[0]]
+        slug = base_slug
+        if slug in existing:
+            counter = 2
+            while f"{slug}-{counter}" in existing:
+                counter += 1
+            slug = f"{slug}-{counter}"
+        obj.slug = slug
+        await db.flush()
+        await db.refresh(obj)
     return obj
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)

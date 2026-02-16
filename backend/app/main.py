@@ -251,11 +251,11 @@ async def get_all_tags(db=Depends(get_db)):
     query = text("""
         SELECT DISTINCT tag
         FROM (
-            SELECT jsonb_array_elements_text(tags) AS tag FROM posts WHERE tags IS NOT NULL
+            SELECT jsonb_array_elements_text(tags::jsonb) AS tag FROM posts WHERE tags IS NOT NULL
             UNION
-            SELECT jsonb_array_elements_text(tags) AS tag FROM artist_images WHERE tags IS NOT NULL
+            SELECT jsonb_array_elements_text(tags::jsonb) AS tag FROM artist_images WHERE tags IS NOT NULL
             UNION
-            SELECT jsonb_array_elements_text(tags) AS tag FROM artist_videos WHERE tags IS NOT NULL
+            SELECT jsonb_array_elements_text(tags::jsonb) AS tag FROM artist_videos WHERE tags IS NOT NULL
         ) t
         ORDER BY tag
     """)
