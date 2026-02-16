@@ -1,0 +1,255 @@
+.subscribe-page {
+  padding: 0 0 100px;
+}
+
+/* 헤더 */
+.subscribe-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.subscribe-back-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  color: var(--text-primary);
+  transition: background 0.2s;
+}
+
+.subscribe-back-btn:hover {
+  background: var(--background-secondary);
+}
+
+.subscribe-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+/* 아티스트 정보 */
+.subscribe-artist-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 16px;
+  gap: 12px;
+}
+
+.subscribe-artist-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--color-point);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  font-size: 24px;
+  font-weight: 800;
+  color: white;
+}
+
+.subscribe-artist-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.subscribe-artist-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* 섹션 */
+.subscribe-section {
+  padding: 16px;
+}
+
+.subscribe-section-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+/* 플랜 카드 */
+.subscribe-plan-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.subscribe-plan-card {
+  position: relative;
+  padding: 16px;
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  text-align: left;
+  transition: border-color 0.2s, background 0.2s;
+  background: var(--background);
+}
+
+.subscribe-plan-card:hover {
+  border-color: var(--color-main);
+}
+
+.subscribe-plan-card.selected {
+  border-color: var(--color-main);
+  background: color-mix(in srgb, var(--color-main) 5%, var(--background));
+}
+
+.subscribe-plan-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.subscribe-plan-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.subscribe-plan-cycle {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-main);
+  background: color-mix(in srgb, var(--color-main) 10%, transparent);
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.subscribe-plan-price {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--color-main);
+  margin-bottom: 8px;
+}
+
+.subscribe-plan-period {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+}
+
+.subscribe-plan-benefits {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  white-space: pre-line;
+}
+
+.subscribe-plan-check {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  color: var(--color-main);
+}
+
+/* 결제 수단 */
+.subscribe-payment-methods {
+  display: flex;
+  gap: 8px;
+}
+
+.subscribe-payment-method {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 8px;
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  transition: border-color 0.2s, background 0.2s;
+  background: var(--background);
+}
+
+.subscribe-payment-method:hover {
+  border-color: var(--color-main);
+}
+
+.subscribe-payment-method.selected {
+  border-color: var(--color-main);
+  background: color-mix(in srgb, var(--color-main) 5%, var(--background));
+}
+
+.subscribe-payment-icon {
+  font-size: 24px;
+}
+
+.subscribe-payment-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* 결제 요약 */
+.subscribe-summary {
+  margin: 0 16px;
+  padding: 16px;
+  background: var(--background-secondary);
+  border-radius: 12px;
+}
+
+.subscribe-summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.subscribe-summary-row.total {
+  margin-top: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-color);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* 에러 */
+.subscribe-error {
+  margin: 12px 16px;
+  padding: 12px;
+  background: color-mix(in srgb, #ef4444 10%, var(--background));
+  border: 1px solid color-mix(in srgb, #ef4444 30%, transparent);
+  border-radius: 8px;
+  color: #ef4444;
+  font-size: 13px;
+  text-align: center;
+}
+
+/* 결제 버튼 */
+.subscribe-pay-btn {
+  display: block;
+  width: calc(100% - 32px);
+  margin: 24px 16px 0;
+  padding: 16px;
+  background: var(--color-main);
+  color: var(--text-inverse);
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  text-align: center;
+  transition: background 0.2s, opacity 0.2s;
+}
+
+.subscribe-pay-btn:hover {
+  background: var(--color-point);
+}
+
+.subscribe-pay-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

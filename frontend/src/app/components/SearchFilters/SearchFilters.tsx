@@ -1,6 +1,7 @@
 "use client";
 
 import type { SearchFilterState } from "../../data/types";
+import FlaceDatePicker from "../FlaceDatePicker/FlaceDatePicker";
 import "./search-filters.css";
 
 interface SearchFiltersProps {
@@ -103,26 +104,26 @@ export default function SearchFilters({ filters, onFiltersChange, tags }: Search
       <div className="filter-section">
         <div className="filter-section-title">기간</div>
         <div className="filter-date-range">
-          <input
-            type="date"
+          <FlaceDatePicker
             value={filters.dateRange.start ?? ""}
-            onChange={(e) =>
+            onChange={(val) =>
               onFiltersChange({
                 ...filters,
-                dateRange: { ...filters.dateRange, start: e.target.value || null },
+                dateRange: { ...filters.dateRange, start: val || null },
               })
             }
+            placeholder="시작일"
           />
           <span className="filter-date-separator">~</span>
-          <input
-            type="date"
+          <FlaceDatePicker
             value={filters.dateRange.end ?? ""}
-            onChange={(e) =>
+            onChange={(val) =>
               onFiltersChange({
                 ...filters,
-                dateRange: { ...filters.dateRange, end: e.target.value || null },
+                dateRange: { ...filters.dateRange, end: val || null },
               })
             }
+            placeholder="종료일"
           />
         </div>
       </div>

@@ -12,6 +12,7 @@ export interface Artist {
   id: number;
   user_id: number;
   stage_name: string;
+  slug: string | null;
   notes: string | null;
   profile_image: string | null;
   cover_image: string | null;
@@ -145,7 +146,7 @@ export interface Profile {
   full_name: string | null;
   nickname: string | null;
   birth_date: string | null;
-  gender: string | null;
+  gender: "male" | "female" | null;
   phone: string | null;
   profile_image: string | null;
   created_at: string;
@@ -167,6 +168,7 @@ export interface SearchFilterState {
 export interface SidebarArtist {
   id: number;
   name: string;
+  slug: string | null;
   category?: string;
   profileImage?: string;
 }
@@ -202,6 +204,7 @@ export interface ChatRoom {
 export interface Magazine {
   id: number;
   title: string;
+  slug: string | null;
   content: string;
   summary: string | null;
   thumbnail_url: string | null;
@@ -227,6 +230,21 @@ export interface MagazineDetail extends Magazine {
   images: MagazineImage[];
 }
 
+export interface UserAddress {
+  id: number;
+  user_id: number;
+  address_name: string | null;
+  recipient_name: string;
+  recipient_phone: string;
+  postal_code: string;
+  base_address: string;
+  detail_address: string | null;
+  is_default: boolean;
+  memo: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface NotificationSetting {
   id: number;
   subscription_id: number | null;
@@ -242,6 +260,36 @@ export interface NotificationSetting {
   receive_app: boolean;
   receive_push: boolean;
   receive_email: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface SubscriptionPlan {
+  id: number;
+  artist_id: number;
+  name: string;
+  price: number;
+  currency: string;
+  billing_cycle: "monthly" | "yearly" | "one-time";
+  duration_days: number | null;
+  benefits: string | null;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Payment {
+  id: number;
+  user_id: number;
+  payment_type: string;
+  related_id: number | null;
+  related_type: string | null;
+  amount: number;
+  currency: string;
+  status: "pending" | "completed" | "failed" | "cancelled" | "refunded";
+  transaction_id: string | null;
+  payment_method_id: number | null;
+  paid_at: string | null;
   created_at: string;
   updated_at: string;
 }

@@ -99,7 +99,7 @@ export default function HomePage() {
               <button
                 key={artist.id}
                 className="artist-selection-card"
-                onClick={() => router.push(`/artists/${artist.id}`)}
+                onClick={() => router.push(`/artists/${artist.slug}`)}
               >
                 <div className={`artist-selection-cover${isSubscribed ? "" : " other"}`} />
                 <div className={`artist-selection-avatar${isSubscribed ? "" : " other"}`}>
@@ -137,7 +137,7 @@ export default function HomePage() {
             <article
               key={item.id}
               className="news-card"
-              onClick={() => router.push(`/magazines/${item.id}`)}
+              onClick={() => router.push(`/magazines/${item.slug}`)}
               style={{ cursor: "pointer" }}
             >
               <div className="news-card-badge">NEWS</div>

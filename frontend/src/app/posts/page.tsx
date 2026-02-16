@@ -1,39 +1,60 @@
 "use client";
 
+import { useState, useEffect, useCallback } from "react";
+import { useAuth } from "../../lib/auth-context";
+import { api } from "../../lib/api";
+import type { Post, PaginatedResponse } from "../data/types";
+import PostCard from "../components/PostCard/PostCard";
 import "./posts.css";
 
 export default function PostsPage() {
+  const { user } = useAuth();
+
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchPosts = useCallback(async () => {
+    try {
+      const postsRes = await api.get<PaginatedResponse<Post>>("/posts/?skip=0&limit=100");
+
+      const sorted = postsRes.items
+        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
+      setPosts(sorted);
+    } catch {
+      // API 실패 시 빈 상태 유지
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchPosts();
+  }, [fetchPosts]);
+
+  if (loading) {
+    return (
+      <div className="posts-page">
+        <div className="posts-empty">로딩 중...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="posts-page">
-      <div className="post-card">
-        <div className="post-header">
-          <div className="post-avatar" />
-          <div>
-            <div className="post-author-name">작성자</div>
-            <div className="post-time">방금 전</div>
-          </div>
-        </div>
-        <div className="post-body">
-          <p className="post-text">게시글 내용이 여기에 표시됩니다.</p>
-        </div>
-        <div className="post-tags">
-          <span className="post-tag">#태그</span>
-        </div>
-        <div className="post-actions">
-          <button className="post-action-btn">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
-            </svg>
-            <span>좋아요</span>
-          </button>
-          <button className="post-action-btn">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
-            </svg>
-            <span>댓글</span>
-          </button>
-        </div>
+      <div className="posts-header">
+        <h1 className="posts-title">포스트</h1>
       </div>
+
+      {posts.length > 0 ? (
+        <div className="posts-list">
+          {posts.map((post) => (
+            <PostCard key={post.id} post={post} />
+          ))}
+        </div>
+      ) : (
+        <div className="posts-empty">아직 작성된 포스트가 없습니다.</div>
+      )}
     </div>
   );
 }

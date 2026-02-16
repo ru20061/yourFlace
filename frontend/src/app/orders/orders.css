@@ -2,11 +2,32 @@
   padding: 16px 0;
 }
 
+.orders-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.orders-back-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  color: var(--text-primary);
+  transition: background 0.2s;
+}
+
+.orders-back-btn:hover {
+  background: var(--background-secondary);
+}
+
 .orders-title {
   font-size: 18px;
   font-weight: 700;
   color: var(--text-primary);
-  margin-bottom: 16px;
 }
 
 .order-list {

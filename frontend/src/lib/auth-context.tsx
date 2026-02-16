@@ -17,12 +17,21 @@ interface AuthUser {
   profile_image: string | null;
 }
 
+interface ProfileData {
+  nickname?: string;
+  full_name?: string;
+  birth_date?: string;
+  gender?: "male" | "female";
+  phone?: string;
+}
+
 interface AuthContextType {
   user: AuthUser | null;
   isLoggedIn: boolean;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string, nickname?: string) => Promise<void>;
+  register: (email: string, password: string, profile?: ProfileData) => Promise<void>;
+  checkEmail: (email: string) => Promise<{ available: boolean; message: string }>;
   logout: () => void;
   refreshUser: () => Promise<void>;
 }
@@ -67,13 +76,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [fetchMe],
   );
 
+  /** 이메일 중복 확인 */
+  const checkEmail = useCallback(
+    async (email: string) => {
+      return api.get<{ available: boolean; message: string }>(
+        `/auth/check-email?email=${encodeURIComponent(email)}`,
+      );
+    },
+    [],
+  );
+
   /** 회원가입 */
   const register = useCallback(
-    async (email: string, password: string, nickname?: string) => {
+    async (email: string, password: string, profile?: ProfileData) => {
       const data = await api.post<{
         access_token: string;
         refresh_token: string;
-      }>("/auth/register", { email, password, nickname });
+      }>("/auth/register", { email, password, ...profile });
       setTokens(data.access_token, data.refresh_token);
       await fetchMe();
     },
@@ -94,6 +113,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isLoading,
         login,
         register,
+        checkEmail,
         logout,
         refreshUser: fetchMe,
       }}

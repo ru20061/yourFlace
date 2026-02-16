@@ -1,0 +1,247 @@
+/* 새 배송지 추가 버튼 */
+.addr-add-btn {
+  width: 100%;
+  padding: 14px;
+  border: 2px dashed var(--border-color);
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-main);
+  background: transparent;
+  transition: border-color 0.2s, background 0.2s;
+  margin-bottom: 16px;
+}
+
+.addr-add-btn:hover {
+  border-color: var(--color-main);
+  background: rgba(230, 102, 250, 0.04);
+}
+
+/* 폼 카드 */
+.addr-form-card {
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  padding: 18px;
+  background: var(--background);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.addr-form-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* 기본배송지 체크박스 */
+.addr-default-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.addr-default-check input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--color-main);
+  cursor: pointer;
+}
+
+/* 폼 액션 버튼 */
+.addr-form-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.addr-form-cancel {
+  flex: 1;
+  padding: 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  transition: border-color 0.2s;
+}
+
+.addr-form-cancel:hover {
+  border-color: var(--text-secondary);
+}
+
+.addr-form-save {
+  flex: 1;
+  padding: 12px;
+  background: var(--color-main);
+  color: var(--text-inverse);
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  transition: background 0.2s;
+}
+
+.addr-form-save:hover {
+  background: var(--color-point);
+}
+
+.addr-form-save:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 빈 상태 */
+.addr-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 20px;
+  gap: 12px;
+}
+
+.addr-empty-icon {
+  color: var(--text-tertiary);
+  opacity: 0.5;
+  margin-bottom: 4px;
+}
+
+.addr-empty-text {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.addr-empty-add-btn {
+  margin-top: 8px;
+  padding: 12px 28px;
+  border: 2px dashed var(--color-main);
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-main);
+  background: transparent;
+  transition: background 0.2s;
+}
+
+.addr-empty-add-btn:hover {
+  background: rgba(230, 102, 250, 0.06);
+}
+
+/* 배송지 목록 */
+.addr-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* 배송지 카드 */
+.addr-card {
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  padding: 16px;
+  background: var(--background);
+}
+
+.addr-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.addr-card-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.addr-default-badge {
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 700;
+  background: rgba(230, 102, 250, 0.12);
+  color: var(--color-main);
+}
+
+.addr-card-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.addr-action-btn {
+  padding: 4px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.addr-action-btn:hover {
+  border-color: var(--color-main);
+  color: var(--color-main);
+}
+
+.addr-action-btn.danger:hover {
+  border-color: var(--color-error);
+  color: var(--color-error);
+}
+
+.addr-action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 카드 본문 */
+.addr-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.addr-card-recipient {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.addr-card-address {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.addr-card-memo {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  margin-top: 2px;
+}
+
+/* 기본배송지 설정 버튼 */
+.addr-set-default-btn {
+  margin-top: 12px;
+  padding: 8px;
+  width: 100%;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  transition: all 0.2s;
+}
+
+.addr-set-default-btn:hover {
+  border-color: var(--color-main);
+  color: var(--color-main);
+  background: rgba(230, 102, 250, 0.04);
+}

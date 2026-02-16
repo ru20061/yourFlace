@@ -9,7 +9,7 @@ import "./magazine-detail.css";
 
 export default function MagazineDetailPage() {
   const params = useParams();
-  const magazineId = Number(params.id);
+  const slug = decodeURIComponent(params.slug as string);
 
   const [magazine, setMagazine] = useState<MagazineDetail | null>(null);
   const [loading, setLoading] = useState(true);
@@ -18,7 +18,7 @@ export default function MagazineDetailPage() {
     (async () => {
       try {
         const data = await apiFetch<MagazineDetail>(
-          `/magazines/public/${magazineId}`
+          `/magazines/public/by-slug/${encodeURIComponent(slug)}`
         );
         setMagazine(data);
       } catch {
@@ -27,7 +27,7 @@ export default function MagazineDetailPage() {
         setLoading(false);
       }
     })();
-  }, [magazineId]);
+  }, [slug]);
 
   if (loading) {
     return (

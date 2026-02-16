@@ -2,11 +2,32 @@
   padding: 16px 0;
 }
 
+.settings-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.settings-back-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  color: var(--text-primary);
+  transition: background 0.2s;
+}
+
+.settings-back-btn:hover {
+  background: var(--background-secondary);
+}
+
 .settings-title {
   font-size: 18px;
   font-weight: 700;
   color: var(--text-primary);
-  margin-bottom: 16px;
 }
 
 /* 설정 섹션 */
@@ -114,6 +135,30 @@
   background: #0a0a0a;
 }
 
+/* 설정 저장 버튼 */
+.settings-save-btn {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--color-main);
+  cursor: pointer;
+  transition: opacity 0.2s, background 0.3s;
+  margin-top: 8px;
+}
+
+.settings-save-btn:hover {
+  opacity: 0.9;
+}
+
+.settings-save-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 /* 위험 영역 */
 .settings-danger-zone {
   margin-top: 32px;
@@ -134,4 +179,78 @@
 
 .settings-danger-btn:hover {
   background: rgba(239, 68, 68, 0.05);
+}
+
+/* 회원 탈퇴 확인 모달 */
+.settings-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.settings-modal {
+  background: var(--background);
+  border-radius: 16px;
+  padding: 24px;
+  width: 100%;
+  max-width: 320px;
+  text-align: center;
+}
+
+.settings-modal-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.settings-modal-desc {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+.settings-modal-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.settings-modal-cancel,
+.settings-modal-confirm {
+  flex: 1;
+  padding: 12px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.settings-modal-cancel {
+  background: var(--background-secondary);
+  color: var(--text-primary);
+  border: none;
+}
+
+.settings-modal-cancel:hover {
+  opacity: 0.8;
+}
+
+.settings-modal-confirm {
+  background: var(--color-error);
+  color: #fff;
+  border: none;
+}
+
+.settings-modal-confirm:hover {
+  opacity: 0.9;
 }

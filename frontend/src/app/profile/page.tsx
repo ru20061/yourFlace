@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useAuth } from "../../lib/auth-context";
 import { api } from "../../lib/api";
+import FlaceDatePicker from "../components/FlaceDatePicker/FlaceDatePicker";
 import type { Profile, PaginatedResponse } from "../data/types";
 import "./profile.css";
 
@@ -149,25 +150,24 @@ export default function ProfilePage() {
           <div className="profile-form-group">
             <label className="profile-form-label">성별</label>
             <div className="profile-gender-options">
-              {["male", "female", "other"].map((g) => (
+              {["male", "female"].map((g) => (
                 <button
                   key={g}
                   type="button"
                   className={`profile-gender-btn ${form.gender === g ? "active" : ""}`}
                   onClick={() => setForm((f) => ({ ...f, gender: g }))}
                 >
-                  {g === "male" ? "남성" : g === "female" ? "여성" : "기타"}
+                  {g === "male" ? "남성" : "여성"}
                 </button>
               ))}
             </div>
           </div>
           <div className="profile-form-group">
             <label className="profile-form-label">생년월일</label>
-            <input
-              type="date"
-              className="profile-form-input"
+            <FlaceDatePicker
               value={form.birth_date}
-              onChange={(e) => setForm((f) => ({ ...f, birth_date: e.target.value }))}
+              onChange={(val) => setForm((f) => ({ ...f, birth_date: val }))}
+              placeholder="생년월일 선택"
             />
           </div>
           <div className="profile-form-group">
@@ -197,6 +197,16 @@ export default function ProfilePage() {
             </svg>
           </div>
           구독별 프로필 설정
+          <span className="profile-menu-arrow">&gt;</span>
+        </Link>
+        <Link href="/profile/addresses" className="profile-menu-item">
+          <div className="profile-menu-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
+              <circle cx="12" cy="10" r="3" />
+            </svg>
+          </div>
+          배송지 관리
           <span className="profile-menu-arrow">&gt;</span>
         </Link>
         <Link href="/orders" className="profile-menu-item">

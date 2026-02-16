@@ -44,6 +44,85 @@
   border-color: var(--color-main);
 }
 
+/* 이메일 중복확인 row */
+.register-email-row {
+  display: flex;
+  gap: 8px;
+}
+
+.register-email-row .register-input {
+  flex: 1;
+  min-width: 0;
+}
+
+.register-check-btn {
+  flex-shrink: 0;
+  padding: 12px 16px;
+  background: var(--color-main);
+  color: var(--text-inverse);
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+
+.register-check-btn:hover:not(:disabled) {
+  background: var(--color-point);
+}
+
+.register-check-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* 이메일 중복확인 메시지 */
+.register-email-msg {
+  font-size: 12px;
+  margin-top: -8px;
+  padding-left: 4px;
+}
+
+.register-email-msg.available {
+  color: #16a34a;
+}
+
+.register-email-msg.unavailable {
+  color: #dc2626;
+}
+
+/* 프로필 구분선 */
+.register-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--text-tertiary);
+  margin: 8px 0;
+}
+
+.register-divider::before,
+.register-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--border-color);
+}
+
+/* select 스타일 */
+select.register-input {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23999' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 36px;
+}
+
+select.register-input option {
+  color: var(--text-primary);
+}
+
 .register-submit {
   width: 100%;
   padding: 12px;

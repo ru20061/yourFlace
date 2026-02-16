@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useAuth } from "../../../lib/auth-context";
 import { api } from "../../../lib/api";
 import type {
@@ -14,11 +15,13 @@ import "../profile.css";
 
 interface SubWithArtist extends Subscription {
   artist_name: string;
+  artist_slug: string | null;
   artist_image: string | null;
   notifSetting: NotificationSetting | null;
 }
 
 export default function SubscriptionProfilesPage() {
+  const router = useRouter();
   const { user, isLoading: authLoading } = useAuth();
 
   const [subs, setSubs] = useState<SubWithArtist[]>([]);
@@ -31,9 +34,6 @@ export default function SubscriptionProfilesPage() {
 
   // 알림 토글 로딩
   const [togglingNotif, setTogglingNotif] = useState<number | null>(null);
-
-  // 구독 해지
-  const [cancellingId, setCancellingId] = useState<number | null>(null);
 
   useEffect(() => {
     if (!user) return;
@@ -59,7 +59,7 @@ export default function SubscriptionProfilesPage() {
           (s) => s.fan_id === user.id && s.status === "subscribed"
         );
         const artistMap = new Map(
-          artistsRes.items.map((a) => [a.id, { name: a.stage_name, image: a.profile_image }])
+          artistsRes.items.map((a) => [a.id, { name: a.stage_name, slug: a.slug, image: a.profile_image }])
         );
         const notifBySubId = new Map(
           notifItems
@@ -71,6 +71,7 @@ export default function SubscriptionProfilesPage() {
           mySubs.map((s) => ({
             ...s,
             artist_name: artistMap.get(s.artist_id)?.name ?? `아티스트 #${s.artist_id}`,
+            artist_slug: artistMap.get(s.artist_id)?.slug ?? null,
             artist_image: artistMap.get(s.artist_id)?.image ?? null,
             notifSetting: notifBySubId.get(s.id) ?? null,
           }))
@@ -186,18 +187,9 @@ export default function SubscriptionProfilesPage() {
     }
   };
 
-  // 구독 해지
-  const handleCancelSub = async (sub: SubWithArtist) => {
-    if (!confirm(`${sub.artist_name} 구독을 해지하시겠습니까?`)) return;
-    setCancellingId(sub.id);
-    try {
-      await api.patch(`/subscriptions/${sub.id}`, { status: "cancelled" });
-      setSubs((prev) => prev.filter((s) => s.id !== sub.id));
-    } catch {
-      alert("구독 해지에 실패했습니다");
-    } finally {
-      setCancellingId(null);
-    }
+  // 구독 해지 → 해당 아티스트 환불 페이지로 이동
+  const handleCancelSub = (sub: SubWithArtist) => {
+    router.push(`/artists/${sub.artist_slug}/unsubscribe`);
   };
 
   const formatDate = (dateStr: string) => {
@@ -368,9 +360,8 @@ export default function SubscriptionProfilesPage() {
               <button
                 className="sub-cancel-btn"
                 onClick={() => handleCancelSub(sub)}
-                disabled={cancellingId === sub.id}
               >
-                {cancellingId === sub.id ? "해지 중..." : "구독 해지"}
+                구독 해지
               </button>
             </div>
           ))}

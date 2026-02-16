@@ -61,8 +61,6 @@ export default function LoginPage() {
 
         <div className="oauth-buttons">
           <button type="button" className="oauth-btn google">Google로 계속하기</button>
-          <button type="button" className="oauth-btn kakao">카카오로 계속하기</button>
-          <button type="button" className="oauth-btn naver">네이버로 계속하기</button>
         </div>
 
         <div className="login-footer">

@@ -6,6 +6,7 @@ import "./sidebar.css";
 interface Artist {
   id: number;
   name: string;
+  slug: string | null;
   category?: string;
   profileImage?: string;
 }
@@ -56,7 +57,7 @@ export default function Sidebar({ isOpen, onClose, isAdmin = false, subscribedAr
             {subscribedArtists.length > 0 ? (
               subscribedArtists.map((artist) => (
                 <Link
-                  href={`/artists/${artist.id}`}
+                  href={`/artists/${artist.slug}`}
                   key={artist.id}
                   className="sidebar-artist-item"
                   onClick={onClose}

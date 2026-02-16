@@ -54,6 +54,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
             return {
               id: artist.id,
               name: artist.stage_name,
+              slug: artist.slug,
               category: catId ? catById.get(catId) : undefined,
               profileImage: artist.profile_image ?? undefined,
             };

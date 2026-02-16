@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useAuth } from "../../../lib/auth-context";
 import { api } from "../../../lib/api";
 import type {
@@ -18,14 +18,14 @@ import type {
 import PostCard from "../../components/PostCard/PostCard";
 import ImageGrid from "../../components/ImageGrid/ImageGrid";
 import VideoCard from "../../components/VideoCard/VideoCard";
-import Calendar from "../../components/Calendar/Calendar";
+import Calendar, { type CalendarItem } from "../../components/Calendar/Calendar";
 import SearchFilters from "../../components/SearchFilters/SearchFilters";
 import "./artist-detail.css";
 import "../../search/search.css";
 
 const TABS = ["유저 포스트", "아티스트 포스트", "이미지", "동영상", "이벤트", "검색"] as const;
 
-const SEARCH_CATEGORIES = ["전체", "게시글", "이미지", "동영상", "이벤트"] as const;
+const SEARCH_CATEGORIES = ["전체", "유저 포스트", "아티스트 포스트", "이미지", "동영상", "이벤트"] as const;
 
 const DEFAULT_FILTERS: SearchFilterState = {
   category: "전체",
@@ -38,7 +38,8 @@ const DEFAULT_FILTERS: SearchFilterState = {
 
 export default function ArtistDetailPage() {
   const params = useParams();
-  const artistId = Number(params.id);
+  const router = useRouter();
+  const slug = decodeURIComponent(params.slug as string);
   const { user, isLoading: authLoading } = useAuth();
 
   const [artist, setArtist] = useState<Artist | null>(null);
@@ -51,8 +52,18 @@ export default function ArtistDetailPage() {
   const [subscriberCount, setSubscriberCount] = useState(0);
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [mySubId, setMySubId] = useState<number | null>(null);
+  const [myFanNickname, setMyFanNickname] = useState<string | null>(null);
+  const [myFanProfileImage, setMyFanProfileImage] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<(typeof TABS)[number]>(TABS[0]);
   const [loading, setLoading] = useState(true);
+
+  // 포스트 작성 모달
+  const [showWriteModal, setShowWriteModal] = useState(false);
+  const [writeContent, setWriteContent] = useState("");
+  const [writeVisibility, setWriteVisibility] = useState<"public" | "user">("public");
+  const [writeTagsInput, setWriteTagsInput] = useState("");
+  const [writeSubmitting, setWriteSubmitting] = useState(false);
+  const [writeError, setWriteError] = useState("");
 
   // 검색 탭 상태
   const [searchQuery, setSearchQuery] = useState("");
@@ -66,9 +77,13 @@ export default function ArtistDetailPage() {
   useEffect(() => {
     (async () => {
       try {
-        const [artistRes, postsRes, imagesRes, videosRes, linksRes, subsRes, eventsRes, tagsRes] =
+        // slug로 아티스트 조회
+        const artistRes = await api.get<Artist>(`/artists/by-slug/${encodeURIComponent(slug)}`);
+        setArtist(artistRes);
+        const artistId = artistRes.id;
+
+        const [postsRes, imagesRes, videosRes, linksRes, subsRes, eventsRes, tagsRes] =
           await Promise.all([
-            api.get<Artist>(`/artists/${artistId}`),
             api.get<PaginatedResponse<Post>>(`/posts/?skip=0&limit=100`),
             api.get<PaginatedResponse<ArtistImage>>(`/artist-images/?skip=0&limit=100`),
             api.get<PaginatedResponse<ArtistVideo>>(`/artist-videos/?skip=0&limit=100`),
@@ -78,9 +93,7 @@ export default function ArtistDetailPage() {
             api.get<string[]>("/tags").catch(() => [] as string[]),
           ]);
 
-        setArtist(artistRes);
-
-        // 아티스트 포스트
+        // 아티스트 포스트 (백엔드에서 author_name 포함)
         const artistPosts = postsRes.items
           .filter((p) => p.author_id === artistId && p.is_artist_post)
           .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
@@ -133,6 +146,8 @@ export default function ArtistDetailPage() {
           const mySub = artistSubs.find((s) => s.fan_id === user.id);
           setIsSubscribed(!!mySub);
           setMySubId(mySub?.id ?? null);
+          setMyFanNickname(mySub?.fan_nickname ?? null);
+          setMyFanProfileImage(mySub?.fan_profile_image ?? null);
         }
       } catch {
         setArtist(null);
@@ -140,38 +155,72 @@ export default function ArtistDetailPage() {
         setLoading(false);
       }
     })();
-  }, [artistId, user]);
+  }, [slug, user]);
 
-  const handleSubscribeToggle = async () => {
-    if (!user) return;
+  const handleSubscribe = () => {
+    if (!user || isSubscribed) return;
+    router.push(`/artists/${slug}/subscribe`);
+  };
+
+  // 포스트 작성
+  const handleWritePost = async () => {
+    if (!user || !artist || !writeContent.trim()) return;
+    setWriteSubmitting(true);
+    setWriteError("");
     try {
-      if (isSubscribed && mySubId) {
-        await api.delete(`/subscriptions/${mySubId}`);
-        setIsSubscribed(false);
-        setMySubId(null);
-        setSubscriberCount((c) => Math.max(0, c - 1));
-      } else {
-        const newSub = await api.post<Subscription>("/subscriptions/", {
-          fan_id: user.id,
-          artist_id: artistId,
-          status: "subscribed",
-          payments_type: "free",
-          start_date: new Date().toISOString().split("T")[0],
-        });
-        setIsSubscribed(true);
-        setMySubId(newSub.id);
-        setSubscriberCount((c) => c + 1);
-      }
+      const tags = writeTagsInput.split(",").map((t) => t.trim()).filter(Boolean);
+      const created = await api.post<Post>("/posts", {
+        author_id: artist.id,
+        author_type: "fan" as const,
+        content: writeContent.trim(),
+        write_id: user.id,
+        write_role: "fan" as const,
+        visibility: writeVisibility,
+        tags: tags.length > 0 ? tags : null,
+      });
+      // 구독 닉네임으로 로컬 목록에 추가
+      setFanPosts((prev) => [{
+        ...created,
+        author_name: myFanNickname ?? user.nickname ?? undefined,
+        author_profile_image: myFanProfileImage ?? user.profile_image ?? undefined,
+      }, ...prev]);
+      setShowWriteModal(false);
+      setWriteContent("");
+      setWriteVisibility("public");
+      setWriteTagsInput("");
     } catch {
-      // 실패 시 무시
+      setWriteError("포스트 작성에 실패했습니다. 다시 시도해주세요.");
+    } finally {
+      setWriteSubmitting(false);
     }
   };
 
-  // 이벤트 날짜 목록 (달력 표시용)
-  const eventDates = useMemo(
-    () => events.map((e) => e.event_date).filter((d): d is string => d !== null),
-    [events],
-  );
+  // 캘린더용 날짜별 콘텐츠 맵 생성
+  const calendarDateItems = useMemo(() => {
+    const map: Record<string, CalendarItem[]> = {};
+    const add = (dateKey: string, item: CalendarItem) => {
+      if (!map[dateKey]) map[dateKey] = [];
+      map[dateKey].push(item);
+    };
+    const toDate = (s: string) => s.slice(0, 10);
+
+    for (const p of fanPosts) {
+      add(toDate(p.published_date || p.created_at), { type: "fanPost", label: "유저 포스트" });
+    }
+    for (const p of posts) {
+      add(toDate(p.published_date || p.created_at), { type: "artistPost", label: "아티스트 포스트" });
+    }
+    for (const i of images) {
+      add(toDate(i.published_date || i.created_at), { type: "image", label: "이미지" });
+    }
+    for (const v of videos) {
+      add(toDate(v.published_date || v.created_at), { type: "video", label: "동영상" });
+    }
+    for (const e of events) {
+      add(toDate(e.event_date || e.created_at), { type: "event", label: e.title });
+    }
+    return map;
+  }, [fanPosts, posts, images, videos, events]);
 
   // 텍스트 날짜 파싱
   const handleDateTextSubmit = () => {
@@ -209,12 +258,21 @@ export default function ArtistDetailPage() {
     setDateError("");
   };
 
+  // created_at에서 YYYY-MM-DD 추출
+  const toDateStr = (isoStr: string) => isoStr.slice(0, 10);
+
+  // 유효 날짜 추출 (YYYY-MM-DD로 정규화, published_date/event_date 우선 → created_at fallback)
+  const postDate = (p: Post) => toDateStr(p.published_date || p.created_at);
+  const imageDate = (i: ArtistImage) => toDateStr(i.published_date || i.created_at);
+  const videoDate = (v: ArtistVideo) => toDateStr(v.published_date || v.created_at);
+  const eventDate = (e: Event) => toDateStr(e.event_date || e.created_at);
+
   // 검색 탭 필터링
   const searchResults = useMemo(() => {
     const q = searchQuery.toLowerCase();
-    const allPosts = [...posts, ...fanPosts];
 
-    let filteredPosts = [...allPosts];
+    let filteredFanPosts = [...fanPosts];
+    let filteredArtistPosts = [...posts];
     let filteredImages = [...images];
     let filteredVideos = [...videos];
     let filteredEvents = [...events];
@@ -225,18 +283,22 @@ export default function ArtistDetailPage() {
       const m = String(selectedDate.getMonth() + 1).padStart(2, "0");
       const d = String(selectedDate.getDate()).padStart(2, "0");
       const dateStr = `${y}-${m}-${d}`;
-      filteredPosts = filteredPosts.filter((p) => p.published_date === dateStr);
-      filteredEvents = filteredEvents.filter((e) => e.event_date && e.event_date === dateStr);
+      filteredFanPosts = filteredFanPosts.filter((p) => postDate(p) === dateStr);
+      filteredArtistPosts = filteredArtistPosts.filter((p) => postDate(p) === dateStr);
+      filteredImages = filteredImages.filter((i) => imageDate(i) === dateStr);
+      filteredVideos = filteredVideos.filter((v) => videoDate(v) === dateStr);
+      filteredEvents = filteredEvents.filter((e) => eventDate(e) === dateStr);
     }
 
     // 텍스트 검색
     if (q) {
-      filteredPosts = filteredPosts.filter(
-        (p) =>
-          p.content?.toLowerCase().includes(q) ||
-          p.tags?.some((t) => t.toLowerCase().includes(q)) ||
-          p.author_name?.toLowerCase().includes(q)
-      );
+      const filterPost = (p: Post) =>
+        p.content?.toLowerCase().includes(q) ||
+        p.title_field?.toLowerCase().includes(q) ||
+        p.tags?.some((t) => t.toLowerCase().includes(q)) ||
+        p.author_name?.toLowerCase().includes(q);
+      filteredFanPosts = filteredFanPosts.filter(filterPost);
+      filteredArtistPosts = filteredArtistPosts.filter(filterPost);
       filteredImages = filteredImages.filter(
         (i) =>
           i.image_purpose?.toLowerCase().includes(q) ||
@@ -256,38 +318,59 @@ export default function ArtistDetailPage() {
 
     // 태그 필터
     if (searchFilters.tags.length > 0) {
-      filteredPosts = filteredPosts.filter((p) => p.tags?.some((t) => searchFilters.tags.includes(t)));
+      filteredFanPosts = filteredFanPosts.filter((p) => p.tags?.some((t) => searchFilters.tags.includes(t)));
+      filteredArtistPosts = filteredArtistPosts.filter((p) => p.tags?.some((t) => searchFilters.tags.includes(t)));
     }
 
     // 공개 범위
     if (searchFilters.visibility !== "all") {
-      filteredPosts = filteredPosts.filter((p) => p.visibility === searchFilters.visibility);
+      filteredFanPosts = filteredFanPosts.filter((p) => p.visibility === searchFilters.visibility);
+      filteredArtistPosts = filteredArtistPosts.filter((p) => p.visibility === searchFilters.visibility);
       filteredImages = filteredImages.filter((i) => i.visibility === searchFilters.visibility);
       filteredVideos = filteredVideos.filter((v) => v.visibility === searchFilters.visibility);
     }
 
     // 기간 범위
     if (searchFilters.dateRange.start) {
-      filteredPosts = filteredPosts.filter((p) => p.published_date && p.published_date >= searchFilters.dateRange.start!);
-      filteredEvents = filteredEvents.filter((e) => e.event_date && e.event_date >= searchFilters.dateRange.start!);
+      const start = searchFilters.dateRange.start;
+      filteredFanPosts = filteredFanPosts.filter((p) => postDate(p) >= start);
+      filteredArtistPosts = filteredArtistPosts.filter((p) => postDate(p) >= start);
+      filteredImages = filteredImages.filter((i) => imageDate(i) >= start);
+      filteredVideos = filteredVideos.filter((v) => videoDate(v) >= start);
+      filteredEvents = filteredEvents.filter((e) => eventDate(e) >= start);
     }
     if (searchFilters.dateRange.end) {
-      filteredPosts = filteredPosts.filter((p) => p.published_date && p.published_date <= searchFilters.dateRange.end!);
-      filteredEvents = filteredEvents.filter((e) => e.event_date && e.event_date <= searchFilters.dateRange.end!);
+      const end = searchFilters.dateRange.end;
+      filteredFanPosts = filteredFanPosts.filter((p) => postDate(p) <= end);
+      filteredArtistPosts = filteredArtistPosts.filter((p) => postDate(p) <= end);
+      filteredImages = filteredImages.filter((i) => imageDate(i) <= end);
+      filteredVideos = filteredVideos.filter((v) => videoDate(v) <= end);
+      filteredEvents = filteredEvents.filter((e) => eventDate(e) <= end);
     }
 
     // 정렬
-    if (searchFilters.sortOrder === "latest") {
-      filteredPosts.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-    } else if (searchFilters.sortOrder === "oldest") {
-      filteredPosts.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
-    }
+    const sortFn = searchFilters.sortOrder === "oldest"
+      ? (a: Post, b: Post) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+      : (a: Post, b: Post) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    filteredFanPosts.sort(sortFn);
+    filteredArtistPosts.sort(sortFn);
 
-    return { posts: filteredPosts, images: filteredImages, videos: filteredVideos, events: filteredEvents };
+    return { fanPosts: filteredFanPosts, artistPosts: filteredArtistPosts, images: filteredImages, videos: filteredVideos, events: filteredEvents };
   }, [searchQuery, selectedDate, searchFilters, posts, fanPosts, images, videos, events]);
 
-  const hasSearchQuery = searchQuery || selectedDate || searchFilters.tags.length > 0 || searchFilters.dateRange.start || searchFilters.dateRange.end || searchFilters.visibility !== "all";
-  const totalSearchResults = searchResults.posts.length + searchResults.images.length + searchResults.videos.length + searchResults.events.length;
+  const hasSearchQuery = searchQuery || selectedDate || searchFilters.category !== "전체" || searchFilters.tags.length > 0 || searchFilters.dateRange.start || searchFilters.dateRange.end || searchFilters.visibility !== "all";
+
+  // 선택된 카테고리에 해당하는 결과만 카운트
+  const totalSearchResults = useMemo(() => {
+    const cat = searchFilters.category;
+    let count = 0;
+    if (cat === "전체" || cat === "유저 포스트") count += searchResults.fanPosts.length;
+    if (cat === "전체" || cat === "아티스트 포스트") count += searchResults.artistPosts.length;
+    if (cat === "전체" || cat === "이미지") count += searchResults.images.length;
+    if (cat === "전체" || cat === "동영상") count += searchResults.videos.length;
+    if (cat === "전체" || cat === "이벤트") count += searchResults.events.length;
+    return count;
+  }, [searchFilters.category, searchResults]);
 
   if (loading) {
     return (
@@ -339,12 +422,14 @@ export default function ArtistDetailPage() {
               ))}
             </div>
           )}
-          <button
-            className={`artist-subscribe-btn ${isSubscribed ? "subscribed" : ""}`}
-            onClick={handleSubscribeToggle}
-          >
-            {isSubscribed ? "구독중" : "구독하기"}
-          </button>
+          {!isSubscribed && (
+            <button
+              className="artist-subscribe-btn"
+              onClick={handleSubscribe}
+            >
+              구독하기
+            </button>
+          )}
         </div>
       </div>
 
@@ -371,16 +456,46 @@ export default function ArtistDetailPage() {
             key={tab}
             className={`artist-content-tab ${activeTab === tab ? "active" : ""}`}
             onClick={() => setActiveTab(tab)}
+            disabled={!isSubscribed}
           >
             {tab}
           </button>
         ))}
       </nav>
 
-      {/* 콘텐츠 피드 */}
+      {/* 구독 전 콘텐츠 잠금 */}
+      {!isSubscribed ? (
+        <div className="artist-content-locked">
+          <div className="artist-locked-icon">
+            <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            </svg>
+          </div>
+          <p className="artist-locked-title">구독자 전용 콘텐츠</p>
+          <p className="artist-locked-desc">구독 후 {artist.stage_name}의 모든 콘텐츠를 확인할 수 있습니다</p>
+          <button
+            className="artist-subscribe-btn"
+            onClick={() => router.push(`/artists/${slug}/subscribe`)}
+          >
+            구독하기
+          </button>
+        </div>
+      ) : (
+      /* 콘텐츠 피드 */
       <div className="artist-feed-container">
         {activeTab === "유저 포스트" && (
           <div className="artist-feed-list">
+            <button
+              className="artist-write-post-btn"
+              onClick={() => setShowWriteModal(true)}
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+              포스트 작성
+            </button>
             {fanPosts.length > 0 ? (
               fanPosts.map((post) => <PostCard key={post.id} post={post} />)
             ) : (
@@ -476,7 +591,7 @@ export default function ArtistDetailPage() {
             <Calendar
               selectedDate={selectedDate}
               onDateSelect={handleDateSelect}
-              eventDates={eventDates}
+              dateItems={calendarDateItems}
             />
 
             {/* 텍스트 날짜 입력 */}
@@ -542,12 +657,23 @@ export default function ArtistDetailPage() {
                 <div className="search-result-count">검색 결과 {totalSearchResults}건</div>
               )}
 
-              {/* 게시글 결과 */}
-              {(searchFilters.category === "전체" || searchFilters.category === "게시글") &&
-                searchResults.posts.length > 0 && (
+              {/* 유저 포스트 결과 */}
+              {(searchFilters.category === "전체" || searchFilters.category === "유저 포스트") &&
+                searchResults.fanPosts.length > 0 && (
                   <div className="search-result-section">
-                    <div className="search-result-section-title">게시글</div>
-                    {searchResults.posts.map((post) => (
+                    <div className="search-result-section-title">유저 포스트</div>
+                    {searchResults.fanPosts.map((post) => (
+                      <PostCard key={post.id} post={post} />
+                    ))}
+                  </div>
+                )}
+
+              {/* 아티스트 포스트 결과 */}
+              {(searchFilters.category === "전체" || searchFilters.category === "아티스트 포스트") &&
+                searchResults.artistPosts.length > 0 && (
+                  <div className="search-result-section">
+                    <div className="search-result-section-title">아티스트 포스트</div>
+                    {searchResults.artistPosts.map((post) => (
                       <PostCard key={post.id} post={post} />
                     ))}
                   </div>
@@ -616,6 +742,71 @@ export default function ArtistDetailPage() {
           </div>
         )}
       </div>
+      )}
+
+      {/* 포스트 작성 모달 */}
+      {showWriteModal && (
+        <div className="write-modal-overlay" onClick={() => setShowWriteModal(false)}>
+          <div className="write-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="write-modal-header">
+              <h2>포스트 작성</h2>
+              <button
+                className="write-modal-close"
+                onClick={() => setShowWriteModal(false)}
+                aria-label="닫기"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            </div>
+            <div className="write-modal-body">
+              <textarea
+                className="write-textarea"
+                placeholder="무슨 이야기를 나누고 싶으신가요?"
+                value={writeContent}
+                onChange={(e) => setWriteContent(e.target.value)}
+                rows={6}
+              />
+              <div className="write-field">
+                <label className="write-label">공개 범위</label>
+                <select
+                  className="write-select"
+                  value={writeVisibility}
+                  onChange={(e) => setWriteVisibility(e.target.value as "public" | "user")}
+                >
+                  <option value="public">전체 공개</option>
+                  <option value="user">유저 공개</option>
+                </select>
+              </div>
+              <div className="write-field">
+                <label className="write-label">태그</label>
+                <input
+                  className="write-input"
+                  type="text"
+                  placeholder="쉼표로 구분 (예: 음악, 일상, 소식)"
+                  value={writeTagsInput}
+                  onChange={(e) => setWriteTagsInput(e.target.value)}
+                />
+              </div>
+              {writeError && <p className="write-error">{writeError}</p>}
+            </div>
+            <div className="write-modal-footer">
+              <button className="write-btn-cancel" onClick={() => setShowWriteModal(false)}>
+                취소
+              </button>
+              <button
+                className="write-btn-submit"
+                onClick={handleWritePost}
+                disabled={writeSubmitting || !writeContent.trim()}
+              >
+                {writeSubmitting ? "작성 중..." : "게시하기"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

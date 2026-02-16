@@ -3,15 +3,33 @@
 import { useState } from "react";
 import "./calendar.css";
 
+export interface CalendarItem {
+  type: "fanPost" | "artistPost" | "image" | "video" | "event";
+  label: string;
+}
+
 interface CalendarProps {
   selectedDate: Date | null;
   onDateSelect: (date: Date) => void;
+  /** YYYY-MM-DD → 해당 날짜의 콘텐츠 목록 */
+  dateItems?: Record<string, CalendarItem[]>;
+  /** 하위 호환: 이벤트 날짜 문자열 배열 (dateItems 우선) */
   eventDates?: string[];
 }
 
 const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
 
-export default function Calendar({ selectedDate, onDateSelect, eventDates = [] }: CalendarProps) {
+const TYPE_CONFIG: Record<CalendarItem["type"], { label: string; cls: string }> = {
+  fanPost:    { label: "유저",   cls: "tag-fan-post" },
+  artistPost: { label: "아티스트", cls: "tag-artist-post" },
+  image:      { label: "이미지", cls: "tag-image" },
+  video:      { label: "동영상", cls: "tag-video" },
+  event:      { label: "이벤트", cls: "tag-event" },
+};
+
+const MAX_TAGS = 2;
+
+export default function Calendar({ selectedDate, onDateSelect, dateItems = {}, eventDates = [] }: CalendarProps) {
   const today = new Date();
   const [currentYear, setCurrentYear] = useState(today.getFullYear());
   const [currentMonth, setCurrentMonth] = useState(today.getMonth());
@@ -38,21 +56,15 @@ export default function Calendar({ selectedDate, onDateSelect, eventDates = [] }
     }
   };
 
-  // 날짜 셀 구성
   const cells: { day: number; isCurrentMonth: boolean; date: Date }[] = [];
 
-  // 이전 달 마지막 날짜들
   for (let i = firstDayOfWeek - 1; i >= 0; i--) {
     const d = daysInPrevMonth - i;
     cells.push({ day: d, isCurrentMonth: false, date: new Date(currentYear, currentMonth - 1, d) });
   }
-
-  // 현재 달
   for (let d = 1; d <= daysInMonth; d++) {
     cells.push({ day: d, isCurrentMonth: true, date: new Date(currentYear, currentMonth, d) });
   }
-
-  // 다음 달 시작 날짜들
   const remaining = 7 - (cells.length % 7);
   if (remaining < 7) {
     for (let d = 1; d <= remaining; d++) {
@@ -60,13 +72,34 @@ export default function Calendar({ selectedDate, onDateSelect, eventDates = [] }
     }
   }
 
-  const isToday = (date: Date) => date.toDateString() === today.toDateString();
-  const isSelected = (date: Date) => selectedDate?.toDateString() === date.toDateString();
-  const hasEvent = (date: Date) => {
+  const toKey = (date: Date) => {
     const y = date.getFullYear();
     const m = String(date.getMonth() + 1).padStart(2, "0");
     const d = String(date.getDate()).padStart(2, "0");
-    return eventDates.includes(`${y}-${m}-${d}`);
+    return `${y}-${m}-${d}`;
+  };
+
+  const isToday = (date: Date) => date.toDateString() === today.toDateString();
+  const isSelected = (date: Date) => selectedDate?.toDateString() === date.toDateString();
+
+  const getItems = (date: Date): CalendarItem[] => {
+    const key = toKey(date);
+    if (dateItems[key]?.length) return dateItems[key];
+    if (eventDates.includes(key)) return [{ type: "event", label: "이벤트" }];
+    return [];
+  };
+
+  // 같은 type끼리 묶어서 개수 표시
+  const summarize = (items: CalendarItem[]) => {
+    const countByType = new Map<CalendarItem["type"], number>();
+    for (const item of items) {
+      countByType.set(item.type, (countByType.get(item.type) || 0) + 1);
+    }
+    return Array.from(countByType.entries()).map(([type, count]) => ({
+      type,
+      count,
+      ...TYPE_CONFIG[type],
+    }));
   };
 
   return (
@@ -84,21 +117,41 @@ export default function Calendar({ selectedDate, onDateSelect, eventDates = [] }
         ))}
       </div>
       <div className="calendar-days">
-        {cells.map((cell, idx) => (
-          <div
-            key={idx}
-            className={[
-              "calendar-day",
-              !cell.isCurrentMonth && "other-month",
-              isToday(cell.date) && "today",
-              isSelected(cell.date) && "selected",
-              hasEvent(cell.date) && "has-event",
-            ].filter(Boolean).join(" ")}
-            onClick={() => onDateSelect(cell.date)}
-          >
-            {cell.day}
-          </div>
-        ))}
+        {cells.map((cell, idx) => {
+          const items = getItems(cell.date);
+          const summary = summarize(items);
+          const hasContent = summary.length > 0;
+          const visibleTags = summary.slice(0, MAX_TAGS);
+          const extraCount = summary.length - MAX_TAGS;
+
+          return (
+            <div
+              key={idx}
+              className={[
+                "calendar-day",
+                !cell.isCurrentMonth && "other-month",
+                isToday(cell.date) && "today",
+                isSelected(cell.date) && "selected",
+                hasContent && "has-content",
+              ].filter(Boolean).join(" ")}
+              onClick={() => onDateSelect(cell.date)}
+            >
+              <span className="calendar-day-num">{cell.day}</span>
+              {hasContent && (
+                <div className="calendar-day-tags">
+                  {visibleTags.map((tag) => (
+                    <span key={tag.type} className={`calendar-tag ${tag.cls}`}>
+                      {tag.label}{tag.count > 1 ? ` ${tag.count}` : ""}
+                    </span>
+                  ))}
+                  {extraCount > 0 && (
+                    <span className="calendar-tag tag-more">+{extraCount}</span>
+                  )}
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );

@@ -288,7 +288,7 @@ export default function SearchPage() {
               {filteredResults.artists.map((artist) => (
                 <Link
                   key={artist.id}
-                  href={`/artists/${artist.id}`}
+                  href={`/artists/${artist.slug}`}
                   className="search-artist-card"
                 >
                   <div className="search-artist-avatar">
