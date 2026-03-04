@@ -15,13 +15,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 16px rgba(230, 102, 250, 0.4);
+  box-shadow: 0 4px 16px rgba(143, 0, 255, 0.4);
   transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .chat-bubble-btn:hover {
   transform: scale(1.08);
-  box-shadow: 0 6px 24px rgba(230, 102, 250, 0.5);
+  box-shadow: 0 6px 24px rgba(143, 0, 255, 0.5);
 }
 
 .chat-bubble-btn svg {

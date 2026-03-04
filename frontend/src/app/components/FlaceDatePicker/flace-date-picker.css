@@ -104,7 +104,7 @@
 }
 
 .fdp-header-btn:hover {
-  background: rgba(230, 102, 250, 0.1);
+  background: rgba(143, 0, 255, 0.1);
   color: var(--color-main);
 }
 
@@ -128,7 +128,7 @@
 }
 
 .fdp-nav-btn:hover:not(:disabled) {
-  background: rgba(230, 102, 250, 0.1);
+  background: rgba(143, 0, 255, 0.1);
 }
 
 .fdp-nav-btn:disabled {
@@ -183,7 +183,7 @@
 }
 
 .fdp-day:hover {
-  background: rgba(230, 102, 250, 0.08);
+  background: rgba(143, 0, 255, 0.08);
   transform: scale(1.05);
 }
 
@@ -207,14 +207,14 @@
 .fdp-day.today {
   font-weight: 800;
   color: var(--color-main);
-  background: rgba(230, 102, 250, 0.1);
+  background: rgba(143, 0, 255, 0.1);
 }
 
 .fdp-day.selected {
   background: linear-gradient(135deg, var(--color-main), var(--color-point));
   color: var(--text-inverse);
   font-weight: 700;
-  box-shadow: 0 2px 8px rgba(230, 102, 250, 0.35);
+  box-shadow: 0 2px 8px rgba(143, 0, 255, 0.35);
   transform: scale(1.05);
 }
 
@@ -256,12 +256,12 @@
 }
 
 .fdp-grid-item:hover {
-  background: rgba(230, 102, 250, 0.08);
+  background: rgba(143, 0, 255, 0.08);
 }
 
 .fdp-grid-item.active {
   background: linear-gradient(135deg, var(--color-main), var(--color-point));
   color: var(--text-inverse);
   font-weight: 700;
-  box-shadow: 0 2px 8px rgba(230, 102, 250, 0.35);
+  box-shadow: 0 2px 8px rgba(143, 0, 255, 0.35);
 }

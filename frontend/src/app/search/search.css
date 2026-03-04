@@ -114,7 +114,7 @@
   align-items: center;
   gap: 8px;
   padding: 6px 12px;
-  background: rgba(230, 102, 250, 0.08);
+  background: rgba(143, 0, 255, 0.08);
   border: 1px solid var(--color-main);
   border-radius: 8px;
   margin-bottom: 16px;
@@ -156,7 +156,7 @@
 .search-filter-chip.active {
   border-color: var(--color-main);
   color: var(--color-main);
-  background: rgba(230, 102, 250, 0.06);
+  background: rgba(143, 0, 255, 0.06);
 }
 
 /* 고급 필터 토글 */
@@ -274,7 +274,7 @@
   min-width: 48px;
   text-align: center;
   padding: 6px;
-  background: rgba(230, 102, 250, 0.08);
+  background: rgba(143, 0, 255, 0.08);
   border-radius: 8px;
   display: flex;
   flex-direction: column;

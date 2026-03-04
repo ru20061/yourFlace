@@ -39,7 +39,7 @@
 }
 
 .calendar-nav button:hover {
-  background: rgba(230, 102, 250, 0.1);
+  background: rgba(143, 0, 255, 0.1);
   color: var(--color-deep);
 }
 
@@ -92,7 +92,7 @@
 }
 
 .calendar-day:hover {
-  background: rgba(230, 102, 250, 0.08);
+  background: rgba(143, 0, 255, 0.08);
   transform: scale(1.03);
 }
 
@@ -115,7 +115,7 @@
 
 /* 오늘 */
 .calendar-day.today {
-  background: rgba(230, 102, 250, 0.08);
+  background: rgba(143, 0, 255, 0.08);
 }
 
 .calendar-day.today .calendar-day-num {
@@ -126,7 +126,7 @@
 /* 선택됨 */
 .calendar-day.selected {
   background: linear-gradient(135deg, var(--color-main), var(--color-point));
-  box-shadow: 0 2px 8px rgba(230, 102, 250, 0.35);
+  box-shadow: 0 2px 8px rgba(143, 0, 255, 0.35);
   transform: scale(1.03);
 }
 
@@ -141,7 +141,7 @@
 
 /* 콘텐츠 있는 날 */
 .calendar-day.has-content {
-  background: rgba(230, 102, 250, 0.04);
+  background: rgba(143, 0, 255, 0.04);
 }
 
 .calendar-day.selected.has-content {
@@ -179,13 +179,13 @@
 
 /* 타입별 태그 색상 */
 .calendar-tag.tag-fan-post {
-  background: rgba(59, 130, 246, 0.15);
-  color: #3b82f6;
+  background: rgba(143, 0, 255, 0.12);
+  color: var(--color-main);
 }
 
 .calendar-tag.tag-artist-post {
-  background: rgba(168, 85, 247, 0.15);
-  color: #a855f7;
+  background: rgba(147, 112, 219, 0.15);
+  color: var(--color-point);
 }
 
 .calendar-tag.tag-image {

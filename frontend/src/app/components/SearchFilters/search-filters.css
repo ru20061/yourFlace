@@ -58,7 +58,7 @@
 .filter-chip.active {
   border-color: var(--color-main);
   color: var(--color-main);
-  background: rgba(230, 102, 250, 0.06);
+  background: rgba(143, 0, 255, 0.06);
 }
 
 .filter-date-range {

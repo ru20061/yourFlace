@@ -108,7 +108,7 @@
 /* 고정 메시지 */
 .chat-pinned {
   padding: 8px 16px;
-  background: rgba(230, 102, 250, 0.08);
+  background: rgba(143, 0, 255, 0.08);
   border-bottom: 1px solid var(--border-color);
   font-size: 13px;
   color: var(--color-main);

@@ -38,7 +38,7 @@
 
 .notice-card:hover {
   border-color: var(--color-main);
-  box-shadow: 0 2px 12px rgba(230, 102, 250, 0.1);
+  box-shadow: 0 2px 12px rgba(143, 0, 255, 0.1);
 }
 
 .notice-card-header {

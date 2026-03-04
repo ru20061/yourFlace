@@ -63,7 +63,7 @@
 
 .artist-selection-card:hover {
   border-color: var(--color-main);
-  box-shadow: 0 4px 16px rgba(230, 102, 250, 0.15);
+  box-shadow: 0 4px 16px rgba(143, 0, 255, 0.15);
   transform: translateY(-2px);
 }
 
@@ -74,7 +74,7 @@
 }
 
 .artist-selection-cover.other {
-  background: linear-gradient(135deg, var(--color-point), #6a5acd);
+  background: linear-gradient(135deg, var(--color-point), var(--color-deep));
 }
 
 .artist-selection-avatar {
@@ -92,7 +92,7 @@
 }
 
 .artist-selection-avatar.other {
-  background: #6a5acd;
+  background: var(--color-deep);
 }
 
 .artist-selection-avatar-text {
@@ -136,7 +136,7 @@
 }
 
 .artist-selection-badge.subscribed {
-  background: rgba(230, 102, 250, 0.85);
+  background: rgba(143, 0, 255, 0.85);
   color: white;
 }
 
@@ -167,7 +167,7 @@
 
 .news-card:hover {
   border-color: var(--color-main);
-  box-shadow: 0 2px 12px rgba(230, 102, 250, 0.1);
+  box-shadow: 0 2px 12px rgba(143, 0, 255, 0.1);
 }
 
 .news-card-badge {
