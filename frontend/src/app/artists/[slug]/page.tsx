@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useAuth } from "../../../lib/auth-context";
 import { api } from "../../../lib/api";
+import type { ChangeEvent } from "react";
 import type {
   Artist,
   Post,
@@ -64,6 +65,7 @@ export default function ArtistDetailPage() {
   const [writeTagsInput, setWriteTagsInput] = useState("");
   const [writeSubmitting, setWriteSubmitting] = useState(false);
   const [writeError, setWriteError] = useState("");
+  const [writeImages, setWriteImages] = useState<{ file: File; caption: string }[]>([]);
 
   // 검색 탭 상태
   const [searchQuery, setSearchQuery] = useState("");
@@ -157,9 +159,33 @@ export default function ArtistDetailPage() {
     })();
   }, [slug, user]);
 
-  const handleSubscribe = () => {
-    if (!user || isSubscribed) return;
-    router.push(`/artists/${slug}/subscribe`);
+  // 이미지 선택 핸들러
+  const handleImageSelect = (e: ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) return;
+    const newItems = Array.from(e.target.files).map((file) => ({ file, caption: "" }));
+    setWriteImages((prev) => [...prev, ...newItems]);
+    e.target.value = "";
+  };
+
+  // 이미지 캡션 변경 핸들러
+  const handleImageCaption = (index: number, caption: string) => {
+    setWriteImages((prev) => prev.map((item, i) => i === index ? { ...item, caption } : item));
+  };
+
+  // 이미지 삭제 핸들러
+  const handleImageRemove = (index: number) => {
+    setWriteImages((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  // 이미지 순서 이동 핸들러
+  const handleImageMove = (index: number, direction: "left" | "right") => {
+    setWriteImages((prev) => {
+      const next = [...prev];
+      const target = direction === "left" ? index - 1 : index + 1;
+      if (target < 0 || target >= next.length) return prev;
+      [next[index], next[target]] = [next[target], next[index]];
+      return next;
+    });
   };
 
   // 포스트 작성
@@ -169,6 +195,17 @@ export default function ArtistDetailPage() {
     setWriteError("");
     try {
       const tags = writeTagsInput.split(",").map((t) => t.trim()).filter(Boolean);
+
+      // 1. 이미지 업로드
+      const imageIds: number[] = [];
+      for (const { file } of writeImages) {
+        const formData = new FormData();
+        formData.append("file", file);
+        const img = await api.upload<{ id: number }>("/images/upload", formData);
+        imageIds.push(img.id);
+      }
+
+      // 2. 포스트 생성
       const created = await api.post<Post>("/posts", {
         author_id: artist.id,
         author_type: "fan" as const,
@@ -178,6 +215,16 @@ export default function ArtistDetailPage() {
         visibility: writeVisibility,
         tags: tags.length > 0 ? tags : null,
       });
+
+      // 3. 포스트-이미지 매핑
+      for (let i = 0; i < imageIds.length; i++) {
+        await api.post("/post-images", {
+          post_id: created.id,
+          image_id: imageIds[i],
+          sort_order: i,
+        });
+      }
+
       // 구독 닉네임으로 로컬 목록에 추가
       setFanPosts((prev) => [{
         ...created,
@@ -188,6 +235,7 @@ export default function ArtistDetailPage() {
       setWriteContent("");
       setWriteVisibility("public");
       setWriteTagsInput("");
+      setWriteImages([]);
     } catch {
       setWriteError("포스트 작성에 실패했습니다. 다시 시도해주세요.");
     } finally {
@@ -407,6 +455,9 @@ export default function ArtistDetailPage() {
           </div>
           <h1 className="artist-name">{artist.stage_name}</h1>
           <p className="artist-bio">{artist.notes ?? "소개가 아직 없습니다."}</p>
+          <span className={`artist-subscribed-badge ${isSubscribed ? "active" : ""}`}>
+            {isSubscribed ? "구독중" : "미구독"}
+          </span>
           {socialLinks.length > 0 && (
             <div className="artist-social-links">
               {socialLinks.map((link) => (
@@ -421,14 +472,6 @@ export default function ArtistDetailPage() {
                 </a>
               ))}
             </div>
-          )}
-          {!isSubscribed && (
-            <button
-              className="artist-subscribe-btn"
-              onClick={handleSubscribe}
-            >
-              구독하기
-            </button>
           )}
         </div>
       </div>
@@ -474,12 +517,6 @@ export default function ArtistDetailPage() {
           </div>
           <p className="artist-locked-title">구독자 전용 콘텐츠</p>
           <p className="artist-locked-desc">구독 후 {artist.stage_name}의 모든 콘텐츠를 확인할 수 있습니다</p>
-          <button
-            className="artist-subscribe-btn"
-            onClick={() => router.push(`/artists/${slug}/subscribe`)}
-          >
-            구독하기
-          </button>
         </div>
       ) : (
       /* 콘텐츠 피드 */
@@ -762,13 +799,83 @@ export default function ArtistDetailPage() {
               </button>
             </div>
             <div className="write-modal-body">
-              <textarea
-                className="write-textarea"
-                placeholder="무슨 이야기를 나누고 싶으신가요?"
-                value={writeContent}
-                onChange={(e) => setWriteContent(e.target.value)}
-                rows={6}
-              />
+              <div className="write-compose-area">
+                <textarea
+                  className="write-textarea"
+                  placeholder="무슨 이야기를 나누고 싶으신가요?"
+                  value={writeContent}
+                  onChange={(e) => setWriteContent(e.target.value)}
+                  rows={4}
+                />
+                {writeImages.map((item, idx) => (
+                  <div key={idx} className="write-image-block">
+                    <div className="write-image-block-img">
+                      <img src={URL.createObjectURL(item.file)} alt={`첨부 ${idx + 1}`} />
+                      <div className="write-image-block-actions">
+                        <div className="write-image-move-btns">
+                          {idx > 0 && (
+                            <button
+                              className="write-image-move-btn"
+                              onClick={() => handleImageMove(idx, "left")}
+                              type="button"
+                              aria-label="위로 이동"
+                            >
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14">
+                                <polyline points="18 15 12 9 6 15" />
+                              </svg>
+                            </button>
+                          )}
+                          {idx < writeImages.length - 1 && (
+                            <button
+                              className="write-image-move-btn"
+                              onClick={() => handleImageMove(idx, "right")}
+                              type="button"
+                              aria-label="아래로 이동"
+                            >
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14">
+                                <polyline points="6 9 12 15 18 9" />
+                              </svg>
+                            </button>
+                          )}
+                        </div>
+                        <button
+                          className="write-image-remove-btn"
+                          onClick={() => handleImageRemove(idx)}
+                          type="button"
+                          aria-label="이미지 삭제"
+                        >
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14">
+                            <line x1="18" y1="6" x2="6" y2="18" />
+                            <line x1="6" y1="6" x2="18" y2="18" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                    <textarea
+                      className="write-image-text"
+                      placeholder="텍스트 입력..."
+                      value={item.caption}
+                      onChange={(e) => handleImageCaption(idx, e.target.value)}
+                      rows={3}
+                    />
+                  </div>
+                ))}
+                <label className="write-image-add-btn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="18" height="18">
+                    <rect x="3" y="3" width="18" height="18" rx="2" />
+                    <circle cx="8.5" cy="8.5" r="1.5" />
+                    <path d="M21 15l-5-5L5 21" />
+                  </svg>
+                  이미지 추가
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/gif,image/webp"
+                    multiple
+                    onChange={handleImageSelect}
+                    style={{ display: "none" }}
+                  />
+                </label>
+              </div>
               <div className="write-field">
                 <label className="write-label">공개 범위</label>
                 <select

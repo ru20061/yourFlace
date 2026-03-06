@@ -5,6 +5,7 @@ import { useAuth } from "../../lib/auth-context";
 import { api } from "../../lib/api";
 import type { Post, PaginatedResponse } from "../data/types";
 import PostCard from "../components/PostCard/PostCard";
+import WritePostModal from "./WritePostModal";
 import "./posts.css";
 
 export default function PostsPage() {
@@ -12,6 +13,7 @@ export default function PostsPage() {
 
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showWriteModal, setShowWriteModal] = useState(false);
 
   const fetchPosts = useCallback(async () => {
     try {
@@ -31,6 +33,11 @@ export default function PostsPage() {
   useEffect(() => {
     fetchPosts();
   }, [fetchPosts]);
+
+  const handlePostCreated = () => {
+    setShowWriteModal(false);
+    fetchPosts();
+  };
 
   if (loading) {
     return (
@@ -54,6 +61,25 @@ export default function PostsPage() {
         </div>
       ) : (
         <div className="posts-empty">아직 작성된 포스트가 없습니다.</div>
+      )}
+
+      {/* 글쓰기 FAB */}
+      {user && (
+        <button className="write-fab" onClick={() => setShowWriteModal(true)}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <line x1="12" y1="5" x2="12" y2="19" />
+            <line x1="5" y1="12" x2="19" y2="12" />
+          </svg>
+          글쓰기
+        </button>
+      )}
+
+      {/* 글쓰기 모달 */}
+      {showWriteModal && (
+        <WritePostModal
+          onClose={() => setShowWriteModal(false)}
+          onCreated={handlePostCreated}
+        />
       )}
     </div>
   );

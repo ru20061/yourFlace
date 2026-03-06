@@ -5,7 +5,7 @@ from datetime import datetime, date
 class PostBase(BaseModel):
     author_id: int
     author_type: Literal["fan", "artist"]
-    content: Optional[str] = None
+    content: Optional[Any] = None
     write_id: int
     write_role: Literal["fan", "artist", "manager"]
     visibility: Optional[Literal["public", "subscribers", "private"]] = "public"
@@ -22,7 +22,7 @@ class PostCreate(PostBase):
 class PostUpdate(BaseModel):
     author_id: Optional[int] = None
     author_type: Optional[Literal["fan", "artist"]] = None
-    content: Optional[str] = None
+    content: Optional[Any] = None
     write_id: Optional[int] = None
     write_role: Optional[Literal["fan", "artist", "manager"]] = None
     visibility: Optional[Literal["public", "subscribers", "private"]] = None

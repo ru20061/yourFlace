@@ -9,7 +9,7 @@ class Post(Base):
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     author_id = Column(BigInteger, nullable=False)
     author_type = Column(String(20), nullable=False)
-    content = Column(Text, nullable=True)
+    content = Column(JSON, nullable=True)
     write_id = Column(BigInteger, ForeignKey('users.id'), nullable=False)
     write_role = Column(String(20), nullable=False)
     visibility = Column(String(20), default='public')

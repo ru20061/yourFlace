@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import { apiFetch } from "../../../lib/api";
 import { getRelativeTime } from "../../../lib/utils";
 import type { MagazineDetail } from "../../data/types";
+import DOMPurify from "dompurify";
 import "./magazine-detail.css";
 
 export default function MagazineDetailPage() {
@@ -71,7 +72,7 @@ export default function MagazineDetailPage() {
 
       {/* 본문 */}
       <div className="magazine-body">
-        <p className="magazine-content">{magazine.content}</p>
+        <div className="magazine-content" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(magazine.content, { ADD_TAGS: ["style"], ADD_ATTR: ["style"] }) }} />
 
         {/* 본문 이미지 */}
         {magazine.images.length > 0 && (

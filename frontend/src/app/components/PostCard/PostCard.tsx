@@ -1,11 +1,49 @@
 "use client";
 
 import { getRelativeTime } from "../../../lib/utils";
-import type { Post } from "../../data/types";
+import type { Post, ContentBlock } from "../../data/types";
 import "./post-card.css";
 
 interface PostCardProps {
   post: Post;
+}
+
+/** 블록 배열 또는 문자열 콘텐츠를 렌더링 */
+function renderContent(content: ContentBlock[] | string | null) {
+  if (!content) return null;
+
+  // 하위 호환: 기존 문자열 콘텐츠
+  if (typeof content === "string") {
+    return content.split("\n").map((line, i) => (
+      <p key={i} className="post-text">
+        {line || "\u00A0"}
+      </p>
+    ));
+  }
+
+  // 블록 배열 렌더링
+  if (Array.isArray(content)) {
+    return content.map((block, i) => {
+      if (block.type === "text") {
+        if (!block.value?.trim()) return null;
+        return block.value.split("\n").map((line, j) => (
+          <p key={`${i}-${j}`} className="post-text">
+            {line || "\u00A0"}
+          </p>
+        ));
+      }
+      if (block.type === "image") {
+        return (
+          <div key={i} className="post-block-image">
+            <img src={block.url} alt="포스트 이미지" />
+          </div>
+        );
+      }
+      return null;
+    });
+  }
+
+  return null;
 }
 
 export default function PostCard({ post }: PostCardProps) {
@@ -30,15 +68,10 @@ export default function PostCard({ post }: PostCardProps) {
       )}
 
       <div className="post-body">
-        {/* 본문 텍스트 (줄바꿈 유지) */}
-        {post.content?.split("\n").map((line, i) => (
-          <p key={i} className="post-text">
-            {line || "\u00A0"}
-          </p>
-        ))}
+        {renderContent(post.content)}
       </div>
 
-      {/* 이미지 */}
+      {/* 기존 이미지 (하위 호환) */}
       {post.images && post.images.length > 0 && (
         <div className={`post-images ${post.images.length === 1 ? "single" : post.images.length === 2 ? "double" : "multi"}`}>
           {post.images.map((img) => (

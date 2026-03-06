@@ -145,6 +145,7 @@ async def seed_data():
             User(id=6, email="jay@artist.com",     password_hash=pw, status="active"),
             User(id=7, email="yuri@artist.com",    password_hash=pw, status="active"),
             User(id=8, email="admin@test.com",     password_hash=pw, status="active"),
+            User(id=9, email="guest@test.com",     password_hash=pw, status="active"),
         ]
         db.add_all(users)
         await db.flush()
@@ -158,13 +159,14 @@ async def seed_data():
             Profile(id=6, user_id=6, nickname="제이",     full_name="한제이"),
             Profile(id=7, user_id=7, nickname="유리",     full_name="송유리"),
             Profile(id=8, user_id=8, nickname="관리자",   full_name="운영자"),
+            Profile(id=9, user_id=9, nickname="게스트",   full_name="이게스트", birth_date=date(1998, 3, 20), gender="female", phone="010-9876-5432"),
         ]
         db.add_all(profiles)
         await db.flush()
 
         user_settings = [
             UserSetting(id=i, user_id=i, language="ko", theme="light")
-            for i in range(1, 9)
+            for i in range(1, 10)
         ]
         db.add_all(user_settings)
         await db.flush()
@@ -259,6 +261,12 @@ async def seed_data():
             SubscriptionPlan(id=4, artist_id=2, name="하루 프리미엄", price=Decimal("7900"),   billing_cycle="monthly", duration_days=30, benefits="전체 콘텐츠 + 연습 영상", is_active=True),
             SubscriptionPlan(id=5, artist_id=3, name="소율 베이직",   price=Decimal("0"),     billing_cycle="monthly", benefits="공개 작품 열람", is_active=True),
             SubscriptionPlan(id=6, artist_id=3, name="소율 프리미엄", price=Decimal("5900"),   billing_cycle="monthly", duration_days=30, benefits="전체 작품 + 작업과정 + 채팅", is_active=True),
+            SubscriptionPlan(id=7, artist_id=4, name="민서 베이직",   price=Decimal("0"),     billing_cycle="monthly", benefits="기본 콘텐츠 열람", is_active=True),
+            SubscriptionPlan(id=8, artist_id=4, name="민서 프리미엄", price=Decimal("8900"),   billing_cycle="monthly", duration_days=30, benefits="전체 콘텐츠 + 비하인드 + 채팅", is_active=True),
+            SubscriptionPlan(id=9, artist_id=5, name="제이 베이직",   price=Decimal("0"),     billing_cycle="monthly", benefits="기본 콘텐츠 열람", is_active=True),
+            SubscriptionPlan(id=10, artist_id=5, name="제이 프리미엄", price=Decimal("6900"),  billing_cycle="monthly", duration_days=30, benefits="전체 콘텐츠 + 비트 + 채팅", is_active=True),
+            SubscriptionPlan(id=11, artist_id=6, name="유리 베이직",   price=Decimal("0"),     billing_cycle="monthly", benefits="기본 콘텐츠 열람", is_active=True),
+            SubscriptionPlan(id=12, artist_id=6, name="유리 프리미엄", price=Decimal("7900"),  billing_cycle="monthly", duration_days=30, benefits="전체 콘텐츠 + 연습 영상 + 채팅", is_active=True),
         ]
         db.add_all(subscription_plans)
         await db.flush()
@@ -267,14 +275,14 @@ async def seed_data():
             Subscription(id=1, fan_id=1, artist_id=1, fan_nickname="테스트팬", status="subscribed", payments_type="free", start_date=today - timedelta(days=30)),
             Subscription(id=2, fan_id=1, artist_id=2, fan_nickname="테스트팬", status="subscribed", payments_type="free", start_date=today - timedelta(days=20)),
             Subscription(id=3, fan_id=1, artist_id=3, fan_nickname="테스트팬", status="subscribed", payments_type="paid", start_date=today - timedelta(days=10)),
-            Subscription(id=4, fan_id=1, artist_id=4, fan_nickname="테스트팬", status="cancelled", payments_type="free", start_date=today - timedelta(days=60), end_date=today - timedelta(days=5)),
+            Subscription(id=4, fan_id=1, artist_id=4, fan_nickname="테스트팬", status="subscribed", payments_type="free", start_date=today - timedelta(days=15)),
+            Subscription(id=5, fan_id=1, artist_id=5, fan_nickname="테스트팬", status="subscribed", payments_type="free", start_date=today - timedelta(days=7)),
+            Subscription(id=6, fan_id=1, artist_id=6, fan_nickname="테스트팬", status="subscribed", payments_type="free", start_date=today - timedelta(days=5)),
         ]
         db.add_all(subscriptions)
         await db.flush()
 
-        subscription_cancellations = [
-            SubscriptionCancellation(id=1, subscription_id=4, user_id=1, artist_id=4, reason_code="lost_interest", reason_detail="콘텐츠가 자주 올라오지 않아서", subscription_started_at=now - timedelta(days=60)),
-        ]
+        subscription_cancellations = []
         db.add_all(subscription_cancellations)
         await db.flush()
 
@@ -593,26 +601,62 @@ async def seed_data():
         # 10. NOTIFICATION — templates / notifications / settings / scheduled / system_logs
         # ================================================================
         notification_templates = [
-            NotificationTemplate(id=1, template_name="새 포스트",       noti_type="content", title_template="{artist_name}님이 새 포스트를 올렸어요",      message_template="{artist_name}: {preview}", is_active=True),
-            NotificationTemplate(id=2, template_name="새 이미지",       noti_type="content", title_template="{artist_name}님이 새 이미지를 올렸어요",      message_template="{artist_name}님의 새 이미지를 확인하세요", is_active=True),
-            NotificationTemplate(id=3, template_name="새 영상",         noti_type="content", title_template="{artist_name}님이 새 영상을 올렸어요",        message_template="{video_title}", is_active=True),
-            NotificationTemplate(id=4, template_name="댓글 답글",       noti_type="social",  title_template="{user_name}님이 답글을 남겼어요",             message_template="{preview}", is_active=True),
-            NotificationTemplate(id=5, template_name="이벤트 오픈",     noti_type="event",   title_template="{artist_name}님의 새 이벤트가 열렸어요",      message_template="{event_title}", is_active=True),
-            NotificationTemplate(id=6, template_name="주문 배송 시작",  noti_type="order",   title_template="주문하신 상품이 배송 시작되었어요",            message_template="주문번호 {order_number}", is_active=True),
-            NotificationTemplate(id=7, template_name="채팅 메시지",     noti_type="chat",    title_template="{sender_name}님의 메시지",                    message_template="{preview}", is_active=True),
+            NotificationTemplate(id=1,  template_name="새 포스트",       noti_type="content", title_template="{artist_name}님이 새 포스트를 올렸어요",      message_template="{artist_name}: {preview}", is_active=True),
+            NotificationTemplate(id=2,  template_name="새 이미지",       noti_type="content", title_template="{artist_name}님이 새 이미지를 올렸어요",      message_template="{artist_name}님의 새 이미지를 확인하세요", is_active=True),
+            NotificationTemplate(id=3,  template_name="새 영상",         noti_type="content", title_template="{artist_name}님이 새 영상을 올렸어요",        message_template="{video_title}", is_active=True),
+            NotificationTemplate(id=4,  template_name="댓글 답글",       noti_type="social",  title_template="{user_name}님이 답글을 남겼어요",             message_template="{preview}", is_active=True),
+            NotificationTemplate(id=5,  template_name="이벤트 오픈",     noti_type="event",   title_template="{artist_name}님의 새 이벤트가 열렸어요",      message_template="{event_title}", is_active=True),
+            NotificationTemplate(id=6,  template_name="주문 배송 시작",  noti_type="order",   title_template="주문하신 상품이 배송 시작되었어요",            message_template="주문번호 {order_number}", is_active=True),
+            NotificationTemplate(id=7,  template_name="채팅 메시지",     noti_type="chat",    title_template="{sender_name}님의 메시지",                    message_template="{preview}", is_active=True),
+            NotificationTemplate(id=8,  template_name="결제 완료",       noti_type="payment", title_template="결제가 완료되었어요",                          message_template="{amount}원 결제 완료", is_active=True),
+            NotificationTemplate(id=9,  template_name="공지사항",        noti_type="notice",  title_template="새 공지사항이 등록되었어요",                   message_template="{title}", is_active=True),
+            NotificationTemplate(id=10, template_name="댓글 알림",       noti_type="comment", title_template="{user_name}님이 댓글을 남겼어요",              message_template="{preview}", is_active=True),
+            NotificationTemplate(id=11, template_name="구독 만료 예정",  noti_type="payment", title_template="구독이 곧 만료돼요",                          message_template="{artist_name} 구독이 {days}일 후 만료됩니다", is_active=True),
+            NotificationTemplate(id=12, template_name="시스템 점검",     noti_type="system",  title_template="시스템 점검 안내",                             message_template="{message}", is_active=True),
+            NotificationTemplate(id=13, template_name="주문 배송 완료",  noti_type="order",   title_template="주문하신 상품이 배송 완료되었어요",             message_template="주문번호 {order_number}", is_active=True),
+            NotificationTemplate(id=14, template_name="좋아요 알림",     noti_type="social",  title_template="{user_name}님이 회원님의 글을 좋아해요",       message_template="{preview}", is_active=True),
         ]
         db.add_all(notification_templates)
         await db.flush()
 
         notifications = [
-            Notification(id=1,  subscription_id=1, user_id=1, noti_type="content", source_id=1, source_type="post",          event_type="new_post",    target_id=1,  title="루나님이 새 포스트를 올렸어요",         message="오늘 새 앨범 작업을 시작했어요!",            is_read=True,  is_pushed=True),
-            Notification(id=2,  subscription_id=1, user_id=1, noti_type="content", source_id=1, source_type="artist_video",   event_type="new_video",   target_id=1,  title="루나님이 새 영상을 올렸어요",           message="루나 - 별빛 아래서 MV",                      is_read=True,  is_pushed=True),
-            Notification(id=3,  subscription_id=2, user_id=1, noti_type="content", source_id=2, source_type="post",          event_type="new_post",    target_id=3,  title="하루님이 새 포스트를 올렸어요",         message="새로운 안무 연습 중!",                       is_read=False, is_pushed=True),
-            Notification(id=4,  subscription_id=3, user_id=1, noti_type="content", source_id=3, source_type="post",          event_type="new_post",    target_id=5,  title="소율님이 새 포스트를 올렸어요",         message="새로운 일러스트 시리즈 '도시의 밤'",          is_read=False, is_pushed=True),
-            Notification(id=5,  user_id=1, noti_type="social",  source_id=2, source_type="user",          event_type="reply",       target_id=1,  title="루나님이 답글을 남겼어요",               message="감사합니다! 열심히 준비할게요",               is_read=False, is_pushed=True),
-            Notification(id=6,  user_id=1, noti_type="event",   source_id=1, source_type="event",         event_type="new_event",   target_id=1,  title="루나님의 새 이벤트가 열렸어요",         message="루나 팬미팅 2026",                           is_read=True,  is_pushed=True),
-            Notification(id=7,  user_id=1, noti_type="order",   source_id=1, source_type="order",         event_type="shipped",     target_id=1,  title="주문하신 상품이 배송 시작되었어요",     message="주문번호 ORD-2026-0001",                     is_read=True,  is_pushed=True),
-            Notification(id=8,  user_id=1, noti_type="chat",    source_id=2, source_type="chat_message",  event_type="new_message", target_id=1,  title="루나님의 메시지",                       message="이 사진 예쁘네요!",                          is_read=False, is_pushed=True),
+            # 콘텐츠 알림 — 읽음/안읽음 혼합
+            Notification(id=1,  subscription_id=1, user_id=1, noti_type="content", source_id=1, source_type="post",          event_type="new_post",    target_id=1,  title="루나님이 새 포스트를 올렸어요",         message="오늘 새 앨범 작업을 시작했어요!",            is_read=True,  is_pushed=True,  created_at=now - timedelta(days=5)),
+            Notification(id=2,  subscription_id=1, user_id=1, noti_type="content", source_id=1, source_type="artist_video",   event_type="new_video",   target_id=1,  title="루나님이 새 영상을 올렸어요",           message="루나 - 별빛 아래서 MV",                      is_read=True,  is_pushed=True,  created_at=now - timedelta(days=4)),
+            Notification(id=3,  subscription_id=2, user_id=1, noti_type="content", source_id=2, source_type="post",          event_type="new_post",    target_id=3,  title="하루님이 새 포스트를 올렸어요",         message="새로운 안무 연습 중!",                       is_read=False, is_pushed=True,  created_at=now - timedelta(days=3)),
+            Notification(id=4,  subscription_id=3, user_id=1, noti_type="content", source_id=3, source_type="post",          event_type="new_post",    target_id=5,  title="소율님이 새 포스트를 올렸어요",         message="새로운 일러스트 시리즈 '도시의 밤'",          is_read=False, is_pushed=True,  created_at=now - timedelta(days=2)),
+            # 소셜 알림 — 답글, 댓글, 좋아요
+            Notification(id=5,  user_id=1, noti_type="social",  source_id=2, source_type="user",          event_type="reply",       target_id=1,  title="루나님이 답글을 남겼어요",               message="감사합니다! 열심히 준비할게요",               is_read=False, is_pushed=True,  created_at=now - timedelta(days=2, hours=5)),
+            Notification(id=9,  user_id=1, noti_type="comment", source_id=3, source_type="user",          event_type="comment",     target_id=3,  title="하루님이 댓글을 남겼어요",               message="응원 감사합니다!",                           is_read=False, is_pushed=True,  created_at=now - timedelta(days=1, hours=8)),
+            Notification(id=10, user_id=1, noti_type="social",  source_id=4, source_type="user",          event_type="like",        target_id=8,  title="소율님이 회원님의 글을 좋아해요",        message="소율 작가님 그림 너무 예뻐요...",             is_read=False, is_pushed=True,  created_at=now - timedelta(hours=12)),
+            Notification(id=11, user_id=1, noti_type="reply",   source_id=2, source_type="user",          event_type="reply",       target_id=6,  title="루나님이 답글을 남겼어요",               message="응원 감사합니다! 더 열심히 할게요",           is_read=True,  is_pushed=True,  created_at=now - timedelta(days=3, hours=2)),
+            # 이벤트 알림
+            Notification(id=6,  user_id=1, noti_type="event",   source_id=1, source_type="event",         event_type="new_event",   target_id=1,  title="루나님의 새 이벤트가 열렸어요",         message="루나 팬미팅 2026",                           is_read=True,  is_pushed=True,  created_at=now - timedelta(days=7)),
+            Notification(id=12, user_id=1, noti_type="event",   source_id=2, source_type="event",         event_type="new_event",   target_id=2,  title="하루님의 새 이벤트가 열렸어요",         message="하루 댄스 챌린지",                           is_read=False, is_pushed=True,  created_at=now - timedelta(days=1, hours=3)),
+            Notification(id=13, user_id=1, noti_type="event",   source_id=3, source_type="event",         event_type="reminder",    target_id=3,  title="소율 라이브 드로잉이 곧 시작돼요",      message="3일 후 유튜브 라이브에서 만나요!",            is_read=False, is_pushed=True,  created_at=now - timedelta(hours=6)),
+            # 주문/배송 알림
+            Notification(id=7,  user_id=1, noti_type="order",   source_id=1, source_type="order",         event_type="shipped",     target_id=1,  title="주문하신 상품이 배송 시작되었어요",     message="주문번호 ORD-2026-0001",                     is_read=True,  is_pushed=True,  created_at=now - timedelta(days=4)),
+            Notification(id=14, user_id=1, noti_type="order",   source_id=1, source_type="order",         event_type="delivered",   target_id=1,  title="주문하신 상품이 배송 완료되었어요",     message="주문번호 ORD-2026-0001 — 루나 라이트스틱",   is_read=True,  is_pushed=True,  created_at=now - timedelta(days=2)),
+            Notification(id=15, user_id=1, noti_type="order",   source_id=3, source_type="order",         event_type="pending",     target_id=3,  title="주문이 접수되었어요",                   message="주문번호 ORD-2026-0003 — 결제 대기 중",      is_read=False, is_pushed=False, created_at=now - timedelta(hours=3)),
+            # 채팅 알림
+            Notification(id=8,  user_id=1, noti_type="chat",    source_id=2, source_type="chat_message",  event_type="new_message", target_id=1,  title="루나님의 메시지",                       message="이 사진 예쁘네요!",                          is_read=False, is_pushed=True,  created_at=now - timedelta(minutes=30)),
+            Notification(id=16, user_id=1, noti_type="chat",    source_id=3, source_type="chat_message",  event_type="new_message", target_id=2,  title="하루님의 메시지",                       message="오늘 연습 끝! 다들 수고했어요",               is_read=False, is_pushed=True,  created_at=now - timedelta(hours=1)),
+            # 결제 알림
+            Notification(id=17, user_id=1, noti_type="payment", source_id=1, source_type="payment",       event_type="completed",   target_id=1,  title="결제가 완료되었어요",                   message="소율 프리미엄 구독 5,900원 결제 완료",       is_read=True,  is_pushed=True,  created_at=now - timedelta(days=10)),
+            Notification(id=18, user_id=1, noti_type="payment", source_id=3, source_type="payment",       event_type="refunded",    target_id=3,  title="환불이 완료되었어요",                   message="25,000원 환불 완료 (하루 연습복 티셔츠)",     is_read=True,  is_pushed=True,  created_at=now - timedelta(days=2)),
+            Notification(id=19, user_id=1, noti_type="payment", source_id=3, source_type="subscription",  event_type="expiring",    target_id=3,  title="구독이 곧 만료돼요",                    message="소율 프리미엄 구독이 3일 후 만료됩니다",      is_read=False, is_pushed=True,  created_at=now - timedelta(hours=2)),
+            # 공지사항 알림
+            Notification(id=20, user_id=1, noti_type="notice",  source_id=1, source_type="notice",        event_type="new_notice",  target_id=1,  title="새 공지사항이 등록되었어요",             message="yourFlace 서비스 오픈 안내",                  is_read=True,  is_pushed=True,  created_at=now - timedelta(days=14)),
+            Notification(id=21, user_id=1, noti_type="notice",  source_id=3, source_type="notice",        event_type="new_notice",  target_id=3,  title="새 공지사항이 등록되었어요",             message="앱 업데이트 안내 (v1.1.0)",                   is_read=False, is_pushed=True,  created_at=now - timedelta(days=1)),
+            # 시스템 알림
+            Notification(id=22, user_id=1, noti_type="system",  source_id=1, source_type="system",        event_type="maintenance", target_id=None, title="시스템 점검 안내",                    message="3월 1일 02:00~06:00 서비스 점검 예정",        is_read=True,  is_pushed=True,  created_at=now - timedelta(days=6)),
+            Notification(id=23, user_id=1, noti_type="system",  source_id=2, source_type="system",        event_type="update",      target_id=None, title="개인정보 처리방침 변경 안내",          message="3월 15일부터 변경된 개인정보 처리방침 적용",   is_read=False, is_pushed=True,  created_at=now - timedelta(hours=18)),
+            # 경고 알림
+            Notification(id=24, user_id=1, noti_type="warning",  source_id=1, source_type="system",       event_type="security",    target_id=None, title="새로운 기기에서 로그인되었어요",       message="iPhone 16 Pro에서 로그인이 감지되었습니다",    is_read=True,  is_pushed=True,  created_at=now - timedelta(days=8)),
+            # 콘텐츠 알림 — 아티스트 이미지/영상 추가
+            Notification(id=25, subscription_id=1, user_id=1, noti_type="content", source_id=1, source_type="artist_image",  event_type="new_image",   target_id=1,  title="루나님이 새 이미지를 올렸어요",         message="콘서트 무대 비하인드 사진",                   is_read=False, is_pushed=True,  created_at=now - timedelta(hours=4)),
+            Notification(id=26, subscription_id=2, user_id=1, noti_type="content", source_id=2, source_type="artist_video",  event_type="new_video",   target_id=3,  title="하루님이 새 영상을 올렸어요",           message="Gravity 안무 풀버전",                        is_read=False, is_pushed=True,  created_at=now - timedelta(hours=8)),
+            Notification(id=27, subscription_id=3, user_id=1, noti_type="content", source_id=3, source_type="artist_image",  event_type="new_image",   target_id=5,  title="소율님이 새 이미지를 올렸어요",         message="'도시의 밤' 시리즈 신작 공개",                is_read=False, is_pushed=True,  created_at=now - timedelta(hours=1)),
         ]
         db.add_all(notifications)
         await db.flush()
@@ -622,20 +666,28 @@ async def seed_data():
             NotificationSetting(id=2, subscription_id=2, user_id=1, source_type="artist"),
             NotificationSetting(id=3, subscription_id=3, user_id=1, source_type="artist"),
             NotificationSetting(id=4, user_id=1, source_type="system"),
+            NotificationSetting(id=5, user_id=1, source_type="payment", notify_all=True, receive_push=True, receive_email=True),
+            NotificationSetting(id=6, user_id=1, source_type="event",   notify_all=True, receive_push=True, receive_email=False),
         ]
         db.add_all(notification_settings)
         await db.flush()
 
         scheduled_notifications = [
             ScheduledNotification(id=1, notification_template_id=5, receiver_id=1, send_at=now + timedelta(days=1), is_sent=False),
+            ScheduledNotification(id=2, notification_template_id=11, receiver_id=1, send_at=now + timedelta(days=3), is_sent=False),
+            ScheduledNotification(id=3, notification_template_id=12, receiver_id=1, send_at=now + timedelta(hours=12), is_sent=False),
+            ScheduledNotification(id=4, notification_template_id=9,  receiver_id=1, send_at=now - timedelta(hours=6), is_sent=True, sent_at=now - timedelta(hours=6)),
         ]
         db.add_all(scheduled_notifications)
         await db.flush()
 
         system_logs_data = [
-            SystemLog(id=1, sender_id=2, receiver_id=1, channel="push", status="delivered"),
-            SystemLog(id=2, sender_id=3, receiver_id=1, channel="push", status="delivered"),
-            SystemLog(id=3, sender_id=2, receiver_id=1, channel="push", status="failed", error_message="디바이스 토큰 만료"),
+            SystemLog(id=1, scheduled_notification_id=4, sender_id=2, receiver_id=1, channel="push",  status="delivered"),
+            SystemLog(id=2, sender_id=3, receiver_id=1, channel="push",  status="delivered"),
+            SystemLog(id=3, sender_id=2, receiver_id=1, channel="push",  status="failed", error_message="디바이스 토큰 만료"),
+            SystemLog(id=4, sender_id=4, receiver_id=1, channel="app",   status="success"),
+            SystemLog(id=5, sender_id=2, receiver_id=1, channel="email", status="success"),
+            SystemLog(id=6, sender_id=2, receiver_id=1, channel="email", status="pending"),
         ]
         db.add_all(system_logs_data)
         await db.flush()
@@ -798,6 +850,52 @@ async def seed_data():
             Magazine(id=3, title="소율, 첫 개인전 '꿈의 색채' 3월 개최",              slug=generate_slug("소율 첫 개인전 꿈의 색채 3월 개최"), content="일러스트레이터 소율의 첫 개인전 '꿈의 색채'가 서울 성수동 갤러리에서 오는 3월 1일부터 31일까지 한 달간 개최됩니다. 이번 전시에서는 '도시의 밤' 시리즈를 포함한 30여 점의 신작이 공개될 예정입니다.", summary="소율 작가의 첫 개인전이 성수동 갤러리에서 열립니다.", thumbnail_url="/placeholder/art1.jpg", category="전시",      artist_id=3, write_id=8, tags=["소율", "개인전", "갤러리"], is_active=True, view_count=650),
             Magazine(id=4, title="yourFlace, 아티스트와 팬을 잇는 새로운 플랫폼 정식 오픈", slug=generate_slug("yourflace 아티스트와 팬을 잇는 새로운 플랫폼 정식 오픈"), content="팬과 아티스트를 더 가깝게 연결하는 플랫폼 yourFlace가 정식 오픈했습니다. 구독 기반의 독점 콘텐츠, 실시간 채팅, 굿즈 쇼핑 등 다양한 기능을 통해 팬과 아티스트 간의 소통을 지원합니다.", summary="yourFlace 플랫폼이 정식 오픈했습니다.", thumbnail_url="/placeholder/banner1.jpg", category="플랫폼",    artist_id=None, write_id=8, tags=["yourFlace", "오픈", "플랫폼"], is_active=True, view_count=2100),
             Magazine(id=5, title="제이, 새 믹스테이프 '야간비행' 발매 예고",            slug=generate_slug("제이 새 믹스테이프 야간비행 발매 예고"), content="래퍼 제이가 새 믹스테이프 '야간비행'의 발매를 예고했습니다. 총 8트랙으로 구성되며 다양한 프로듀서와의 협업이 포함되어 있어 팬들의 기대를 모으고 있습니다.", summary="제이의 새 믹스테이프 '야간비행'이 곧 발매됩니다.", thumbnail_url="/placeholder/concert2.jpg", category="음악",      artist_id=5, write_id=8, tags=["제이", "믹스테이프", "신보"], is_active=True, view_count=430),
+            Magazine(
+                id=6,
+                title="루나의 콘서트 비하인드 — 무대 뒤 24시간",
+                slug=generate_slug("루나의 콘서트 비하인드 무대 뒤 24시간"),
+                content="""<style>
+.highlight-box { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; padding: 20px; border-radius: 12px; margin: 20px 0; font-size: 18px; line-height: 1.6; }
+.photo-caption { text-align: center; color: #888; font-size: 13px; margin-top: 6px; font-style: italic; }
+.quote-block { border-left: 4px solid #764ba2; padding: 12px 20px; margin: 24px 0; background: #f8f6ff; font-size: 16px; color: #333; }
+.section-title { font-size: 22px; font-weight: 700; margin: 32px 0 12px; color: #1a1a1a; }
+</style>
+
+<div class="highlight-box">
+2만 관객의 함성 뒤에는 루나와 스태프들의 치열한 24시간이 있었습니다.
+</div>
+
+<p class="section-title">리허설 — 완벽을 향한 집념</p>
+<p>콘서트 당일 오전 8시, 루나는 이미 잠실 올림픽경기장에 도착해 있었습니다. 총 18곡의 셋리스트를 처음부터 끝까지 두 번 반복하며, 동선 하나하나를 점검했습니다.</p>
+
+<img src="/placeholder/concert1.jpg" alt="리허설 현장" style="width:100%; border-radius:8px; margin:16px 0;" />
+<p class="photo-caption">오전 리허설 중인 루나 — 스태프 촬영</p>
+
+<div class="quote-block">
+"무대에 서면 떨림이 사라져요. 연습한 만큼 몸이 기억하니까요." — 루나
+</div>
+
+<p class="section-title">백스테이지 — 팬에게 보내는 손편지</p>
+<p>공연 시작 2시간 전, 루나는 대기실에서 팬들에게 보낼 손편지를 쓰고 있었습니다. 한 장 한 장 정성스럽게 적은 편지는 객석 랜덤 좌석에 놓였습니다.</p>
+
+<img src="/placeholder/concert2.jpg" alt="백스테이지" style="width:100%; border-radius:8px; margin:16px 0;" />
+<p class="photo-caption">백스테이지에서 준비 중인 모습</p>
+
+<p class="section-title">앙코르 — 눈물의 무대</p>
+<p>마지막 곡 '별빛 아래서'가 끝난 뒤, 2만 관객이 일제히 외친 앙코르 함성에 루나는 눈물을 참지 못했습니다. 예정에 없던 어쿠스틱 버전의 데뷔곡을 부르며, 팬과 아티스트가 하나 되는 순간이 만들어졌습니다.</p>
+
+<div class="highlight-box" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); text-align:center;">
+"여러분이 있어 제가 여기 설 수 있어요. 고마워요, 사랑해요." — 루나
+</div>""",
+                summary="루나 첫 단독 콘서트의 비하인드 스토리를 공개합니다.",
+                thumbnail_url="/placeholder/concert1.jpg",
+                category="비하인드",
+                artist_id=1,
+                write_id=8,
+                tags=["루나", "비하인드", "콘서트", "HTML테스트"],
+                is_active=True,
+                view_count=320,
+            ),
         ]
         db.add_all(magazines)
         await db.flush()
@@ -812,6 +910,8 @@ async def seed_data():
             MagazineImage(id=7, magazine_id=4, image_id=10, sort_order=0),
             MagazineImage(id=8, magazine_id=4, image_id=11, sort_order=1),
             MagazineImage(id=9, magazine_id=5, image_id=1,  sort_order=0),
+            MagazineImage(id=10, magazine_id=6, image_id=1, sort_order=0),
+            MagazineImage(id=11, magazine_id=6, image_id=2, sort_order=1),
         ]
         db.add_all(magazine_images)
         await db.flush()
@@ -827,24 +927,25 @@ async def seed_data():
         print("  시드 데이터 삽입 완료!")
         print("=" * 55)
         print()
-        print("  테스트 계정: fan@test.com / test1234")
-        print("  관리자 계정: admin@test.com / test1234")
+        print("  팬 계정(전체 구독): fan@test.com / test1234")
+        print("  팬 계정(구독 없음): guest@test.com / test1234")
+        print("  관리자 계정:        admin@test.com / test1234")
         print()
-        print("  Users           8명 (팬1 + 아티스트6 + 관리자1)")
+        print("  Users           9명 (팬2 + 아티스트6 + 관리자1)")
         print("  Artists         6명 (루나, 하루, 소율, 민서, 제이, 유리)")
-        print("  Subscriptions   4건 (활성3 + 취소1)")
-        print("  Sub Plans       6건 (아티스트별 베이직+프리미엄)")
+        print("  Subscriptions   6건 (fan@test.com → 전체 아티스트 구독)")
+        print("  Sub Plans      12건 (아티스트별 베이직+프리미엄)")
         print("  Posts          11건 (아티스트5 + 팬3 + 기사3)")
         print("  Images         12건 / Artist Images 6건 / Videos 5건")
         print("  Chat Rooms      3개 / Messages 10건")
         print("  Events          4건 (활성3 + 완료1)")
         print("  Products        5건 / Orders 3건")
         print("  Payments        3건 / Refunds 1건")
-        print("  Notifications   8건 / Templates 7건")
+        print("  Notifications  27건 / Templates 14건")
         print("  Fan Likes       8건 / Recommendations 3건")
         print("  FAQ             7건 / Banners 3건 / Notices 3건")
         print("  Moderation      2 models / 3 results")
-        print("  Magazines       5건")
+        print("  Magazines       6건 (HTML 콘텐츠 포함 1건)")
         print("  + settings, addresses, devices, stats, logs 등")
 
 
@@ -857,7 +958,7 @@ async def reset_sequences():
             ("artist_categories", 10), ("artists", 10),
             ("artist_category_map", 10), ("artist_social_links", 20),
             ("managers", 10),
-            ("subscription_plans", 10), ("subscriptions", 10),
+            ("subscription_plans", 20), ("subscriptions", 10),
             ("subscription_cancellations", 10),
             ("images", 20), ("posts", 20), ("post_images", 10),
             ("post_comments", 10), ("post_stats", 20),
@@ -871,7 +972,7 @@ async def reset_sequences():
             ("events", 10), ("event_participants", 10), ("event_attendance", 10),
             ("products", 10), ("product_images", 10),
             ("orders", 10), ("order_items", 10),
-            ("notification_templates", 10), ("notifications", 20),
+            ("notification_templates", 20), ("notifications", 30),
             ("notification_settings", 10), ("scheduled_notifications", 10),
             ("system_logs", 10),
             ("fan_likes", 20), ("fan_recommendations", 10),

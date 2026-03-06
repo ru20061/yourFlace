@@ -56,11 +56,25 @@ export interface Subscription {
   updated_at: string;
 }
 
+/** 블록 에디터 콘텐츠 타입 */
+export interface TextBlock {
+  type: "text";
+  value: string;
+}
+
+export interface ImageBlock {
+  type: "image";
+  imageId: number;
+  url: string;
+}
+
+export type ContentBlock = TextBlock | ImageBlock;
+
 export interface Post {
   id: number;
   author_id: number;
   author_type: "fan" | "artist";
-  content: string | null;
+  content: ContentBlock[] | string | null;
   write_id: number;
   write_role: "fan" | "artist" | "manager";
   visibility: "public" | "subscribers" | "private";

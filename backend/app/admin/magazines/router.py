@@ -51,6 +51,7 @@ async def get_public_magazine_by_slug(
     # view_count 증가
     magazine.view_count = (magazine.view_count or 0) + 1
     await db.flush()
+    await db.refresh(magazine)
 
     return schemas.MagazineDetailResponse(
         id=magazine.id,

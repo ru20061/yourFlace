@@ -1,10 +1,50 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+import uuid
+from io import BytesIO
+from fastapi import APIRouter, Depends, HTTPException, status, Query, UploadFile, File
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import get_db
 from app.content.images import crud, schemas
 from app.dependencies import get_current_user
+from app.core.storage import storage
 
 router = APIRouter()
+
+ALLOWED_MIME_TYPES = {"image/jpeg", "image/png", "image/gif", "image/webp"}
+MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
+
+@router.post("/upload", response_model=schemas.ImageResponse, status_code=status.HTTP_201_CREATED)
+async def upload_image(
+    file: UploadFile = File(...),
+    db: AsyncSession = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    """이미지 파일 업로드 (R2 저장 후 DB 등록)"""
+    if file.content_type not in ALLOWED_MIME_TYPES:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="허용되지 않는 파일 형식입니다. (jpeg, png, gif, webp만 가능)"
+        )
+
+    contents = await file.read()
+    if len(contents) > MAX_FILE_SIZE:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="파일 크기는 10MB 이하만 가능합니다."
+        )
+
+    ext = file.filename.rsplit(".", 1)[-1] if file.filename and "." in file.filename else "jpg"
+    object_name = f"posts/{uuid.uuid4().hex}.{ext}"
+
+    file_obj = BytesIO(contents)
+    url = await storage.upload_file(file_obj, object_name, content_type=file.content_type)
+
+    image_in = schemas.ImageCreate(
+        url=url,
+        size_bytes=len(contents),
+        mime_type=file.content_type,
+    )
+    obj = await crud.image_crud.create(db, image_in)
+    return obj
 
 @router.post("", response_model=schemas.ImageResponse, status_code=status.HTTP_201_CREATED)
 async def create_images(

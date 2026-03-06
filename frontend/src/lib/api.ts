@@ -102,6 +102,44 @@ export class ApiError extends Error {
   }
 }
 
+/** FormData 업로드용 fetch 래퍼 (Content-Type 자동 설정) */
+export async function apiUpload<T = unknown>(
+  path: string,
+  formData: FormData,
+): Promise<T> {
+  const normalizedPath = normalizePath(path);
+  const token = getAccessToken();
+  const headers: Record<string, string> = {};
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
+  let res = await fetch(`${API_BASE}${normalizedPath}`, {
+    method: "POST",
+    headers,
+    body: formData,
+  });
+
+  if (res.status === 401 && token) {
+    const refreshed = await tryRefresh();
+    if (refreshed) {
+      headers["Authorization"] = `Bearer ${getAccessToken()}`;
+      res = await fetch(`${API_BASE}${normalizedPath}`, {
+        method: "POST",
+        headers,
+        body: formData,
+      });
+    }
+  }
+
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new ApiError(res.status, body.detail || res.statusText);
+  }
+
+  return res.json();
+}
+
 /** 편의 함수 */
 export const api = {
   get: <T = unknown>(path: string) => apiFetch<T>(path),
@@ -110,4 +148,5 @@ export const api = {
   patch: <T = unknown>(path: string, body?: unknown) =>
     apiFetch<T>(path, { method: "PATCH", body: body ? JSON.stringify(body) : undefined }),
   delete: <T = unknown>(path: string) => apiFetch<T>(path, { method: "DELETE" }),
+  upload: <T = unknown>(path: string, formData: FormData) => apiUpload<T>(path, formData),
 };

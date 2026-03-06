@@ -64,6 +64,25 @@
   line-height: 1.5;
 }
 
+/* 구독 상태 배지 */
+.artist-subscribed-badge {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  background: var(--background-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+}
+
+.artist-subscribed-badge.active {
+  color: white;
+  background: rgba(143, 0, 255, 0.85);
+  border-color: transparent;
+}
+
 /* 소셜 링크 */
 .artist-social-links {
   display: flex;
@@ -260,13 +279,15 @@
 }
 
 .write-modal {
-  background: var(--background);
+  background: #ffffff;
   border-radius: 16px;
   width: 100%;
   max-width: 520px;
   max-height: 90vh;
   overflow-y: auto;
+  overflow: hidden;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  border: none;
 }
 
 .write-modal-header {
@@ -274,13 +295,14 @@
   align-items: center;
   justify-content: space-between;
   padding: 16px 20px;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: none;
+  background: linear-gradient(135deg, var(--color-main), var(--color-point));
 }
 
 .write-modal-header h2 {
   font-size: 16px;
   font-weight: 700;
-  color: var(--text-primary);
+  color: #ffffff;
 }
 
 .write-modal-close {
@@ -291,14 +313,14 @@
   height: 32px;
   border: none;
   background: none;
-  color: var(--text-secondary);
+  color: #ffffff;
   cursor: pointer;
   border-radius: 8px;
   transition: background 0.2s;
 }
 
 .write-modal-close:hover {
-  background: var(--background-secondary);
+  background: rgba(255, 255, 255, 0.15);
 }
 
 .write-modal-close svg {
@@ -313,13 +335,19 @@
   gap: 16px;
 }
 
-.write-textarea {
-  width: 100%;
-  min-height: 140px;
-  padding: 12px;
+.write-compose-area {
   border: 1px solid var(--border-color);
   border-radius: 10px;
-  background: var(--background-secondary);
+  background: #ffffff;
+  overflow: hidden;
+}
+
+.write-textarea {
+  width: 100%;
+  min-height: 100px;
+  padding: 12px;
+  border: none;
+  background: transparent;
   color: var(--text-primary);
   font-size: 14px;
   line-height: 1.6;
@@ -327,8 +355,15 @@
   font-family: inherit;
 }
 
+.write-textarea::-webkit-resizer {
+  display: none;
+}
+
 .write-textarea:focus {
   outline: none;
+}
+
+.write-compose-area:focus-within {
   border-color: var(--color-main);
 }
 
@@ -353,7 +388,7 @@
   padding: 10px 12px;
   border: 1px solid var(--border-color);
   border-radius: 10px;
-  background: var(--background-secondary);
+  background: #ffffff;
   color: var(--text-primary);
   font-size: 14px;
   font-family: inherit;
@@ -374,6 +409,120 @@
   color: #e74c3c;
 }
 
+/* 이미지 첨부 */
+/* 이미지 블록 */
+.write-image-block {
+  border-top: 1px solid var(--border-color);
+}
+
+.write-image-block-img {
+  position: relative;
+}
+
+.write-image-block-img img {
+  width: 100%;
+  max-height: 300px;
+  object-fit: cover;
+  display: block;
+}
+
+.write-image-block-actions {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.write-image-block-img:hover .write-image-block-actions {
+  opacity: 1;
+}
+
+.write-image-text {
+  width: 100%;
+  padding: 10px 12px;
+  border: none;
+  border-top: 1px solid var(--border-color);
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 14px;
+  line-height: 1.6;
+  font-family: inherit;
+  outline: none;
+  resize: vertical;
+}
+
+.write-image-text::-webkit-resizer {
+  display: none;
+}
+
+.write-image-text::placeholder {
+  color: var(--text-tertiary);
+}
+
+.write-image-add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 8px 12px 10px;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 8px;
+  background: none;
+  color: var(--text-tertiary);
+  font-size: 13px;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.write-image-add-btn:hover {
+  color: var(--color-main);
+}
+
+.write-image-remove-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.write-image-remove-btn:hover {
+  background: rgba(0, 0, 0, 0.85);
+}
+
+.write-image-move-btns {
+  display: flex;
+  gap: 4px;
+}
+
+.write-image-move-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.write-image-move-btn:hover {
+  background: rgba(0, 0, 0, 0.85);
+}
+
 .write-modal-footer {
   display: flex;
   justify-content: flex-end;
@@ -383,18 +532,20 @@
 }
 
 .write-btn-cancel {
-  padding: 8px 18px;
-  border: 1px solid var(--border-color);
-  border-radius: 10px;
-  background: none;
-  color: var(--text-secondary);
+  padding: 9px 24px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--color-main), var(--color-point));
+  color: #fff;
   font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: opacity 0.2s, transform 0.15s;
 }
 
 .write-btn-cancel:hover {
-  background: var(--background-secondary);
+  opacity: 0.92;
+  transform: translateY(-1px);
 }
 
 .write-btn-submit {

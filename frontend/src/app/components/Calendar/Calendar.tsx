@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import "./calendar.css";
 
 export interface CalendarItem {
@@ -79,6 +79,19 @@ export default function Calendar({ selectedDate, onDateSelect, dateItems = {}, e
     return `${y}-${m}-${d}`;
   };
 
+  const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
+  const hoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleMouseEnter = (idx: number, hasContent: boolean) => {
+    if (!hasContent) return;
+    hoverTimerRef.current = setTimeout(() => setHoveredIdx(idx), 200);
+  };
+
+  const handleMouseLeave = () => {
+    if (hoverTimerRef.current) clearTimeout(hoverTimerRef.current);
+    setHoveredIdx(null);
+  };
+
   const isToday = (date: Date) => date.toDateString() === today.toDateString();
   const isSelected = (date: Date) => selectedDate?.toDateString() === date.toDateString();
 
@@ -135,6 +148,8 @@ export default function Calendar({ selectedDate, onDateSelect, dateItems = {}, e
                 hasContent && "has-content",
               ].filter(Boolean).join(" ")}
               onClick={() => onDateSelect(cell.date)}
+              onMouseEnter={() => handleMouseEnter(idx, hasContent)}
+              onMouseLeave={handleMouseLeave}
             >
               <span className="calendar-day-num">{cell.day}</span>
               {hasContent && (
@@ -147,6 +162,20 @@ export default function Calendar({ selectedDate, onDateSelect, dateItems = {}, e
                   {extraCount > 0 && (
                     <span className="calendar-tag tag-more">+{extraCount}</span>
                   )}
+                </div>
+              )}
+              {hoveredIdx === idx && hasContent && (
+                <div className={`calendar-tooltip ${idx % 7 >= 5 ? "tooltip-left" : ""}`}>
+                  <div className="calendar-tooltip-date">
+                    {cell.date.getMonth() + 1}월 {cell.date.getDate()}일
+                  </div>
+                  <div className="calendar-tooltip-items">
+                    {summary.map((tag) => (
+                      <span key={tag.type} className={`calendar-tag ${tag.cls}`}>
+                        {tag.label}{tag.count > 1 ? ` ${tag.count}` : ""}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
