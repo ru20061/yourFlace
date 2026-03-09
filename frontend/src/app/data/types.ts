@@ -8,7 +8,7 @@ export interface PaginatedResponse<T> {
   limit: number;
 }
 
-export interface Artist {
+export interface Creator {
   id: number;
   user_id: number;
   stage_name: string;
@@ -24,16 +24,16 @@ export interface Artist {
   updated_at: string;
 }
 
-export interface ArtistCategory {
+export interface CreatorCategory {
   id: number;
   name: string;
   description: string | null;
   is_active: boolean;
 }
 
-export interface ArtistSocialLink {
+export interface CreatorSocialLink {
   id: number;
-  artist_id: number;
+  creator_id: number;
   platform_name: string;
   url: string;
   display_name: string | null;
@@ -45,7 +45,7 @@ export interface ArtistSocialLink {
 export interface Subscription {
   id: number;
   fan_id: number;
-  artist_id: number;
+  creator_id: number;
   fan_nickname: string | null;
   fan_profile_image: string | null;
   status: "subscribed" | "cancelled" | "expired";
@@ -100,9 +100,9 @@ export interface PostImage {
   height?: number;
 }
 
-export interface ArtistImage {
+export interface CreatorImage {
   id: number;
-  artist_id: number;
+  creator_id: number;
   image_id: number;
   image_purpose: string | null;
   published_date: string | null;
@@ -116,9 +116,9 @@ export interface ArtistImage {
   thumbnail_url: string;
 }
 
-export interface ArtistVideo {
+export interface CreatorVideo {
   id: number;
-  artist_id: number;
+  creator_id: number;
   url: string;
   thumbnail_url: string | null;
   title: string | null;
@@ -132,16 +132,16 @@ export interface ArtistVideo {
   updated_at: string;
 }
 
-export interface ArtistCategoryMap {
+export interface CreatorCategoryMap {
   id: number;
-  artist_id: number;
+  creator_id: number;
   category_id: number;
   created_at: string;
 }
 
 export interface Event {
   id: number;
-  artist_id: number;
+  creator_id: number;
   title: string;
   description: string | null;
   event_type: string | null;
@@ -179,7 +179,7 @@ export interface SearchFilterState {
   query: string;
 }
 
-export interface SidebarArtist {
+export interface SidebarCreator {
   id: number;
   name: string;
   slug: string | null;
@@ -206,7 +206,7 @@ export interface Notice {
 export interface ChatRoom {
   id: number;
   room_type: string;
-  artist_id: number | null;
+  creator_id: number | null;
   room_name: string | null;
   room_image: string | null;
   last_message_at: string | null;
@@ -223,7 +223,7 @@ export interface Magazine {
   summary: string | null;
   thumbnail_url: string | null;
   category: string | null;
-  artist_id: number | null;
+  creator_id: number | null;
   write_id: number;
   tags: string[] | null;
   is_active: boolean;
@@ -280,7 +280,7 @@ export interface NotificationSetting {
 
 export interface SubscriptionPlan {
   id: number;
-  artist_id: number;
+  creator_id: number;
   name: string;
   price: number;
   currency: string;

@@ -4,7 +4,7 @@ from datetime import datetime
 from decimal import Decimal
 
 class SubscriptionPlanBase(BaseModel):
-    artist_id: int
+    creator_id: int
     name: str
     price: Decimal
     currency: str = "KRW"

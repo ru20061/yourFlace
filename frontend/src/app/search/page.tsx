@@ -6,10 +6,10 @@ import Calendar from "../components/Calendar/Calendar";
 import PostCard from "../components/PostCard/PostCard";
 import SearchFilters from "../components/SearchFilters/SearchFilters";
 import { api } from "../../lib/api";
-import type { Artist, Post, Event, PaginatedResponse, SearchFilterState } from "../data/types";
+import type { Creator, Post, Event, PaginatedResponse, SearchFilterState } from "../data/types";
 import "./search.css";
 
-const CATEGORIES = ["전체", "아티스트", "게시글", "이벤트", "상품"] as const;
+const CATEGORIES = ["전체", "크리에이터", "게시글", "이벤트", "상품"] as const;
 
 const DEFAULT_FILTERS: SearchFilterState = {
   category: "전체",
@@ -29,7 +29,7 @@ export default function SearchPage() {
   const [showAdvanced, setShowAdvanced] = useState(false);
 
   const [allPosts, setAllPosts] = useState<Post[]>([]);
-  const [allArtists, setAllArtists] = useState<Artist[]>([]);
+  const [allCreators, setAllCreators] = useState<Creator[]>([]);
   const [allEvents, setAllEvents] = useState<Event[]>([]);
   const [allTags, setAllTags] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
@@ -37,14 +37,14 @@ export default function SearchPage() {
   useEffect(() => {
     const load = async () => {
       try {
-        const [postsRes, artistsRes, eventsRes, tagsRes] = await Promise.all([
+        const [postsRes, creatorsRes, eventsRes, tagsRes] = await Promise.all([
           api.get<PaginatedResponse<Post>>("/posts/?limit=200"),
-          api.get<PaginatedResponse<Artist>>("/artists/?limit=200"),
+          api.get<PaginatedResponse<Creator>>("/creators/?limit=200"),
           api.get<PaginatedResponse<Event>>("/events/?limit=200"),
           api.get<string[]>("/tags"),
         ]);
         setAllPosts(postsRes.items);
-        setAllArtists(artistsRes.items);
+        setAllCreators(creatorsRes.items);
         setAllEvents(eventsRes.items);
         setAllTags(tagsRes);
       } catch {
@@ -117,7 +117,7 @@ export default function SearchPage() {
     const q = query.toLowerCase();
 
     let posts = [...allPosts];
-    let artists = [...allArtists];
+    let creators = [...allCreators];
     let events = [...allEvents];
 
     // 텍스트 검색
@@ -128,7 +128,7 @@ export default function SearchPage() {
           p.tags?.some((t) => t.toLowerCase().includes(q)) ||
           p.author_name?.toLowerCase().includes(q)
       );
-      artists = artists.filter(
+      creators = creators.filter(
         (a) =>
           a.stage_name.toLowerCase().includes(q) ||
           a.notes?.toLowerCase().includes(q)
@@ -177,11 +177,11 @@ export default function SearchPage() {
       posts.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
     }
 
-    return { posts, artists, events };
-  }, [query, selectedDate, filters, allPosts, allArtists, allEvents]);
+    return { posts, creators, events };
+  }, [query, selectedDate, filters, allPosts, allCreators, allEvents]);
 
   const hasQuery = query || selectedDate || filters.tags.length > 0 || filters.dateRange.start || filters.dateRange.end || filters.visibility !== "all";
-  const totalResults = filteredResults.posts.length + filteredResults.artists.length + filteredResults.events.length;
+  const totalResults = filteredResults.posts.length + filteredResults.creators.length + filteredResults.events.length;
 
   if (loading) {
     return <div className="search-page"><div className="feed-empty">로딩 중...</div></div>;
@@ -199,7 +199,7 @@ export default function SearchPage() {
         </svg>
         <input
           type="text"
-          placeholder="아티스트, 이벤트, 게시글 검색..."
+          placeholder="크리에이터, 이벤트, 게시글 검색..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
@@ -280,23 +280,23 @@ export default function SearchPage() {
           <div className="search-result-count">검색 결과 {totalResults}건</div>
         )}
 
-        {/* 아티스트 결과 */}
-        {(filters.category === "전체" || filters.category === "아티스트") &&
-          filteredResults.artists.length > 0 && (
+        {/* 크리에이터 결과 */}
+        {(filters.category === "전체" || filters.category === "크리에이터") &&
+          filteredResults.creators.length > 0 && (
             <div className="search-result-section">
-              <div className="search-result-section-title">아티스트</div>
-              {filteredResults.artists.map((artist) => (
+              <div className="search-result-section-title">크리에이터</div>
+              {filteredResults.creators.map((creator) => (
                 <Link
-                  key={artist.id}
-                  href={`/artists/${artist.slug}`}
+                  key={creator.id}
+                  href={`/creators/${creator.slug}`}
                   className="search-artist-card"
                 >
                   <div className="search-artist-avatar">
-                    {artist.stage_name[0]}
+                    {creator.stage_name[0]}
                   </div>
                   <div className="search-artist-info">
-                    <div className="search-artist-name">{artist.stage_name}</div>
-                    <div className="search-artist-bio">{artist.notes}</div>
+                    <div className="search-artist-name">{creator.stage_name}</div>
+                    <div className="search-artist-bio">{creator.notes}</div>
                   </div>
                 </Link>
               ))}

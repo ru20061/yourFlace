@@ -7,7 +7,7 @@ class Event(Base):
     __tablename__ = "events"
     
     id = Column(BigInteger, primary_key=True, autoincrement=True)
-    artist_id = Column(BigInteger, ForeignKey('artists.id'), nullable=False)
+    creator_id = Column(BigInteger, ForeignKey('creators.id'), nullable=False)
     title = Column(String(255), nullable=False)
     description = Column(Text, nullable=True)
     event_type = Column(String(50), nullable=True)

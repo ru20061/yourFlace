@@ -7,16 +7,16 @@ import { useAuth } from "../../../lib/auth-context";
 import { api } from "../../../lib/api";
 import type {
   Subscription,
-  Artist,
+  Creator,
   NotificationSetting,
   PaginatedResponse,
 } from "../../data/types";
 import "../profile.css";
 
-interface SubWithArtist extends Subscription {
-  artist_name: string;
-  artist_slug: string | null;
-  artist_image: string | null;
+interface SubWithCreator extends Subscription {
+  creator_name: string;
+  creator_slug: string | null;
+  creator_image: string | null;
   notifSetting: NotificationSetting | null;
 }
 
@@ -24,7 +24,7 @@ export default function SubscriptionProfilesPage() {
   const router = useRouter();
   const { user, isLoading: authLoading } = useAuth();
 
-  const [subs, setSubs] = useState<SubWithArtist[]>([]);
+  const [subs, setSubs] = useState<SubWithCreator[]>([]);
   const [loading, setLoading] = useState(true);
 
   // 프로필 편집 상태
@@ -39,10 +39,10 @@ export default function SubscriptionProfilesPage() {
     if (!user) return;
     (async () => {
       try {
-        // 구독 + 아티스트는 필수, 알림 설정은 실패해도 진행
-        const [subsRes, artistsRes] = await Promise.all([
+        // 구독 + 크리에이터는 필수, 알림 설정은 실패해도 진행
+        const [subsRes, creatorsRes] = await Promise.all([
           api.get<PaginatedResponse<Subscription>>(`/subscriptions?skip=0&limit=100`),
-          api.get<PaginatedResponse<Artist>>(`/artists?skip=0&limit=200`),
+          api.get<PaginatedResponse<Creator>>(`/creators?skip=0&limit=200`),
         ]);
 
         let notifItems: NotificationSetting[] = [];
@@ -58,8 +58,8 @@ export default function SubscriptionProfilesPage() {
         const mySubs = subsRes.items.filter(
           (s) => s.fan_id === user.id && s.status === "subscribed"
         );
-        const artistMap = new Map(
-          artistsRes.items.map((a) => [a.id, { name: a.stage_name, slug: a.slug, image: a.profile_image }])
+        const creatorMap = new Map(
+          creatorsRes.items.map((a) => [a.id, { name: a.stage_name, slug: a.slug, image: a.profile_image }])
         );
         const notifBySubId = new Map(
           notifItems
@@ -70,9 +70,9 @@ export default function SubscriptionProfilesPage() {
         setSubs(
           mySubs.map((s) => ({
             ...s,
-            artist_name: artistMap.get(s.artist_id)?.name ?? `아티스트 #${s.artist_id}`,
-            artist_slug: artistMap.get(s.artist_id)?.slug ?? null,
-            artist_image: artistMap.get(s.artist_id)?.image ?? null,
+            creator_name: creatorMap.get(s.creator_id)?.name ?? `크리에이터 #${s.creator_id}`,
+            creator_slug: creatorMap.get(s.creator_id)?.slug ?? null,
+            creator_image: creatorMap.get(s.creator_id)?.image ?? null,
             notifSetting: notifBySubId.get(s.id) ?? null,
           }))
         );
@@ -85,7 +85,7 @@ export default function SubscriptionProfilesPage() {
   }, [user]);
 
   // 프로필 편집
-  const startEditing = (sub: SubWithArtist) => {
+  const startEditing = (sub: SubWithCreator) => {
     setEditingSubId(sub.id);
     setSubForm({
       fan_nickname: sub.fan_nickname ?? "",
@@ -118,7 +118,7 @@ export default function SubscriptionProfilesPage() {
   };
 
   // 알림 전체 토글
-  const toggleNotification = async (sub: SubWithArtist) => {
+  const toggleNotification = async (sub: SubWithCreator) => {
     if (!user) return;
     setTogglingNotif(sub.id);
     try {
@@ -166,7 +166,7 @@ export default function SubscriptionProfilesPage() {
 
   // 개별 알림 토글
   const toggleNotifField = async (
-    sub: SubWithArtist,
+    sub: SubWithCreator,
     field: "notify_post" | "notify_comment" | "notify_reply" | "notify_notice"
   ) => {
     if (!sub.notifSetting || !user) return;
@@ -187,9 +187,9 @@ export default function SubscriptionProfilesPage() {
     }
   };
 
-  // 구독 해지 → 해당 아티스트 환불 페이지로 이동
-  const handleCancelSub = (sub: SubWithArtist) => {
-    router.push(`/artists/${sub.artist_slug}/unsubscribe`);
+  // 구독 해지 → 해당 크리에이터 환불 페이지로 이동
+  const handleCancelSub = (sub: SubWithCreator) => {
+    router.push(`/creators/${sub.creator_slug}/unsubscribe`);
   };
 
   const formatDate = (dateStr: string) => {
@@ -229,26 +229,26 @@ export default function SubscriptionProfilesPage() {
       </div>
 
       <p className="profile-sub-desc">
-        아티스트별로 다른 닉네임, 프로필 이미지, 알림을 설정할 수 있습니다
+        크리에이터별로 다른 닉네임, 프로필 이미지, 알림을 설정할 수 있습니다
       </p>
 
       {subs.length === 0 ? (
-        <div className="feed-empty">구독 중인 아티스트가 없습니다</div>
+        <div className="feed-empty">구독 중인 크리에이터가 없습니다</div>
       ) : (
         <div className="profile-sub-list">
           {subs.map((sub) => (
             <div key={sub.id} className="profile-sub-item">
-              {/* 아티스트 정보 + 편집 버튼 */}
+              {/* 크리에이터 정보 + 편집 버튼 */}
               <div className="profile-sub-header">
                 <div className="profile-sub-avatar">
-                  {sub.artist_image ? (
-                    <img src={sub.artist_image} alt="" />
+                  {sub.creator_image ? (
+                    <img src={sub.creator_image} alt="" />
                   ) : (
-                    <span>{sub.artist_name[0]}</span>
+                    <span>{sub.creator_name[0]}</span>
                   )}
                 </div>
                 <div className="profile-sub-info">
-                  <div className="profile-sub-artist">{sub.artist_name}</div>
+                  <div className="profile-sub-artist">{sub.creator_name}</div>
                   <div className="profile-sub-nickname">
                     {sub.fan_nickname ? `닉네임: ${sub.fan_nickname}` : "기본 닉네임 사용 중"}
                   </div>
@@ -295,7 +295,7 @@ export default function SubscriptionProfilesPage() {
                       onChange={(e) =>
                         setSubForm((f) => ({ ...f, fan_nickname: e.target.value }))
                       }
-                      placeholder="이 아티스트에서 사용할 닉네임"
+                      placeholder="이 크리에이터에서 사용할 닉네임"
                       maxLength={50}
                     />
                   </div>

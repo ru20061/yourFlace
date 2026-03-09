@@ -23,11 +23,11 @@ from app.auth.deleted_users.models import DeletedUser
 from app.auth.global_blacklist.models import GlobalBlacklist
 from app.auth.subscription_blacklist.models import SubscriptionBlacklist
 
-from app.artist.artists.models import Artist
-from app.artist.artist_categories.models import ArtistCategory
-from app.artist.artist_category_map.models import ArtistCategoryMap
-from app.artist.artist_social_links.models import ArtistSocialLink
-from app.artist.managers.models import Manager
+from app.creator.creators.models import Artist
+from app.creator.creator_categories.models import ArtistCategory
+from app.creator.creator_category_map.models import ArtistCategoryMap
+from app.creator.creator_social_links.models import ArtistSocialLink
+from app.creator.managers.models import Manager
 
 from app.subscription.subscriptions.models import Subscription
 from app.subscription.subscription_plans.models import SubscriptionPlan
@@ -38,12 +38,12 @@ from app.content.post_images.models import PostImage
 from app.content.post_comments.models import PostComment
 from app.content.post_stats.models import PostStat
 from app.content.images.models import Image
-from app.content.artist_images.models import ArtistImage
-from app.content.artist_image_comments.models import ArtistImageComment
-from app.content.artist_image_stats.models import ArtistImageStat
-from app.content.artist_videos.models import ArtistVideo
-from app.content.artist_video_comments.models import ArtistVideoComment
-from app.content.artist_video_stats.models import ArtistVideoStat
+from app.content.creator_images.models import ArtistImage
+from app.content.creator_image_comments.models import ArtistImageComment
+from app.content.creator_image_stats.models import ArtistImageStat
+from app.content.creator_videos.models import ArtistVideo
+from app.content.creator_video_comments.models import ArtistVideoComment
+from app.content.creator_video_stats.models import ArtistVideoStat
 
 from app.chat.chat_rooms.models import ChatRoom
 from app.chat.chat_messages.models import ChatMessage
@@ -77,11 +77,11 @@ from app.notification.system_logs.models import SystemLog
 
 from app.like.fan_likes.models import FanLike
 from app.like.fan_recommendations.models import FanRecommendation
-from app.like.artist_post_likes.models import ArtistPostLike
-from app.like.artist_post_recommendations.models import ArtistPostRecommendation
+from app.like.creator_post_likes.models import ArtistPostLike
+from app.like.creator_post_recommendations.models import ArtistPostRecommendation
 
-from app.stats.artist_content_stats.models import ArtistContentStat
-from app.stats.artist_chat_stats.models import ArtistChatStat
+from app.stats.creator_content_stats.models import ArtistContentStat
+from app.stats.creator_chat_stats.models import ArtistChatStat
 from app.stats.subscriber_content_stats.models import SubscriberContentStat
 from app.stats.subscriber_chat_stats.models import SubscriberChatStat
 

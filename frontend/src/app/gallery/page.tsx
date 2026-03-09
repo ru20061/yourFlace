@@ -10,7 +10,7 @@ export default function GalleryPage() {
       </div>
       <div className="gallery-grid">
         <div className="feed-empty" style={{ gridColumn: "1 / -1" }}>
-          아티스트 이미지가 아직 없습니다
+          크리에이터 이미지가 아직 없습니다
         </div>
       </div>
     </div>

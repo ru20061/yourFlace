@@ -8,7 +8,7 @@ class Subscription(Base):
     
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     fan_id = Column(BigInteger, ForeignKey('users.id'), nullable=False)
-    artist_id = Column(BigInteger, ForeignKey('artists.id'), nullable=False)
+    creator_id = Column(BigInteger, ForeignKey('creators.id'), nullable=False)
     fan_nickname = Column(String(50), nullable=True)
     fan_profile_image = Column(String(255), nullable=True)
     status = Column(String(20), default='subscribed', nullable=False)

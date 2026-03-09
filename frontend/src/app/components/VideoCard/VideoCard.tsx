@@ -1,11 +1,11 @@
 "use client";
 
 import { formatDuration, getRelativeTime } from "../../../lib/utils";
-import type { ArtistVideo } from "../../data/types";
+import type { CreatorVideo } from "../../data/types";
 import "./video-card.css";
 
 interface VideoCardProps {
-  video: ArtistVideo;
+  video: CreatorVideo;
 }
 
 export default function VideoCard({ video }: VideoCardProps) {

@@ -3,15 +3,15 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { api } from "../../../lib/api";
 import { useAuth } from "../../../lib/auth-context";
-import type { SidebarArtist, ChatRoom, ChatMessage, PaginatedResponse } from "../../data/types";
+import type { SidebarCreator, ChatRoom, ChatMessage, PaginatedResponse } from "../../data/types";
 import "./chatbubble.css";
 
 interface ChatBubbleProps {
-  subscribedArtists: SidebarArtist[];
+  subscribedCreators: SidebarCreator[];
 }
 
-interface ChatArtistItem {
-  artist: SidebarArtist;
+interface ChatCreatorItem {
+  creator: SidebarCreator;
   chatRoom: ChatRoom | null;
   lastMessage: string | null;
   lastMessageAt: string | null;
@@ -19,16 +19,16 @@ interface ChatArtistItem {
 
 type View = "list" | "chat";
 
-export default function ChatBubble({ subscribedArtists }: ChatBubbleProps) {
+export default function ChatBubble({ subscribedCreators }: ChatBubbleProps) {
   const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [view, setView] = useState<View>("list");
-  const [chatList, setChatList] = useState<ChatArtistItem[]>([]);
+  const [chatList, setChatList] = useState<ChatCreatorItem[]>([]);
   const [loading, setLoading] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
 
   // 채팅방 상태
-  const [activeItem, setActiveItem] = useState<ChatArtistItem | null>(null);
+  const [activeItem, setActiveItem] = useState<ChatCreatorItem | null>(null);
   const [activeRoom, setActiveRoom] = useState<ChatRoom | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [msgLoading, setMsgLoading] = useState(false);
@@ -62,7 +62,7 @@ export default function ChatBubble({ subscribedArtists }: ChatBubbleProps) {
 
   // 패널 열 때 채팅방 목록 조회
   useEffect(() => {
-    if (!isOpen || subscribedArtists.length === 0) return;
+    if (!isOpen || subscribedCreators.length === 0) return;
 
     (async () => {
       setLoading(true);
@@ -71,16 +71,16 @@ export default function ChatBubble({ subscribedArtists }: ChatBubbleProps) {
           "/chat-rooms/?skip=0&limit=100"
         );
 
-        const roomByArtist = new Map<number, ChatRoom>();
+        const roomByCreator = new Map<number, ChatRoom>();
         for (const room of roomsRes.items) {
-          if (room.artist_id && room.status === "active") {
-            roomByArtist.set(room.artist_id, room);
+          if (room.creator_id && room.status === "active") {
+            roomByCreator.set(room.creator_id, room);
           }
         }
 
-        const items: ChatArtistItem[] = [];
-        for (const artist of subscribedArtists) {
-          const room = roomByArtist.get(artist.id) || null;
+        const items: ChatCreatorItem[] = [];
+        for (const creator of subscribedCreators) {
+          const room = roomByCreator.get(creator.id) || null;
           let lastMessage: string | null = null;
           let lastMessageAt: string | null = null;
 
@@ -102,14 +102,14 @@ export default function ChatBubble({ subscribedArtists }: ChatBubbleProps) {
             lastMessageAt = lastMessageAt || room.last_message_at;
           }
 
-          items.push({ artist, chatRoom: room, lastMessage, lastMessageAt });
+          items.push({ creator, chatRoom: room, lastMessage, lastMessageAt });
         }
 
         setChatList(items);
       } catch {
         setChatList(
-          subscribedArtists.map((artist) => ({
-            artist,
+          subscribedCreators.map((creator) => ({
+            creator,
             chatRoom: null,
             lastMessage: null,
             lastMessageAt: null,
@@ -119,7 +119,7 @@ export default function ChatBubble({ subscribedArtists }: ChatBubbleProps) {
         setLoading(false);
       }
     })();
-  }, [isOpen, subscribedArtists]);
+  }, [isOpen, subscribedCreators]);
 
   // 메시지 목록 불러오기
   const loadMessages = useCallback(async (roomId: number) => {
@@ -144,8 +144,8 @@ export default function ChatBubble({ subscribedArtists }: ChatBubbleProps) {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // 아티스트 클릭 → 채팅방 진입
-  const handleChatClick = async (item: ChatArtistItem) => {
+  // 크리에이터 클릭 → 채팅방 진입
+  const handleChatClick = async (item: ChatCreatorItem) => {
     setActiveItem(item);
 
     if (item.chatRoom) {
@@ -157,8 +157,8 @@ export default function ChatBubble({ subscribedArtists }: ChatBubbleProps) {
       try {
         const newRoom = await api.post<ChatRoom>("/chat-rooms", {
           room_type: "subscription",
-          artist_id: item.artist.id,
-          room_name: item.artist.name,
+          creator_id: item.creator.id,
+          room_name: item.creator.name,
           status: "active",
         });
         setActiveRoom(newRoom);
@@ -230,7 +230,7 @@ export default function ChatBubble({ subscribedArtists }: ChatBubbleProps) {
     return date.toLocaleTimeString("ko-KR", { hour: "numeric", minute: "2-digit" });
   };
 
-  if (subscribedArtists.length === 0) return null;
+  if (subscribedCreators.length === 0) return null;
 
   return (
     <div className="chat-bubble-container" ref={panelRef}>
@@ -249,33 +249,33 @@ export default function ChatBubble({ subscribedArtists }: ChatBubbleProps) {
                 </button>
               </div>
 
-              {/* 아티스트 목록 */}
+              {/* 크리에이터 목록 */}
               <div className="chat-bubble-panel-list">
                 {loading ? (
                   <div className="chat-bubble-empty">불러오는 중...</div>
                 ) : chatList.length === 0 ? (
-                  <div className="chat-bubble-empty">구독한 아티스트가 없습니다</div>
+                  <div className="chat-bubble-empty">구독한 크리에이터가 없습니다</div>
                 ) : (
                   chatList.map((item) => (
                     <button
-                      key={item.artist.id}
+                      key={item.creator.id}
                       className="chat-bubble-item"
                       onClick={() => handleChatClick(item)}
                     >
                       <div className="chat-bubble-avatar">
-                        {item.artist.profileImage ? (
+                        {item.creator.profileImage ? (
                           <img
-                            src={item.artist.profileImage}
-                            alt={item.artist.name}
+                            src={item.creator.profileImage}
+                            alt={item.creator.name}
                           />
                         ) : (
                           <span className="chat-bubble-avatar-text">
-                            {item.artist.name[0]}
+                            {item.creator.name[0]}
                           </span>
                         )}
                       </div>
                       <div className="chat-bubble-info">
-                        <div className="chat-bubble-name">{item.artist.name}</div>
+                        <div className="chat-bubble-name">{item.creator.name}</div>
                         <div className="chat-bubble-last-msg">
                           {item.lastMessage || "대화를 시작해보세요"}
                         </div>
@@ -300,14 +300,14 @@ export default function ChatBubble({ subscribedArtists }: ChatBubbleProps) {
                   </svg>
                 </button>
                 <div className="chat-bubble-room-avatar">
-                  {activeItem?.artist.profileImage ? (
-                    <img src={activeItem.artist.profileImage} alt="" />
+                  {activeItem?.creator.profileImage ? (
+                    <img src={activeItem.creator.profileImage} alt="" />
                   ) : (
-                    <span>{activeItem?.artist.name[0]}</span>
+                    <span>{activeItem?.creator.name[0]}</span>
                   )}
                 </div>
                 <span className="chat-bubble-panel-title">
-                  {activeItem?.artist.name}
+                  {activeItem?.creator.name}
                 </span>
                 <button
                   className="chat-bubble-panel-close"
@@ -336,10 +336,10 @@ export default function ChatBubble({ subscribedArtists }: ChatBubbleProps) {
                       >
                         {!isMine && (
                           <div className="chat-bubble-msg-avatar">
-                            {activeItem?.artist.profileImage ? (
-                              <img src={activeItem.artist.profileImage} alt="" />
+                            {activeItem?.creator.profileImage ? (
+                              <img src={activeItem.creator.profileImage} alt="" />
                             ) : (
-                              <span>{activeItem?.artist.name[0]}</span>
+                              <span>{activeItem?.creator.name[0]}</span>
                             )}
                           </div>
                         )}

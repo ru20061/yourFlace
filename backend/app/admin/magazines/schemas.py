@@ -8,7 +8,7 @@ class MagazineBase(BaseModel):
     summary: Optional[str] = None
     thumbnail_url: Optional[str] = None
     category: Optional[str] = None
-    artist_id: Optional[int] = None
+    creator_id: Optional[int] = None
     write_id: int
     tags: Optional[list[str]] = None
     is_active: Optional[bool] = True
@@ -22,7 +22,7 @@ class MagazineUpdate(BaseModel):
     summary: Optional[str] = None
     thumbnail_url: Optional[str] = None
     category: Optional[str] = None
-    artist_id: Optional[int] = None
+    creator_id: Optional[int] = None
     tags: Optional[list[str]] = None
     is_active: Optional[bool] = None
 

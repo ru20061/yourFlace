@@ -106,7 +106,7 @@ export default function RegisterPage() {
   return (
     <div className="register-page">
       <h1 className="register-title">회원가입</h1>
-      <p className="register-subtitle">yourFlace에서 아티스트를 만나보세요</p>
+      <p className="register-subtitle">yourFlace에서 크리에이터를 만나보세요</p>
 
       <form className="register-form" onSubmit={handleSubmit}>
         {/* 이메일 + 중복체크 */}

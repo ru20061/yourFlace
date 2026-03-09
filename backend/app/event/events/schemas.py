@@ -3,7 +3,7 @@ from typing import Optional, Literal
 from datetime import datetime
 
 class EventBase(BaseModel):
-    artist_id: int
+    creator_id: int
     title: str
     description: Optional[str] = None
     event_type: Optional[str] = None

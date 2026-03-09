@@ -29,12 +29,12 @@ from app.auth.deleted_users.models import DeletedUser
 from app.auth.global_blacklist.models import GlobalBlacklist
 from app.auth.subscription_blacklist.models import SubscriptionBlacklist
 
-# Artist
-from app.artist.artists.models import Artist
-from app.artist.artist_categories.models import ArtistCategory
-from app.artist.artist_category_map.models import ArtistCategoryMap
-from app.artist.artist_social_links.models import ArtistSocialLink
-from app.artist.managers.models import Manager
+# Creator
+from app.creator.creators.models import Creator
+from app.creator.creator_categories.models import CreatorCategory
+from app.creator.creator_category_map.models import CreatorCategoryMap
+from app.creator.creator_social_links.models import CreatorSocialLink
+from app.creator.managers.models import Manager
 
 # Subscription
 from app.subscription.subscriptions.models import Subscription
@@ -47,12 +47,12 @@ from app.content.post_images.models import PostImage
 from app.content.post_comments.models import PostComment
 from app.content.post_stats.models import PostStat
 from app.content.images.models import Image
-from app.content.artist_images.models import ArtistImage
-from app.content.artist_image_comments.models import ArtistImageComment
-from app.content.artist_image_stats.models import ArtistImageStat
-from app.content.artist_videos.models import ArtistVideo
-from app.content.artist_video_comments.models import ArtistVideoComment
-from app.content.artist_video_stats.models import ArtistVideoStat
+from app.content.creator_images.models import CreatorImage
+from app.content.creator_image_comments.models import CreatorImageComment
+from app.content.creator_image_stats.models import CreatorImageStat
+from app.content.creator_videos.models import CreatorVideo
+from app.content.creator_video_comments.models import CreatorVideoComment
+from app.content.creator_video_stats.models import CreatorVideoStat
 
 # Search
 from app.search.calendar_searches.models import CalendarSearch
@@ -93,12 +93,12 @@ from app.notification.system_logs.models import SystemLog
 # Like
 from app.like.fan_likes.models import FanLike
 from app.like.fan_recommendations.models import FanRecommendation
-from app.like.artist_post_likes.models import ArtistPostLike
-from app.like.artist_post_recommendations.models import ArtistPostRecommendation
+from app.like.creator_post_likes.models import CreatorPostLike
+from app.like.creator_post_recommendations.models import CreatorPostRecommendation
 
 # Stats
-from app.stats.artist_content_stats.models import ArtistContentStat
-from app.stats.artist_chat_stats.models import ArtistChatStat
+from app.stats.creator_content_stats.models import CreatorContentStat
+from app.stats.creator_chat_stats.models import CreatorChatStat
 from app.stats.subscriber_content_stats.models import SubscriberContentStat
 from app.stats.subscriber_chat_stats.models import SubscriberChatStat
 
@@ -137,36 +137,49 @@ async def seed_data():
         # 1. AUTH — users / profile / user_settings / user_addresses / user_devices / login_logs
         # ================================================================
         users = [
-            User(id=1, email="fan@test.com",      password_hash=pw, status="active"),
-            User(id=2, email="luna@artist.com",    password_hash=pw, status="active"),
-            User(id=3, email="haru@artist.com",    password_hash=pw, status="active"),
-            User(id=4, email="soyul@artist.com",   password_hash=pw, status="active"),
-            User(id=5, email="minseo@artist.com",  password_hash=pw, status="active"),
-            User(id=6, email="jay@artist.com",     password_hash=pw, status="active"),
-            User(id=7, email="yuri@artist.com",    password_hash=pw, status="active"),
-            User(id=8, email="admin@test.com",     password_hash=pw, status="active"),
-            User(id=9, email="guest@test.com",     password_hash=pw, status="active"),
+            User(id=1,  email="fan@test.com",        password_hash=pw, status="active"),
+            User(id=2,  email="luna@artist.com",      password_hash=pw, status="active"),
+            User(id=3,  email="haru@artist.com",      password_hash=pw, status="active"),
+            User(id=4,  email="soyul@artist.com",     password_hash=pw, status="active"),
+            User(id=5,  email="minseo@artist.com",    password_hash=pw, status="active"),
+            User(id=6,  email="jay@artist.com",       password_hash=pw, status="active"),
+            User(id=7,  email="yuri@artist.com",      password_hash=pw, status="active"),
+            User(id=8,  email="admin@test.com",       password_hash=pw, status="active"),
+            User(id=9,  email="guest@test.com",       password_hash=pw, status="active"),
+            # 크리에이터 유형 확장
+            User(id=10, email="jisoo@creator.com",    password_hash=pw, status="active"),
+            User(id=11, email="minji@creator.com",    password_hash=pw, status="active"),
+            User(id=12, email="seungwoo@creator.com", password_hash=pw, status="active"),
+            User(id=13, email="nara@creator.com",     password_hash=pw, status="active"),
+            User(id=14, email="hyeonseok@creator.com",password_hash=pw, status="active"),
+            User(id=15, email="chaewon@creator.com",  password_hash=pw, status="active"),
         ]
         db.add_all(users)
         await db.flush()
 
         profiles = [
-            Profile(id=1, user_id=1, nickname="테스트팬", full_name="김팬", birth_date=date(2000, 5, 15), gender="male", phone="010-1234-5678"),
-            Profile(id=2, user_id=2, nickname="루나",     full_name="박루나"),
-            Profile(id=3, user_id=3, nickname="하루",     full_name="이하루"),
-            Profile(id=4, user_id=4, nickname="소율",     full_name="최소율"),
-            Profile(id=5, user_id=5, nickname="민서",     full_name="정민서"),
-            Profile(id=6, user_id=6, nickname="제이",     full_name="한제이"),
-            Profile(id=7, user_id=7, nickname="유리",     full_name="송유리"),
-            Profile(id=8, user_id=8, nickname="관리자",   full_name="운영자"),
-            Profile(id=9, user_id=9, nickname="게스트",   full_name="이게스트", birth_date=date(1998, 3, 20), gender="female", phone="010-9876-5432"),
+            Profile(id=1,  user_id=1,  nickname="테스트팬", full_name="김팬",   birth_date=date(2000, 5, 15), gender="male",   phone="010-1234-5678"),
+            Profile(id=2,  user_id=2,  nickname="루나",     full_name="박루나"),
+            Profile(id=3,  user_id=3,  nickname="하루",     full_name="이하루"),
+            Profile(id=4,  user_id=4,  nickname="소율",     full_name="최소율"),
+            Profile(id=5,  user_id=5,  nickname="민서",     full_name="정민서"),
+            Profile(id=6,  user_id=6,  nickname="제이",     full_name="한제이"),
+            Profile(id=7,  user_id=7,  nickname="유리",     full_name="송유리"),
+            Profile(id=8,  user_id=8,  nickname="관리자",   full_name="운영자"),
+            Profile(id=9,  user_id=9,  nickname="게스트",   full_name="이게스트", birth_date=date(1998, 3, 20), gender="female", phone="010-9876-5432"),
+            Profile(id=10, user_id=10, nickname="지수",     full_name="김지수"),
+            Profile(id=11, user_id=11, nickname="민지",     full_name="박민지"),
+            Profile(id=12, user_id=12, nickname="승우",     full_name="이승우"),
+            Profile(id=13, user_id=13, nickname="나라",     full_name="최나라"),
+            Profile(id=14, user_id=14, nickname="현석",     full_name="정현석"),
+            Profile(id=15, user_id=15, nickname="채원",     full_name="오채원"),
         ]
         db.add_all(profiles)
         await db.flush()
 
         user_settings = [
             UserSetting(id=i, user_id=i, language="ko", theme="light")
-            for i in range(1, 10)
+            for i in range(1, 16)
         ]
         db.add_all(user_settings)
         await db.flush()
@@ -197,87 +210,139 @@ async def seed_data():
         print("  [OK] Auth (users, profile, settings, addresses, devices, login_logs)")
 
         # ================================================================
-        # 2. ARTIST — artists / categories / category_map / social_links / managers
+        # 2. CREATOR — creators / categories / category_map / social_links / managers
         # ================================================================
         categories = [
-            ArtistCategory(id=1, name="가수"),
-            ArtistCategory(id=2, name="댄서"),
-            ArtistCategory(id=3, name="일러스트레이터"),
-            ArtistCategory(id=4, name="배우"),
+            CreatorCategory(id=1,  name="가수"),
+            CreatorCategory(id=2,  name="댄서"),
+            CreatorCategory(id=3,  name="일러스트레이터"),
+            CreatorCategory(id=4,  name="배우"),
+            CreatorCategory(id=5,  name="시인"),
+            CreatorCategory(id=6,  name="유튜버"),
+            CreatorCategory(id=7,  name="소설가"),
+            CreatorCategory(id=8,  name="사진작가"),
+            CreatorCategory(id=9,  name="웹툰작가"),
+            CreatorCategory(id=10, name="요리연구가"),
         ]
         db.add_all(categories)
         await db.flush()
 
         artists = [
-            Artist(id=1, user_id=2, stage_name="루나", slug=generate_slug("루나"), notes="음악으로 세상을 밝히는 아티스트", status="active"),
-            Artist(id=2, user_id=3, stage_name="하루", slug=generate_slug("하루"), notes="춤으로 하루를 채우는 댄서",       status="active"),
-            Artist(id=3, user_id=4, stage_name="소율", slug=generate_slug("소율"), notes="그림으로 이야기를 전하는 일러스트레이터", status="active"),
-            Artist(id=4, user_id=5, stage_name="민서", slug=generate_slug("민서"), notes="연기로 감동을 주는 배우",         status="active"),
-            Artist(id=5, user_id=6, stage_name="제이", slug=generate_slug("제이"), notes="힙합으로 세상을 흔드는 래퍼",     status="active"),
-            Artist(id=6, user_id=7, stage_name="유리", slug=generate_slug("유리"), notes="현대무용의 새로운 지평을 여는 댄서", status="active"),
+            Creator(id=1,  user_id=2,  stage_name="루나",   slug=generate_slug("루나"),   notes="음악으로 세상을 밝히는 싱어송라이터. 감성적인 멜로디와 진솔한 가사로 많은 팬들의 사랑을 받고 있습니다.", status="active"),
+            Creator(id=2,  user_id=3,  stage_name="하루",   slug=generate_slug("하루"),   notes="춤으로 하루를 채우는 댄서. 현대무용과 팝핀을 결합한 독창적인 스타일로 주목받고 있습니다.", status="active"),
+            Creator(id=3,  user_id=4,  stage_name="소율",   slug=generate_slug("소율"),   notes="그림으로 이야기를 전하는 일러스트레이터. 도시의 감성을 담은 작품으로 많은 사랑을 받고 있습니다.", status="active"),
+            Creator(id=4,  user_id=5,  stage_name="민서",   slug=generate_slug("민서"),   notes="연기로 감동을 주는 배우. 다양한 장르를 넘나드는 연기력으로 주목받는 신진 배우입니다.", status="active"),
+            Creator(id=5,  user_id=6,  stage_name="제이",   slug=generate_slug("제이"),   notes="힙합으로 세상을 흔드는 래퍼. 날카로운 가사와 강렬한 퍼포먼스로 언더그라운드를 평정했습니다.", status="active"),
+            Creator(id=6,  user_id=7,  stage_name="유리",   slug=generate_slug("유리"),   notes="현대무용의 새로운 지평을 여는 댄서. 몸으로 쓰는 시인이라는 평가를 받습니다.", status="active"),
+            # 크리에이터 유형 확장
+            Creator(id=7,  user_id=10, stage_name="김지수", slug=generate_slug("김지수"), notes="일상의 틈에서 시를 건지는 시인. 쉽고 따뜻한 언어로 독자의 마음을 어루만지는 작품을 씁니다.", status="active"),
+            Creator(id=8,  user_id=11, stage_name="박민지", slug=generate_slug("박민지"), notes="구독자 120만 뷰튜버. 여행·일상·브이로그 콘텐츠로 많은 사랑을 받고 있는 유튜버입니다.", status="active"),
+            Creator(id=9,  user_id=12, stage_name="이승우", slug=generate_slug("이승우"), notes="베스트셀러 소설 '밤의 언어'로 데뷔한 소설가. 서정적인 문체와 탄탄한 서사로 독자를 사로잡습니다.", status="active"),
+            Creator(id=10, user_id=13, stage_name="최나라", slug=generate_slug("최나라"), notes="빛과 감성을 담는 사진작가. 필름 카메라 특유의 질감으로 일상을 예술로 만들어냅니다.", status="active"),
+            Creator(id=11, user_id=14, stage_name="정현석", slug=generate_slug("정현석"), notes="네이버 웹툰 '우리 사이의 거리' 연재 중인 웹툰작가. 청춘의 감성과 유머로 많은 팬을 보유하고 있습니다.", status="active"),
+            Creator(id=12, user_id=15, stage_name="오채원", slug=generate_slug("오채원"), notes="집밥의 따뜻함을 전하는 요리연구가. 쉽고 맛있는 레시피로 요리 초보자도 따라할 수 있는 콘텐츠를 제공합니다.", status="active"),
         ]
         db.add_all(artists)
         await db.flush()
 
         category_maps = [
-            ArtistCategoryMap(artist_id=1, category_id=1),
-            ArtistCategoryMap(artist_id=2, category_id=2),
-            ArtistCategoryMap(artist_id=3, category_id=3),
-            ArtistCategoryMap(artist_id=4, category_id=4),
-            ArtistCategoryMap(artist_id=5, category_id=1),
-            ArtistCategoryMap(artist_id=6, category_id=2),
+            CreatorCategoryMap(creator_id=1,  category_id=1),
+            CreatorCategoryMap(creator_id=2,  category_id=2),
+            CreatorCategoryMap(creator_id=3,  category_id=3),
+            CreatorCategoryMap(creator_id=4,  category_id=4),
+            CreatorCategoryMap(creator_id=5,  category_id=1),
+            CreatorCategoryMap(creator_id=6,  category_id=2),
+            CreatorCategoryMap(creator_id=7,  category_id=5),
+            CreatorCategoryMap(creator_id=8,  category_id=6),
+            CreatorCategoryMap(creator_id=9,  category_id=7),
+            CreatorCategoryMap(creator_id=10, category_id=8),
+            CreatorCategoryMap(creator_id=11, category_id=9),
+            CreatorCategoryMap(creator_id=12, category_id=10),
         ]
         db.add_all(category_maps)
         await db.flush()
 
         social_links = [
-            ArtistSocialLink(artist_id=1, platform_name="YouTube",   url="https://youtube.com/@luna",    display_name="루나 뮤직",      follower_count=12000, priority=1),
-            ArtistSocialLink(artist_id=1, platform_name="Instagram", url="https://instagram.com/luna",   display_name="@luna_music",    follower_count=8500,  priority=2),
-            ArtistSocialLink(artist_id=2, platform_name="YouTube",   url="https://youtube.com/@haru",    display_name="하루 댄스",      follower_count=9500,  priority=1),
-            ArtistSocialLink(artist_id=2, platform_name="TikTok",    url="https://tiktok.com/@haru",     display_name="@haru_dance",    follower_count=23000, priority=2),
-            ArtistSocialLink(artist_id=3, platform_name="Instagram", url="https://instagram.com/soyul",  display_name="@soyul_art",     follower_count=15000, priority=1),
-            ArtistSocialLink(artist_id=4, platform_name="YouTube",   url="https://youtube.com/@minseo",  display_name="민서 채널",      follower_count=6000,  priority=1),
-            ArtistSocialLink(artist_id=5, platform_name="SoundCloud", url="https://soundcloud.com/jay",  display_name="JAY beats",      follower_count=4500,  priority=1),
-            ArtistSocialLink(artist_id=6, platform_name="YouTube",   url="https://youtube.com/@yuri",    display_name="유리 댄스",      follower_count=7200,  priority=1),
+            CreatorSocialLink(creator_id=1,  platform_name="YouTube",    url="https://youtube.com/@luna",       display_name="루나 뮤직",        follower_count=12000,  priority=1),
+            CreatorSocialLink(creator_id=1,  platform_name="Instagram",  url="https://instagram.com/luna",      display_name="@luna_music",      follower_count=8500,   priority=2),
+            CreatorSocialLink(creator_id=2,  platform_name="YouTube",    url="https://youtube.com/@haru",       display_name="하루 댄스",        follower_count=9500,   priority=1),
+            CreatorSocialLink(creator_id=2,  platform_name="TikTok",     url="https://tiktok.com/@haru",        display_name="@haru_dance",      follower_count=23000,  priority=2),
+            CreatorSocialLink(creator_id=3,  platform_name="Instagram",  url="https://instagram.com/soyul",     display_name="@soyul_art",       follower_count=15000,  priority=1),
+            CreatorSocialLink(creator_id=4,  platform_name="YouTube",    url="https://youtube.com/@minseo",     display_name="민서 채널",        follower_count=6000,   priority=1),
+            CreatorSocialLink(creator_id=5,  platform_name="SoundCloud", url="https://soundcloud.com/jay",      display_name="JAY beats",        follower_count=4500,   priority=1),
+            CreatorSocialLink(creator_id=6,  platform_name="YouTube",    url="https://youtube.com/@yuri",       display_name="유리 댄스",        follower_count=7200,   priority=1),
+            # 신규 크리에이터 소셜 링크
+            CreatorSocialLink(creator_id=7,  platform_name="Instagram",  url="https://instagram.com/jisoo_poem",display_name="@지수의 시",       follower_count=32000,  priority=1),
+            CreatorSocialLink(creator_id=7,  platform_name="브런치",     url="https://brunch.co.kr/@jisoo",     display_name="김지수 브런치",    follower_count=18500,  priority=2),
+            CreatorSocialLink(creator_id=8,  platform_name="YouTube",    url="https://youtube.com/@minji_vlog", display_name="박민지 브이로그",  follower_count=1200000,priority=1),
+            CreatorSocialLink(creator_id=8,  platform_name="Instagram",  url="https://instagram.com/minji_vlog",display_name="@minji_vlog",      follower_count=450000, priority=2),
+            CreatorSocialLink(creator_id=9,  platform_name="브런치",     url="https://brunch.co.kr/@seungwoo",  display_name="이승우 브런치",    follower_count=25000,  priority=1),
+            CreatorSocialLink(creator_id=9,  platform_name="Instagram",  url="https://instagram.com/seungwoo_w",display_name="@seungwoo_writer", follower_count=14000,  priority=2),
+            CreatorSocialLink(creator_id=10, platform_name="Instagram",  url="https://instagram.com/nara_photo",display_name="@나라의 필름",     follower_count=89000,  priority=1),
+            CreatorSocialLink(creator_id=10, platform_name="500px",      url="https://500px.com/nara",          display_name="Nara Photography", follower_count=12000,  priority=2),
+            CreatorSocialLink(creator_id=11, platform_name="네이버 웹툰", url="https://webtoon.naver.com/hyeonseok", display_name="우리 사이의 거리", follower_count=580000, priority=1),
+            CreatorSocialLink(creator_id=11, platform_name="Twitter",    url="https://twitter.com/hyeonseok_wt",display_name="@hyeonseok_wt",    follower_count=42000,  priority=2),
+            CreatorSocialLink(creator_id=12, platform_name="YouTube",    url="https://youtube.com/@chaewon_cook",display_name="오채원의 집밥",    follower_count=340000, priority=1),
+            CreatorSocialLink(creator_id=12, platform_name="Instagram",  url="https://instagram.com/chaewon_cook",display_name="@chaewon_cook",   follower_count=120000, priority=2),
         ]
         db.add_all(social_links)
         await db.flush()
 
         managers = [
-            Manager(id=1, user_id=8, artist_id=1, role="manager", status="active"),
+            Manager(id=1, user_id=8, creator_id=1, role="manager", status="active"),
         ]
         db.add_all(managers)
         await db.flush()
 
-        print("  [OK] Artist (artists, categories, category_map, social_links, managers)")
+        print("  [OK] Creator (creators, categories, category_map, social_links, managers)")
 
         # ================================================================
         # 3. SUBSCRIPTION — subscriptions / subscription_plans / subscription_cancellations
         # ================================================================
         subscription_plans = [
-            SubscriptionPlan(id=1, artist_id=1, name="루나 베이직",   price=Decimal("0"),     billing_cycle="monthly", benefits="기본 콘텐츠 열람", is_active=True),
-            SubscriptionPlan(id=2, artist_id=1, name="루나 프리미엄", price=Decimal("9900"),   billing_cycle="monthly", duration_days=30, benefits="전체 콘텐츠 + 비하인드 + 채팅", is_active=True),
-            SubscriptionPlan(id=3, artist_id=2, name="하루 베이직",   price=Decimal("0"),     billing_cycle="monthly", benefits="기본 콘텐츠 열람", is_active=True),
-            SubscriptionPlan(id=4, artist_id=2, name="하루 프리미엄", price=Decimal("7900"),   billing_cycle="monthly", duration_days=30, benefits="전체 콘텐츠 + 연습 영상", is_active=True),
-            SubscriptionPlan(id=5, artist_id=3, name="소율 베이직",   price=Decimal("0"),     billing_cycle="monthly", benefits="공개 작품 열람", is_active=True),
-            SubscriptionPlan(id=6, artist_id=3, name="소율 프리미엄", price=Decimal("5900"),   billing_cycle="monthly", duration_days=30, benefits="전체 작품 + 작업과정 + 채팅", is_active=True),
-            SubscriptionPlan(id=7, artist_id=4, name="민서 베이직",   price=Decimal("0"),     billing_cycle="monthly", benefits="기본 콘텐츠 열람", is_active=True),
-            SubscriptionPlan(id=8, artist_id=4, name="민서 프리미엄", price=Decimal("8900"),   billing_cycle="monthly", duration_days=30, benefits="전체 콘텐츠 + 비하인드 + 채팅", is_active=True),
-            SubscriptionPlan(id=9, artist_id=5, name="제이 베이직",   price=Decimal("0"),     billing_cycle="monthly", benefits="기본 콘텐츠 열람", is_active=True),
-            SubscriptionPlan(id=10, artist_id=5, name="제이 프리미엄", price=Decimal("6900"),  billing_cycle="monthly", duration_days=30, benefits="전체 콘텐츠 + 비트 + 채팅", is_active=True),
-            SubscriptionPlan(id=11, artist_id=6, name="유리 베이직",   price=Decimal("0"),     billing_cycle="monthly", benefits="기본 콘텐츠 열람", is_active=True),
-            SubscriptionPlan(id=12, artist_id=6, name="유리 프리미엄", price=Decimal("7900"),  billing_cycle="monthly", duration_days=30, benefits="전체 콘텐츠 + 연습 영상 + 채팅", is_active=True),
+            SubscriptionPlan(id=1,  creator_id=1,  name="루나 베이직",    price=Decimal("0"),    billing_cycle="monthly", benefits="기본 콘텐츠 열람", is_active=True),
+            SubscriptionPlan(id=2,  creator_id=1,  name="루나 프리미엄",  price=Decimal("9900"), billing_cycle="monthly", duration_days=30, benefits="전체 콘텐츠 + 비하인드 + 채팅", is_active=True),
+            SubscriptionPlan(id=3,  creator_id=2,  name="하루 베이직",    price=Decimal("0"),    billing_cycle="monthly", benefits="기본 콘텐츠 열람", is_active=True),
+            SubscriptionPlan(id=4,  creator_id=2,  name="하루 프리미엄",  price=Decimal("7900"), billing_cycle="monthly", duration_days=30, benefits="전체 콘텐츠 + 연습 영상", is_active=True),
+            SubscriptionPlan(id=5,  creator_id=3,  name="소율 베이직",    price=Decimal("0"),    billing_cycle="monthly", benefits="공개 작품 열람", is_active=True),
+            SubscriptionPlan(id=6,  creator_id=3,  name="소율 프리미엄",  price=Decimal("5900"), billing_cycle="monthly", duration_days=30, benefits="전체 작품 + 작업과정 + 채팅", is_active=True),
+            SubscriptionPlan(id=7,  creator_id=4,  name="민서 베이직",    price=Decimal("0"),    billing_cycle="monthly", benefits="기본 콘텐츠 열람", is_active=True),
+            SubscriptionPlan(id=8,  creator_id=4,  name="민서 프리미엄",  price=Decimal("8900"), billing_cycle="monthly", duration_days=30, benefits="전체 콘텐츠 + 비하인드 + 채팅", is_active=True),
+            SubscriptionPlan(id=9,  creator_id=5,  name="제이 베이직",    price=Decimal("0"),    billing_cycle="monthly", benefits="기본 콘텐츠 열람", is_active=True),
+            SubscriptionPlan(id=10, creator_id=5,  name="제이 프리미엄",  price=Decimal("6900"), billing_cycle="monthly", duration_days=30, benefits="전체 콘텐츠 + 비트 + 채팅", is_active=True),
+            SubscriptionPlan(id=11, creator_id=6,  name="유리 베이직",    price=Decimal("0"),    billing_cycle="monthly", benefits="기본 콘텐츠 열람", is_active=True),
+            SubscriptionPlan(id=12, creator_id=6,  name="유리 프리미엄",  price=Decimal("7900"), billing_cycle="monthly", duration_days=30, benefits="전체 콘텐츠 + 연습 영상 + 채팅", is_active=True),
+            # 신규 크리에이터 구독 플랜
+            SubscriptionPlan(id=13, creator_id=7,  name="지수 베이직",    price=Decimal("0"),    billing_cycle="monthly", benefits="공개 시 열람", is_active=True),
+            SubscriptionPlan(id=14, creator_id=7,  name="지수 프리미엄",  price=Decimal("4900"), billing_cycle="monthly", duration_days=30, benefits="전체 시 + 필사 가이드 + 채팅", is_active=True),
+            SubscriptionPlan(id=15, creator_id=8,  name="민지 베이직",    price=Decimal("0"),    billing_cycle="monthly", benefits="공개 영상 시청", is_active=True),
+            SubscriptionPlan(id=16, creator_id=8,  name="민지 프리미엄",  price=Decimal("6900"), billing_cycle="monthly", duration_days=30, benefits="멤버십 전용 영상 + 비하인드 + 채팅", is_active=True),
+            SubscriptionPlan(id=17, creator_id=9,  name="승우 베이직",    price=Decimal("0"),    billing_cycle="monthly", benefits="공개 글 열람", is_active=True),
+            SubscriptionPlan(id=18, creator_id=9,  name="승우 프리미엄",  price=Decimal("5900"), billing_cycle="monthly", duration_days=30, benefits="연재 소설 전편 + 창작 노트 + 채팅", is_active=True),
+            SubscriptionPlan(id=19, creator_id=10, name="나라 베이직",    price=Decimal("0"),    billing_cycle="monthly", benefits="공개 사진 열람", is_active=True),
+            SubscriptionPlan(id=20, creator_id=10, name="나라 프리미엄",  price=Decimal("7900"), billing_cycle="monthly", duration_days=30, benefits="고화질 원본 + 촬영 노하우 + 채팅", is_active=True),
+            SubscriptionPlan(id=21, creator_id=11, name="현석 베이직",    price=Decimal("0"),    billing_cycle="monthly", benefits="공개 회차 열람", is_active=True),
+            SubscriptionPlan(id=22, creator_id=11, name="현석 프리미엄",  price=Decimal("5900"), billing_cycle="monthly", duration_days=30, benefits="미리보기 + 스케치 + 채팅", is_active=True),
+            SubscriptionPlan(id=23, creator_id=12, name="채원 베이직",    price=Decimal("0"),    billing_cycle="monthly", benefits="공개 레시피 열람", is_active=True),
+            SubscriptionPlan(id=24, creator_id=12, name="채원 프리미엄",  price=Decimal("4900"), billing_cycle="monthly", duration_days=30, benefits="전체 레시피 + 장보기 리스트 + 채팅", is_active=True),
         ]
         db.add_all(subscription_plans)
         await db.flush()
 
         subscriptions = [
-            Subscription(id=1, fan_id=1, artist_id=1, fan_nickname="테스트팬", status="subscribed", payments_type="free", start_date=today - timedelta(days=30)),
-            Subscription(id=2, fan_id=1, artist_id=2, fan_nickname="테스트팬", status="subscribed", payments_type="free", start_date=today - timedelta(days=20)),
-            Subscription(id=3, fan_id=1, artist_id=3, fan_nickname="테스트팬", status="subscribed", payments_type="paid", start_date=today - timedelta(days=10)),
-            Subscription(id=4, fan_id=1, artist_id=4, fan_nickname="테스트팬", status="subscribed", payments_type="free", start_date=today - timedelta(days=15)),
-            Subscription(id=5, fan_id=1, artist_id=5, fan_nickname="테스트팬", status="subscribed", payments_type="free", start_date=today - timedelta(days=7)),
-            Subscription(id=6, fan_id=1, artist_id=6, fan_nickname="테스트팬", status="subscribed", payments_type="free", start_date=today - timedelta(days=5)),
+            Subscription(id=1,  fan_id=1, creator_id=1,  fan_nickname="테스트팬", status="subscribed", payments_type="free", start_date=today - timedelta(days=30)),
+            Subscription(id=2,  fan_id=1, creator_id=2,  fan_nickname="테스트팬", status="subscribed", payments_type="free", start_date=today - timedelta(days=20)),
+            Subscription(id=3,  fan_id=1, creator_id=3,  fan_nickname="테스트팬", status="subscribed", payments_type="paid", start_date=today - timedelta(days=10)),
+            Subscription(id=4,  fan_id=1, creator_id=4,  fan_nickname="테스트팬", status="subscribed", payments_type="free", start_date=today - timedelta(days=15)),
+            Subscription(id=5,  fan_id=1, creator_id=5,  fan_nickname="테스트팬", status="subscribed", payments_type="free", start_date=today - timedelta(days=7)),
+            Subscription(id=6,  fan_id=1, creator_id=6,  fan_nickname="테스트팬", status="subscribed", payments_type="free", start_date=today - timedelta(days=5)),
+            # 신규 크리에이터 구독
+            Subscription(id=7,  fan_id=1, creator_id=7,  fan_nickname="테스트팬", status="subscribed", payments_type="paid", start_date=today - timedelta(days=14)),
+            Subscription(id=8,  fan_id=1, creator_id=8,  fan_nickname="테스트팬", status="subscribed", payments_type="free", start_date=today - timedelta(days=25)),
+            Subscription(id=9,  fan_id=1, creator_id=9,  fan_nickname="테스트팬", status="subscribed", payments_type="paid", start_date=today - timedelta(days=8)),
+            Subscription(id=10, fan_id=1, creator_id=10, fan_nickname="테스트팬", status="subscribed", payments_type="free", start_date=today - timedelta(days=12)),
+            Subscription(id=11, fan_id=1, creator_id=11, fan_nickname="테스트팬", status="subscribed", payments_type="free", start_date=today - timedelta(days=3)),
+            Subscription(id=12, fan_id=1, creator_id=12, fan_nickname="테스트팬", status="subscribed", payments_type="paid", start_date=today - timedelta(days=18)),
         ]
         db.add_all(subscriptions)
         await db.flush()
@@ -290,8 +355,8 @@ async def seed_data():
 
         # ================================================================
         # 4. CONTENT — images / posts / post_images / post_comments / post_stats
-        #              artist_images / artist_image_comments / artist_image_stats
-        #              artist_videos / artist_video_comments / artist_video_stats
+        #              creator_images / creator_image_comments / creator_image_stats
+        #              creator_videos / creator_video_comments / creator_video_stats
         # ================================================================
         images = [
             Image(id=1,  url="/placeholder/concert1.jpg", width=1200, height=800, mime_type="image/jpeg"),
@@ -311,20 +376,33 @@ async def seed_data():
         await db.flush()
 
         posts = [
-            # 아티스트 포스트 (id 1~5)
-            Post(id=1,  author_id=1, author_type="artist", content="오늘 새 앨범 작업을 시작했어요! 기대해주세요",                              write_id=2, write_role="artist", visibility="public",      is_artist_post=True,  tags=["음악", "앨범"]),
-            Post(id=2,  author_id=1, author_type="artist", content="구독자 여러분만을 위한 비하인드 영상 곧 올라갑니다!",                       write_id=2, write_role="artist", visibility="subscribers", is_artist_post=True,  tags=["비하인드"]),
-            Post(id=3,  author_id=2, author_type="artist", content="새로운 안무 연습 중! 이번 주 라이브에서 공개할게요",                        write_id=3, write_role="artist", visibility="public",      is_artist_post=True,  tags=["댄스", "안무"]),
-            Post(id=4,  author_id=2, author_type="artist", content="연습실에서 하루종일 땀 흘리는 중... 화이팅!",                               write_id=3, write_role="artist", visibility="subscribers", is_artist_post=True,  tags=["일상", "연습"]),
-            Post(id=5,  author_id=3, author_type="artist", content="새로운 일러스트 시리즈 '도시의 밤' 첫 번째 작품을 공개합니다.",             write_id=4, write_role="artist", visibility="public",      is_artist_post=True,  tags=["일러스트", "아트"]),
+            # 크리에이터 포스트 (id 1~5)
+            Post(id=1,  author_id=1,  author_type="artist", content="오늘 새 앨범 작업을 시작했어요! 기대해주세요",                              write_id=2,  write_role="artist", visibility="public",      is_artist_post=True,  tags=["음악", "앨범"]),
+            Post(id=2,  author_id=1,  author_type="artist", content="구독자 여러분만을 위한 비하인드 영상 곧 올라갑니다!",                       write_id=2,  write_role="artist", visibility="subscribers", is_artist_post=True,  tags=["비하인드"]),
+            Post(id=3,  author_id=2,  author_type="artist", content="새로운 안무 연습 중! 이번 주 라이브에서 공개할게요",                        write_id=3,  write_role="artist", visibility="public",      is_artist_post=True,  tags=["댄스", "안무"]),
+            Post(id=4,  author_id=2,  author_type="artist", content="연습실에서 하루종일 땀 흘리는 중... 화이팅!",                               write_id=3,  write_role="artist", visibility="subscribers", is_artist_post=True,  tags=["일상", "연습"]),
+            Post(id=5,  author_id=3,  author_type="artist", content="새로운 일러스트 시리즈 '도시의 밤' 첫 번째 작품을 공개합니다.",             write_id=4,  write_role="artist", visibility="public",      is_artist_post=True,  tags=["일러스트", "아트"]),
             # 팬 포스트 (id 6~8)
-            Post(id=6,  author_id=1, author_type="fan",    content="루나 노래 진짜 좋아요!! 다음 앨범 기대됩니다",                              write_id=1, write_role="fan",    visibility="public",      is_artist_post=False, tags=["팬레터"]),
-            Post(id=7,  author_id=2, author_type="fan",    content="하루님 안무 진짜 대박... 라이브 꼭 볼게요!",                                write_id=1, write_role="fan",    visibility="public",      is_artist_post=False, tags=["응원"]),
-            Post(id=8,  author_id=3, author_type="fan",    content="소율 작가님 그림 너무 예뻐요. 굿즈 나오면 바로 구매할게요!",                write_id=1, write_role="fan",    visibility="public",      is_artist_post=False, tags=["팬아트"]),
+            Post(id=6,  author_id=1,  author_type="fan",    content="루나 노래 진짜 좋아요!! 다음 앨범 기대됩니다",                              write_id=1,  write_role="fan",    visibility="public",      is_artist_post=False, tags=["팬레터"]),
+            Post(id=7,  author_id=2,  author_type="fan",    content="하루님 안무 진짜 대박... 라이브 꼭 볼게요!",                                write_id=1,  write_role="fan",    visibility="public",      is_artist_post=False, tags=["응원"]),
+            Post(id=8,  author_id=3,  author_type="fan",    content="소율 작가님 그림 너무 예뻐요. 굿즈 나오면 바로 구매할게요!",                write_id=1,  write_role="fan",    visibility="public",      is_artist_post=False, tags=["팬아트"]),
             # 기사형 포스트 (id 9~11)
-            Post(id=9,  author_id=1, author_type="artist", content="지난 금요일 잠실 올림픽경기장에서 열린 루나의 첫 번째 단독 콘서트가 2만 관객을 가득 채우며 성공적으로 막을 내렸습니다.", write_id=2, write_role="artist", visibility="public", is_artist_post=True, tags=["콘서트", "공연"], title_field="루나, 첫 단독 콘서트 2만 관객 매진"),
-            Post(id=10, author_id=2, author_type="artist", content="하루가 세계적인 댄스 대회 'World Dance Championship 2026'에서 현대무용 부문 금상을 수상했습니다.", write_id=3, write_role="artist", visibility="public", is_artist_post=True, tags=["수상", "대회"], title_field="하루, 세계 댄스 대회 금상 수상"),
-            Post(id=11, author_id=3, author_type="artist", content="소율 작가의 첫 개인전 '꿈의 색채'가 서울 성수동 갤러리에서 오는 3월 1일부터 31일까지 한 달간 개최됩니다.", write_id=4, write_role="artist", visibility="public", is_artist_post=True, tags=["전시", "갤러리"], title_field="소율, 첫 개인전 '꿈의 색채' 개최"),
+            Post(id=9,  author_id=1,  author_type="artist", content="지난 금요일 잠실 올림픽경기장에서 열린 루나의 첫 번째 단독 콘서트가 2만 관객을 가득 채우며 성공적으로 막을 내렸습니다.", write_id=2, write_role="artist", visibility="public", is_artist_post=True, tags=["콘서트", "공연"], title_field="루나, 첫 단독 콘서트 2만 관객 매진"),
+            Post(id=10, author_id=2,  author_type="artist", content="하루가 세계적인 댄스 대회 'World Dance Championship 2026'에서 현대무용 부문 금상을 수상했습니다.", write_id=3, write_role="artist", visibility="public", is_artist_post=True, tags=["수상", "대회"], title_field="하루, 세계 댄스 대회 금상 수상"),
+            Post(id=11, author_id=3,  author_type="artist", content="소율 작가의 첫 개인전 '꿈의 색채'가 서울 성수동 갤러리에서 오는 3월 1일부터 31일까지 한 달간 개최됩니다.", write_id=4, write_role="artist", visibility="public", is_artist_post=True, tags=["전시", "갤러리"], title_field="소율, 첫 개인전 '꿈의 색채' 개최"),
+            # 신규 크리에이터 포스트 (id 12~23)
+            Post(id=12, author_id=7,  author_type="artist", content="봄비\n\n빗소리를 들으며\n창가에 앉아\n당신 생각을 했습니다\n\n빗물처럼\n조용히 스며드는\n그런 사람이 있다는 게\n얼마나 다행인지", write_id=10, write_role="artist", visibility="public",      is_artist_post=True, tags=["시", "봄", "일상시"]),
+            Post(id=13, author_id=7,  author_type="artist", content="구독자 여러분, 이번 달 필사 가이드를 공유드려요. 손으로 직접 써보면 시의 리듬이 더 잘 느껴진답니다 ✍️", write_id=10, write_role="artist", visibility="subscribers", is_artist_post=True, tags=["필사", "가이드"]),
+            Post(id=14, author_id=8,  author_type="artist", content="도쿄 여행 브이로그 올라왔어요! 아키하바라 → 신주쿠 → 하라주쿠 코스 추천드립니다. 유튜브 링크는 프로필에 🎥", write_id=11, write_role="artist", visibility="public",      is_artist_post=True, tags=["여행", "도쿄", "브이로그"]),
+            Post(id=15, author_id=8,  author_type="artist", content="멤버십 전용! 편집할 때 쓰는 장비 세팅 공개합니다. 카메라, 마이크, 조명까지 전부 알려드릴게요 📸", write_id=11, write_role="artist", visibility="subscribers", is_artist_post=True, tags=["장비", "유튜브", "촬영"]),
+            Post(id=16, author_id=9,  author_type="artist", content="'밤의 언어' 연재 7화가 올라왔습니다. 이번 화에서 드디어 준혁과 하은이 마주치게 됩니다. 많이 기대해주세요!", write_id=12, write_role="artist", visibility="public",      is_artist_post=True, tags=["소설", "연재", "밤의언어"]),
+            Post(id=17, author_id=9,  author_type="artist", content="소설 쓰면서 영감을 얻는 방법 (창작 노트 공개). 제가 글을 쓸 때 습관적으로 하는 세 가지 루틴을 공유합니다.", write_id=12, write_role="artist", visibility="subscribers", is_artist_post=True, tags=["창작", "소설쓰기", "루틴"]),
+            Post(id=18, author_id=10, author_type="artist", content="서울의 새벽 4시. 아무도 없는 골목에서 찍은 사진들을 공개합니다. 고요함 속에 담긴 도시의 숨소리.", write_id=13, write_role="artist", visibility="public",      is_artist_post=True, tags=["사진", "서울", "새벽", "필름"]),
+            Post(id=19, author_id=10, author_type="artist", content="구독자 전용 — 고화질 원본 파일 공유 + 이번 달 촬영 세팅 노하우. 조리개값과 필름 시뮬레이션 세팅 전부 공개!", write_id=13, write_role="artist", visibility="subscribers", is_artist_post=True, tags=["원본", "노하우", "필름카메라"]),
+            Post(id=20, author_id=11, author_type="artist", content="'우리 사이의 거리' 42화 업로드 완료! 이번 화 진짜 많이 울었어요... 독자분들 반응이 기대되네요 😭", write_id=14, write_role="artist", visibility="public",      is_artist_post=True, tags=["웹툰", "연재", "우리사이의거리"]),
+            Post(id=21, author_id=11, author_type="artist", content="43화 스케치 미리보기 공개! 다음 전개가 궁금하시면 구독 후 확인해주세요 🎨", write_id=14, write_role="artist", visibility="subscribers", is_artist_post=True, tags=["스케치", "미리보기", "웹툰"]),
+            Post(id=22, author_id=12, author_type="artist", content="봄 제철 재료로 만드는 쑥 된장국 레시피 공개! 재료 딱 5가지, 15분 안에 완성되는 집밥이에요 🍲", write_id=15, write_role="artist", visibility="public",      is_artist_post=True, tags=["레시피", "봄요리", "된장국"]),
+            Post(id=23, author_id=12, author_type="artist", content="이번 달 장보기 리스트 + 5만원으로 일주일 식단 짜는 법 (구독자 전용). 마트 할인 정보까지 포함!", write_id=15, write_role="artist", visibility="subscribers", is_artist_post=True, tags=["장보기", "절약", "식단"]),
         ]
         db.add_all(posts)
         await db.flush()
@@ -353,65 +431,65 @@ async def seed_data():
         await db.flush()
 
         post_stats = [
-            PostStat(id=i, post_id=i, view_count=(12 - i) * 50, comment_count=2 if i <= 3 else 1, fan_like_count=(12 - i) * 3, artist_like_count=1 if i >= 6 else 0)
-            for i in range(1, 12)
+            PostStat(id=i, post_id=i, view_count=(24 - i) * 50, comment_count=2 if i <= 3 else 1, fan_like_count=(24 - i) * 3, artist_like_count=1 if i >= 6 else 0)
+            for i in range(1, 24)
         ]
         db.add_all(post_stats)
         await db.flush()
 
-        # Artist Images
-        artist_images = [
-            ArtistImage(id=1, artist_id=1, image_id=1, write_id=2, write_role="artist", image_purpose="concert",     tags=["콘서트", "무대"],   visibility="public"),
-            ArtistImage(id=2, artist_id=1, image_id=2, write_id=2, write_role="artist", image_purpose="behind",      tags=["비하인드"],         visibility="subscribers"),
-            ArtistImage(id=3, artist_id=2, image_id=3, write_id=3, write_role="artist", image_purpose="performance", tags=["댄스", "공연"],     visibility="public"),
-            ArtistImage(id=4, artist_id=2, image_id=4, write_id=3, write_role="artist", image_purpose="practice",    tags=["연습"],             visibility="subscribers"),
-            ArtistImage(id=5, artist_id=3, image_id=5, write_id=4, write_role="artist", image_purpose="artwork",     tags=["일러스트", "작품"], visibility="public"),
-            ArtistImage(id=6, artist_id=3, image_id=6, write_id=4, write_role="artist", image_purpose="process",     tags=["작업과정"],         visibility="public"),
+        # Creator Images
+        creator_images = [
+            CreatorImage(id=1, creator_id=1, image_id=1, write_id=2, write_role="artist", image_purpose="concert",     tags=["콘서트", "무대"],   visibility="public"),
+            CreatorImage(id=2, creator_id=1, image_id=2, write_id=2, write_role="artist", image_purpose="behind",      tags=["비하인드"],         visibility="subscribers"),
+            CreatorImage(id=3, creator_id=2, image_id=3, write_id=3, write_role="artist", image_purpose="performance", tags=["댄스", "공연"],     visibility="public"),
+            CreatorImage(id=4, creator_id=2, image_id=4, write_id=3, write_role="artist", image_purpose="practice",    tags=["연습"],             visibility="subscribers"),
+            CreatorImage(id=5, creator_id=3, image_id=5, write_id=4, write_role="artist", image_purpose="artwork",     tags=["일러스트", "작품"], visibility="public"),
+            CreatorImage(id=6, creator_id=3, image_id=6, write_id=4, write_role="artist", image_purpose="process",     tags=["작업과정"],         visibility="public"),
         ]
-        db.add_all(artist_images)
+        db.add_all(creator_images)
         await db.flush()
 
-        artist_image_comments = [
-            ArtistImageComment(id=1, artist_image_id=1, user_id=1, content="무대 사진 너무 멋져요!",    commenter_role="fan",    status="active"),
-            ArtistImageComment(id=2, artist_image_id=1, user_id=2, content="고마워요!",                 commenter_role="artist", status="active", parent_comment_id=1),
-            ArtistImageComment(id=3, artist_image_id=3, user_id=1, content="공연 사진 대박이네요",       commenter_role="fan",    status="active"),
-            ArtistImageComment(id=4, artist_image_id=5, user_id=1, content="이 작품 원본 사이즈 보고싶어요", commenter_role="fan", status="active"),
+        creator_image_comments = [
+            CreatorImageComment(id=1, creator_image_id=1, user_id=1, content="무대 사진 너무 멋져요!",    commenter_role="fan",    status="active"),
+            CreatorImageComment(id=2, creator_image_id=1, user_id=2, content="고마워요!",                 commenter_role="artist", status="active", parent_comment_id=1),
+            CreatorImageComment(id=3, creator_image_id=3, user_id=1, content="공연 사진 대박이네요",       commenter_role="fan",    status="active"),
+            CreatorImageComment(id=4, creator_image_id=5, user_id=1, content="이 작품 원본 사이즈 보고싶어요", commenter_role="fan", status="active"),
         ]
-        db.add_all(artist_image_comments)
+        db.add_all(creator_image_comments)
         await db.flush()
 
-        artist_image_stats = [
-            ArtistImageStat(id=i, artist_image_id=i, view_count=(7 - i) * 30, comment_count=2 if i == 1 else 1, fan_like_count=(7 - i) * 5)
+        creator_image_stats = [
+            CreatorImageStat(id=i, creator_image_id=i, view_count=(7 - i) * 30, comment_count=2 if i == 1 else 1, fan_like_count=(7 - i) * 5)
             for i in range(1, 7)
         ]
-        db.add_all(artist_image_stats)
+        db.add_all(creator_image_stats)
         await db.flush()
 
-        # Artist Videos
-        artist_videos = [
-            ArtistVideo(id=1, artist_id=1, write_id=2, write_role="artist", url="/placeholder/video1.mp4", title="루나 - 별빛 아래서 MV",    description="신곡 뮤직비디오",   duration_seconds=245, tags=["뮤직비디오", "신곡"], visibility="public"),
-            ArtistVideo(id=2, artist_id=1, write_id=2, write_role="artist", url="/placeholder/video2.mp4", title="앨범 작업 비하인드",        description="스튜디오 비하인드", duration_seconds=600, tags=["비하인드"],           visibility="subscribers"),
-            ArtistVideo(id=3, artist_id=2, write_id=3, write_role="artist", url="/placeholder/video3.mp4", title="Gravity 안무 풀버전",       description="대회 출전 안무",    duration_seconds=310, tags=["안무", "풀버전"],     visibility="public"),
-            ArtistVideo(id=4, artist_id=2, write_id=3, write_role="artist", url="/placeholder/video4.mp4", title="안무 연습 브이로그",         description="연습실 브이로그",   duration_seconds=900, tags=["브이로그", "연습"],   visibility="public"),
-            ArtistVideo(id=5, artist_id=3, write_id=4, write_role="artist", url="/placeholder/video5.mp4", title="작업 타임랩스 - 도시의 밤", description="일러스트 타임랩스", duration_seconds=180, tags=["타임랩스", "작업과정"], visibility="public"),
+        # Creator Videos
+        creator_videos = [
+            CreatorVideo(id=1, creator_id=1, write_id=2, write_role="artist", url="/placeholder/video1.mp4", title="루나 - 별빛 아래서 MV",    description="신곡 뮤직비디오",   duration_seconds=245, tags=["뮤직비디오", "신곡"], visibility="public"),
+            CreatorVideo(id=2, creator_id=1, write_id=2, write_role="artist", url="/placeholder/video2.mp4", title="앨범 작업 비하인드",        description="스튜디오 비하인드", duration_seconds=600, tags=["비하인드"],           visibility="subscribers"),
+            CreatorVideo(id=3, creator_id=2, write_id=3, write_role="artist", url="/placeholder/video3.mp4", title="Gravity 안무 풀버전",       description="대회 출전 안무",    duration_seconds=310, tags=["안무", "풀버전"],     visibility="public"),
+            CreatorVideo(id=4, creator_id=2, write_id=3, write_role="artist", url="/placeholder/video4.mp4", title="안무 연습 브이로그",         description="연습실 브이로그",   duration_seconds=900, tags=["브이로그", "연습"],   visibility="public"),
+            CreatorVideo(id=5, creator_id=3, write_id=4, write_role="artist", url="/placeholder/video5.mp4", title="작업 타임랩스 - 도시의 밤", description="일러스트 타임랩스", duration_seconds=180, tags=["타임랩스", "작업과정"], visibility="public"),
         ]
-        db.add_all(artist_videos)
+        db.add_all(creator_videos)
         await db.flush()
 
-        artist_video_comments = [
-            ArtistVideoComment(id=1, artist_video_id=1, user_id=1, content="MV 퀄리티 미쳤어요!",         commenter_role="fan",    status="active"),
-            ArtistVideoComment(id=2, artist_video_id=1, user_id=2, content="많이 사랑해주세요!",           commenter_role="artist", status="active", parent_comment_id=1),
-            ArtistVideoComment(id=3, artist_video_id=3, user_id=1, content="안무 진짜 소름 돋아요",        commenter_role="fan",    status="active"),
-            ArtistVideoComment(id=4, artist_video_id=5, user_id=1, content="타임랩스 보는 재미가 있네요",  commenter_role="fan",    status="active"),
+        creator_video_comments = [
+            CreatorVideoComment(id=1, creator_video_id=1, user_id=1, content="MV 퀄리티 미쳤어요!",         commenter_role="fan",    status="active"),
+            CreatorVideoComment(id=2, creator_video_id=1, user_id=2, content="많이 사랑해주세요!",           commenter_role="artist", status="active", parent_comment_id=1),
+            CreatorVideoComment(id=3, creator_video_id=3, user_id=1, content="안무 진짜 소름 돋아요",        commenter_role="fan",    status="active"),
+            CreatorVideoComment(id=4, creator_video_id=5, user_id=1, content="타임랩스 보는 재미가 있네요",  commenter_role="fan",    status="active"),
         ]
-        db.add_all(artist_video_comments)
+        db.add_all(creator_video_comments)
         await db.flush()
 
-        artist_video_stats = [
-            ArtistVideoStat(id=i, artist_video_id=i, view_count=(6 - i) * 100, comment_count=2 if i == 1 else 1, fan_like_count=(6 - i) * 15)
+        creator_video_stats = [
+            CreatorVideoStat(id=i, creator_video_id=i, view_count=(6 - i) * 100, comment_count=2 if i == 1 else 1, fan_like_count=(6 - i) * 15)
             for i in range(1, 6)
         ]
-        db.add_all(artist_video_stats)
+        db.add_all(creator_video_stats)
         await db.flush()
 
         print("  [OK] Content (posts, images, videos, comments, stats)")
@@ -421,27 +499,42 @@ async def seed_data():
         #           chat_read_receipts / chat_pins / chat_reports
         # ================================================================
         chat_rooms = [
-            ChatRoom(id=1, room_type="subscription", artist_id=1, room_name="루나 채팅방",  last_message_at=now - timedelta(minutes=5), status="active"),
-            ChatRoom(id=2, room_type="subscription", artist_id=2, room_name="하루 채팅방",  last_message_at=now - timedelta(hours=1),   status="active"),
-            ChatRoom(id=3, room_type="subscription", artist_id=3, room_name="소율 채팅방",  last_message_at=now - timedelta(hours=3),   status="active"),
+            ChatRoom(id=1, room_type="subscription", creator_id=1,  room_name="루나 채팅방",    last_message_at=now - timedelta(minutes=5),  status="active"),
+            ChatRoom(id=2, room_type="subscription", creator_id=2,  room_name="하루 채팅방",    last_message_at=now - timedelta(hours=1),    status="active"),
+            ChatRoom(id=3, room_type="subscription", creator_id=3,  room_name="소율 채팅방",    last_message_at=now - timedelta(hours=3),    status="active"),
+            ChatRoom(id=4, room_type="subscription", creator_id=7,  room_name="지수 시인 채팅", last_message_at=now - timedelta(hours=2),    status="active"),
+            ChatRoom(id=5, room_type="subscription", creator_id=8,  room_name="민지 유튜버 채팅",last_message_at=now - timedelta(minutes=30), status="active"),
+            ChatRoom(id=6, room_type="subscription", creator_id=12, room_name="채원 채팅방",    last_message_at=now - timedelta(hours=5),    status="active"),
         ]
         db.add_all(chat_rooms)
         await db.flush()
 
         chat_messages = [
             # 루나 채팅방
-            ChatMessage(id=1,  chat_room_id=1, sender_id=2, sender_type="artist", message_type="text",  content="안녕하세요! 오늘도 좋은 하루 보내세요", status="active"),
-            ChatMessage(id=2,  chat_room_id=1, sender_id=1, sender_type="fan",    message_type="text",  content="루나님 안녕하세요! 새 앨범 기대하고 있어요", status="active"),
-            ChatMessage(id=3,  chat_room_id=1, sender_id=2, sender_type="artist", message_type="text",  content="감사합니다! 곧 좋은 소식 들려드릴게요", status="active"),
-            ChatMessage(id=4,  chat_room_id=1, sender_id=1, sender_type="fan",    message_type="image", content=None, status="active"),
-            ChatMessage(id=5,  chat_room_id=1, sender_id=2, sender_type="artist", message_type="text",  content="이 사진 예쁘네요!", status="active", is_pinned=True),
+            ChatMessage(id=1,  chat_room_id=1, sender_id=2,  sender_type="artist", message_type="text",  content="안녕하세요! 오늘도 좋은 하루 보내세요", status="active"),
+            ChatMessage(id=2,  chat_room_id=1, sender_id=1,  sender_type="fan",    message_type="text",  content="루나님 안녕하세요! 새 앨범 기대하고 있어요", status="active"),
+            ChatMessage(id=3,  chat_room_id=1, sender_id=2,  sender_type="artist", message_type="text",  content="감사합니다! 곧 좋은 소식 들려드릴게요", status="active"),
+            ChatMessage(id=4,  chat_room_id=1, sender_id=1,  sender_type="fan",    message_type="image", content=None, status="active"),
+            ChatMessage(id=5,  chat_room_id=1, sender_id=2,  sender_type="artist", message_type="text",  content="이 사진 예쁘네요!", status="active", is_pinned=True),
             # 하루 채팅방
-            ChatMessage(id=6,  chat_room_id=2, sender_id=3, sender_type="artist", message_type="text",  content="오늘 연습 끝! 다들 수고했어요", status="active"),
-            ChatMessage(id=7,  chat_room_id=2, sender_id=1, sender_type="fan",    message_type="text",  content="하루님 연습 영상 올려주세요!", status="active"),
-            ChatMessage(id=8,  chat_room_id=2, sender_id=3, sender_type="artist", message_type="video", content=None, status="active"),
+            ChatMessage(id=6,  chat_room_id=2, sender_id=3,  sender_type="artist", message_type="text",  content="오늘 연습 끝! 다들 수고했어요", status="active"),
+            ChatMessage(id=7,  chat_room_id=2, sender_id=1,  sender_type="fan",    message_type="text",  content="하루님 연습 영상 올려주세요!", status="active"),
+            ChatMessage(id=8,  chat_room_id=2, sender_id=3,  sender_type="artist", message_type="video", content=None, status="active"),
             # 소율 채팅방
-            ChatMessage(id=9,  chat_room_id=3, sender_id=4, sender_type="artist", message_type="text",  content="새 작품 작업 중이에요. 조금만 기다려주세요!", status="active"),
-            ChatMessage(id=10, chat_room_id=3, sender_id=1, sender_type="fan",    message_type="text",  content="기대하고 있을게요!!", status="active"),
+            ChatMessage(id=9,  chat_room_id=3, sender_id=4,  sender_type="artist", message_type="text",  content="새 작품 작업 중이에요. 조금만 기다려주세요!", status="active"),
+            ChatMessage(id=10, chat_room_id=3, sender_id=1,  sender_type="fan",    message_type="text",  content="기대하고 있을게요!!", status="active"),
+            # 지수 시인 채팅방
+            ChatMessage(id=11, chat_room_id=4, sender_id=10, sender_type="artist", message_type="text",  content="오늘 새 시 한 편 썼어요. 봄비 소리를 들으며 쓴 시인데, 구독자분들께 먼저 보여드릴게요 🌧️", status="active"),
+            ChatMessage(id=12, chat_room_id=4, sender_id=1,  sender_type="fan",    message_type="text",  content="지수님 시 너무 좋아요... 오늘도 읽으면서 위로받았어요", status="active"),
+            ChatMessage(id=13, chat_room_id=4, sender_id=10, sender_type="artist", message_type="text",  content="그 말이 저한테 큰 힘이 돼요. 감사합니다 🙏", status="active"),
+            # 민지 유튜버 채팅방
+            ChatMessage(id=14, chat_room_id=5, sender_id=11, sender_type="artist", message_type="text",  content="도쿄 브이로그 편집 중이에요! 내일 오후에 올라갈 예정 🎬", status="active"),
+            ChatMessage(id=15, chat_room_id=5, sender_id=1,  sender_type="fan",    message_type="text",  content="오 대박!! 도쿄 어디어디 갔어요?", status="active"),
+            ChatMessage(id=16, chat_room_id=5, sender_id=11, sender_type="artist", message_type="text",  content="아키하바라, 하라주쿠, 신주쿠 갔어요! 영상에서 코스 다 알려드릴게요 😊", status="active"),
+            # 채원 채팅방
+            ChatMessage(id=17, chat_room_id=6, sender_id=15, sender_type="artist", message_type="text",  content="오늘 레시피 질문 받아요! 요즘 봄나물 제철이니까 뭐든 물어보세요 🌿", status="active"),
+            ChatMessage(id=18, chat_room_id=6, sender_id=1,  sender_type="fan",    message_type="text",  content="쑥 된장국 끓일 때 쑥 데쳐야 하나요?", status="active"),
+            ChatMessage(id=19, chat_room_id=6, sender_id=15, sender_type="artist", message_type="text",  content="네! 살짝 데친 후 찬물에 헹궈서 쓴맛 빼주시면 더 맛있어요 😋", status="active"),
         ]
         db.add_all(chat_messages)
         await db.flush()
@@ -531,10 +624,15 @@ async def seed_data():
         # 8. EVENT — events / event_participants / event_attendance
         # ================================================================
         events = [
-            Event(id=1, artist_id=1, title="루나 팬미팅 2026",  description="팬 여러분과 함께하는 특별한 시간",           event_type="fanmeeting", event_date=now + timedelta(days=14), location="서울 강남 이벤트홀", max_participants=200, current_participants=46, status="active"),
-            Event(id=2, artist_id=2, title="하루 댄스 챌린지",  description="Gravity 안무 따라하기 챌린지",                event_type="challenge",  event_date=now + timedelta(days=7),  location="온라인",             max_participants=None, current_participants=128, status="active"),
-            Event(id=3, artist_id=3, title="소율 라이브 드로잉", description="실시간으로 그림 그리는 과정을 공개합니다",     event_type="live",       event_date=now + timedelta(days=3),  location="유튜브 라이브",      max_participants=None, current_participants=1, status="active"),
-            Event(id=4, artist_id=1, title="루나 콘서트 2026",  description="루나 단독 콘서트 — 별빛 아래서",              event_type="concert",    event_date=now - timedelta(days=7),  location="잠실 올림픽경기장",   max_participants=20000, current_participants=20000, status="completed"),
+            Event(id=1, creator_id=1,  title="루나 팬미팅 2026",        description="팬 여러분과 함께하는 특별한 시간",                                         event_type="fanmeeting", event_date=now + timedelta(days=14), location="서울 강남 이벤트홀",         max_participants=200,   current_participants=46,    status="active"),
+            Event(id=2, creator_id=2,  title="하루 댄스 챌린지",         description="Gravity 안무 따라하기 챌린지",                                              event_type="challenge",  event_date=now + timedelta(days=7),  location="온라인",                     max_participants=None,  current_participants=128,   status="active"),
+            Event(id=3, creator_id=3,  title="소율 라이브 드로잉",        description="실시간으로 그림 그리는 과정을 공개합니다",                                  event_type="live",       event_date=now + timedelta(days=3),  location="유튜브 라이브",              max_participants=None,  current_participants=1,     status="active"),
+            Event(id=4, creator_id=1,  title="루나 콘서트 2026",         description="루나 단독 콘서트 — 별빛 아래서",                                            event_type="concert",    event_date=now - timedelta(days=7),  location="잠실 올림픽경기장",          max_participants=20000, current_participants=20000, status="completed"),
+            # 신규 크리에이터 이벤트
+            Event(id=5, creator_id=7,  title="김지수 시인과의 대화",      description="시인 김지수와 함께 시 읽기, 필사, Q&A를 진행하는 소규모 모임입니다. 구독자 우선 신청 가능.", event_type="meetup",  event_date=now + timedelta(days=21), location="서울 마포구 독립서점 '책방 달'", max_participants=30,    current_participants=22,    status="active"),
+            Event(id=6, creator_id=8,  title="박민지 크리에이터 클래스",  description="유튜브 채널 운영부터 영상 편집까지! 박민지의 노하우를 직접 배울 수 있는 워크숍입니다.",    event_type="workshop", event_date=now + timedelta(days=10), location="서울 강남구 스튜디오 M",       max_participants=20,    current_participants=20,    status="full"),
+            Event(id=7, creator_id=11, title="정현석 사인회 & 독자 간담회", description="웹툰 '우리 사이의 거리' 100화 기념 특별 사인회. 작가와 직접 이야기를 나눌 수 있는 자리입니다.", event_type="signing", event_date=now + timedelta(days=28), location="서울 종로구 교보문고 광화문점", max_participants=100,   current_participants=67,    status="active"),
+            Event(id=8, creator_id=12, title="오채원 요리 클래스 — 봄 제철 요리",description="봄 제철 재료로 만드는 건강 집밥 3가지를 직접 요리해보는 오프라인 클래스입니다.",   event_type="class",    event_date=now + timedelta(days=5),  location="서울 성동구 요리 스튜디오",   max_participants=12,    current_participants=10,    status="active"),
         ]
         db.add_all(events)
         await db.flush()
@@ -560,11 +658,19 @@ async def seed_data():
         # 9. SHOP — products / product_images / orders / order_items
         # ================================================================
         products = [
-            Product(id=1, artist_id=1, name="루나 포토카드 세트",    description="별빛 아래서 콘서트 포토카드 5장", price=Decimal("15000"), stock=100, category="photocard", status="active"),
-            Product(id=2, artist_id=1, name="루나 라이트스틱",       description="공식 응원봉",                    price=Decimal("35000"), stock=50,  category="lightstick", status="active"),
-            Product(id=3, artist_id=2, name="하루 연습복 티셔츠",    description="하루 시그니처 로고 티셔츠",       price=Decimal("25000"), stock=200, category="apparel",    status="active"),
-            Product(id=4, artist_id=3, name="소율 아트프린트 A3",    description="도시의 밤 시리즈 한정판 프린트",  price=Decimal("20000"), stock=30,  category="art",        status="active"),
-            Product(id=5, artist_id=3, name="소율 스티커팩",         description="일러스트 스티커 10장 세트",       price=Decimal("5000"),  stock=500, category="sticker",    status="active"),
+            Product(id=1,  creator_id=1,  name="루나 포토카드 세트",         description="별빛 아래서 콘서트 포토카드 5장",                                  price=Decimal("15000"), stock=100, category="photocard", status="active"),
+            Product(id=2,  creator_id=1,  name="루나 라이트스틱",             description="공식 응원봉",                                                      price=Decimal("35000"), stock=50,  category="lightstick", status="active"),
+            Product(id=3,  creator_id=2,  name="하루 연습복 티셔츠",          description="하루 시그니처 로고 티셔츠",                                        price=Decimal("25000"), stock=200, category="apparel",    status="active"),
+            Product(id=4,  creator_id=3,  name="소율 아트프린트 A3",          description="도시의 밤 시리즈 한정판 프린트",                                   price=Decimal("20000"), stock=30,  category="art",        status="active"),
+            Product(id=5,  creator_id=3,  name="소율 스티커팩",               description="일러스트 스티커 10장 세트",                                        price=Decimal("5000"),  stock=500, category="sticker",    status="active"),
+            # 신규 크리에이터 상품
+            Product(id=6,  creator_id=7,  name="김지수 시집 '봄을 기다리며'", description="시인 김지수의 첫 번째 시집. 총 72편 수록, 작가 친필 사인 포함 (한정 100부)", price=Decimal("18000"), stock=100, category="book",       status="active"),
+            Product(id=7,  creator_id=7,  name="필사 노트 세트",              description="김지수 시인 추천 필사 노트 + 캘리그래피 펜 세트. 감성 패키지 포장.", price=Decimal("22000"), stock=150, category="stationery", status="active"),
+            Product(id=8,  creator_id=8,  name="박민지 브이로그 캘린더",      description="2026년 박민지 여행 사진으로 만든 탁상 캘린더 (12개월)",             price=Decimal("12000"), stock=300, category="calendar",   status="active"),
+            Product(id=9,  creator_id=9,  name="이승우 소설 '밤의 언어'",    description="베스트셀러 소설 단행본. 작가 친필 사인 + 엽서 3종 포함 (한정판)",    price=Decimal("16800"), stock=200, category="book",       status="active"),
+            Product(id=10, creator_id=10, name="최나라 포토북 '서울의 새벽'", description="사진작가 최나라의 첫 번째 포토북. 필름 사진 80컷 수록, 하드커버 양장.", price=Decimal("38000"), stock=50,  category="photobook",  status="active"),
+            Product(id=11, creator_id=11, name="'우리 사이의 거리' 단행본 1권", description="네이버 웹툰 단행본. 1~25화 수록, 미공개 에피소드 포함.",          price=Decimal("13000"), stock=400, category="book",       status="active"),
+            Product(id=12, creator_id=12, name="오채원 레시피북 '집밥의 온도'", description="인기 레시피 100가지 수록. 계절별 제철 재료 활용법 + QR코드 영상 제공.", price=Decimal("19800"), stock=250, category="book",       status="active"),
         ]
         db.add_all(products)
         await db.flush()
@@ -695,7 +801,7 @@ async def seed_data():
         print("  [OK] Notification (templates, notifications, settings, scheduled, system_logs)")
 
         # ================================================================
-        # 11. LIKE — fan_likes / fan_recommendations / artist_post_likes / artist_post_recommendations
+        # 11. LIKE — fan_likes / fan_recommendations / creator_post_likes / creator_post_recommendations
         # ================================================================
         fan_likes = [
             FanLike(id=1, subscription_id=1, target_type="post",         target_id=1),
@@ -718,61 +824,76 @@ async def seed_data():
         db.add_all(fan_recommendations)
         await db.flush()
 
-        artist_post_likes = [
-            ArtistPostLike(id=1, artist_id=1, post_id=6),
-            ArtistPostLike(id=2, artist_id=2, post_id=7),
-            ArtistPostLike(id=3, artist_id=3, post_id=8),
+        creator_post_likes = [
+            CreatorPostLike(id=1, creator_id=1, post_id=6),
+            CreatorPostLike(id=2, creator_id=2, post_id=7),
+            CreatorPostLike(id=3, creator_id=3, post_id=8),
         ]
-        db.add_all(artist_post_likes)
+        db.add_all(creator_post_likes)
         await db.flush()
 
-        artist_post_recommendations = [
-            ArtistPostRecommendation(id=1, artist_id=1, post_id=6),
+        creator_post_recommendations = [
+            CreatorPostRecommendation(id=1, creator_id=1, post_id=6),
         ]
-        db.add_all(artist_post_recommendations)
+        db.add_all(creator_post_recommendations)
         await db.flush()
 
-        print("  [OK] Like (fan_likes, fan_recommendations, artist_post_likes, artist_post_recommendations)")
+        print("  [OK] Like (fan_likes, fan_recommendations, creator_post_likes, creator_post_recommendations)")
 
         # ================================================================
         # 12. STATS — artist_content / artist_chat / subscriber_content / subscriber_chat
         # ================================================================
-        artist_content_stats = [
-            ArtistContentStat(id=1, artist_id=1, post_count=4,  image_count=2, video_count=2, fan_like_count=3, fan_recommend_count=1),
-            ArtistContentStat(id=2, artist_id=2, post_count=3,  image_count=2, video_count=2, fan_like_count=2, fan_recommend_count=1),
-            ArtistContentStat(id=3, artist_id=3, post_count=2,  image_count=2, video_count=1, fan_like_count=1, fan_recommend_count=1),
-            ArtistContentStat(id=4, artist_id=4, post_count=0,  image_count=0, video_count=0, fan_like_count=0, fan_recommend_count=0),
-            ArtistContentStat(id=5, artist_id=5, post_count=0,  image_count=0, video_count=0, fan_like_count=0, fan_recommend_count=0),
-            ArtistContentStat(id=6, artist_id=6, post_count=0,  image_count=0, video_count=0, fan_like_count=0, fan_recommend_count=0),
+        creator_content_stats = [
+            CreatorContentStat(id=1,  creator_id=1,  post_count=4,  image_count=2, video_count=2, fan_like_count=3, fan_recommend_count=1),
+            CreatorContentStat(id=2,  creator_id=2,  post_count=3,  image_count=2, video_count=2, fan_like_count=2, fan_recommend_count=1),
+            CreatorContentStat(id=3,  creator_id=3,  post_count=2,  image_count=2, video_count=1, fan_like_count=1, fan_recommend_count=1),
+            CreatorContentStat(id=4,  creator_id=4,  post_count=0,  image_count=0, video_count=0, fan_like_count=0, fan_recommend_count=0),
+            CreatorContentStat(id=5,  creator_id=5,  post_count=0,  image_count=0, video_count=0, fan_like_count=0, fan_recommend_count=0),
+            CreatorContentStat(id=6,  creator_id=6,  post_count=0,  image_count=0, video_count=0, fan_like_count=0, fan_recommend_count=0),
+            CreatorContentStat(id=7,  creator_id=7,  post_count=2,  image_count=0, video_count=0, fan_like_count=4, fan_recommend_count=2),
+            CreatorContentStat(id=8,  creator_id=8,  post_count=2,  image_count=0, video_count=0, fan_like_count=8, fan_recommend_count=3),
+            CreatorContentStat(id=9,  creator_id=9,  post_count=2,  image_count=0, video_count=0, fan_like_count=5, fan_recommend_count=2),
+            CreatorContentStat(id=10, creator_id=10, post_count=2,  image_count=0, video_count=0, fan_like_count=6, fan_recommend_count=2),
+            CreatorContentStat(id=11, creator_id=11, post_count=2,  image_count=0, video_count=0, fan_like_count=9, fan_recommend_count=4),
+            CreatorContentStat(id=12, creator_id=12, post_count=2,  image_count=0, video_count=0, fan_like_count=7, fan_recommend_count=3),
         ]
-        db.add_all(artist_content_stats)
+        db.add_all(creator_content_stats)
         await db.flush()
 
-        artist_chat_stats = [
-            ArtistChatStat(id=1, artist_id=1, chat_subscriber_count=1, chat_image_count=0, chat_video_count=0, chat_attendance_days=5),
-            ArtistChatStat(id=2, artist_id=2, chat_subscriber_count=1, chat_image_count=0, chat_video_count=1, chat_attendance_days=3),
-            ArtistChatStat(id=3, artist_id=3, chat_subscriber_count=1, chat_image_count=0, chat_video_count=0, chat_attendance_days=2),
+        creator_chat_stats = [
+            CreatorChatStat(id=1, creator_id=1, chat_subscriber_count=1, chat_image_count=0, chat_video_count=0, chat_attendance_days=5),
+            CreatorChatStat(id=2, creator_id=2, chat_subscriber_count=1, chat_image_count=0, chat_video_count=1, chat_attendance_days=3),
+            CreatorChatStat(id=3, creator_id=3, chat_subscriber_count=1, chat_image_count=0, chat_video_count=0, chat_attendance_days=2),
         ]
-        db.add_all(artist_chat_stats)
+        db.add_all(creator_chat_stats)
         await db.flush()
 
         subscriber_content_stats = [
-            SubscriberContentStat(id=1, subscription_id=1, post_count=2, image_count=0, fan_like_count=3, fan_recommend_count=1),
-            SubscriberContentStat(id=2, subscription_id=2, post_count=1, image_count=0, fan_like_count=2, fan_recommend_count=1),
-            SubscriberContentStat(id=3, subscription_id=3, post_count=1, image_count=0, fan_like_count=1, fan_recommend_count=1),
+            SubscriberContentStat(id=1,  subscription_id=1,  post_count=2, image_count=0, fan_like_count=3, fan_recommend_count=1),
+            SubscriberContentStat(id=2,  subscription_id=2,  post_count=1, image_count=0, fan_like_count=2, fan_recommend_count=1),
+            SubscriberContentStat(id=3,  subscription_id=3,  post_count=1, image_count=0, fan_like_count=1, fan_recommend_count=1),
+            SubscriberContentStat(id=7,  subscription_id=7,  post_count=1, image_count=0, fan_like_count=2, fan_recommend_count=1),
+            SubscriberContentStat(id=8,  subscription_id=8,  post_count=1, image_count=0, fan_like_count=3, fan_recommend_count=1),
+            SubscriberContentStat(id=9,  subscription_id=9,  post_count=1, image_count=0, fan_like_count=2, fan_recommend_count=1),
+            SubscriberContentStat(id=10, subscription_id=10, post_count=1, image_count=0, fan_like_count=2, fan_recommend_count=1),
+            SubscriberContentStat(id=11, subscription_id=11, post_count=1, image_count=0, fan_like_count=3, fan_recommend_count=2),
+            SubscriberContentStat(id=12, subscription_id=12, post_count=1, image_count=0, fan_like_count=2, fan_recommend_count=1),
         ]
         db.add_all(subscriber_content_stats)
         await db.flush()
 
         subscriber_chat_stats = [
-            SubscriberChatStat(id=1, subscription_id=1, messages_sent=3, chat_active_days=5),
-            SubscriberChatStat(id=2, subscription_id=2, messages_sent=1, chat_active_days=2),
-            SubscriberChatStat(id=3, subscription_id=3, messages_sent=1, chat_active_days=1),
+            SubscriberChatStat(id=1,  subscription_id=1,  messages_sent=3, chat_active_days=5),
+            SubscriberChatStat(id=2,  subscription_id=2,  messages_sent=1, chat_active_days=2),
+            SubscriberChatStat(id=3,  subscription_id=3,  messages_sent=1, chat_active_days=1),
+            SubscriberChatStat(id=7,  subscription_id=7,  messages_sent=2, chat_active_days=3),
+            SubscriberChatStat(id=8,  subscription_id=8,  messages_sent=2, chat_active_days=4),
+            SubscriberChatStat(id=12, subscription_id=12, messages_sent=2, chat_active_days=2),
         ]
         db.add_all(subscriber_chat_stats)
         await db.flush()
 
-        print("  [OK] Stats (artist_content, artist_chat, subscriber_content, subscriber_chat)")
+        print("  [OK] Stats (creator_content, creator_chat, subscriber_content, subscriber_chat)")
 
         # ================================================================
         # 13. MODERATION — moderation_models / content_moderation
@@ -800,7 +921,7 @@ async def seed_data():
         faqs = [
             FAQ(id=1, category="계정",   question="비밀번호를 잊어버렸어요. 어떻게 해야 하나요?",         answer="로그인 화면에서 '비밀번호 찾기'를 클릭하고 가입한 이메일을 입력하시면 재설정 링크가 발송됩니다.", priority=1, is_active=True, write_id=8),
             FAQ(id=2, category="계정",   question="회원 탈퇴는 어떻게 하나요?",                           answer="설정 > 계정 관리 > 회원 탈퇴에서 진행할 수 있습니다. 탈퇴 후 30일간 데이터가 보관됩니다.",     priority=2, is_active=True, write_id=8),
-            FAQ(id=3, category="구독",   question="구독은 어떻게 하나요?",                                 answer="아티스트 프로필 페이지에서 '구독하기' 버튼을 클릭하면 됩니다. 무료/유료 플랜을 선택할 수 있습니다.", priority=1, is_active=True, write_id=8),
+            FAQ(id=3, category="구독",   question="구독은 어떻게 하나요?",                                 answer="크리에이터 프로필 페이지에서 '구독하기' 버튼을 클릭하면 됩니다. 무료/유료 플랜을 선택할 수 있습니다.", priority=1, is_active=True, write_id=8),
             FAQ(id=4, category="구독",   question="구독을 취소하면 환불이 되나요?",                        answer="유료 구독의 경우, 남은 기간에 대해 일할 계산으로 환불이 가능합니다.",                           priority=2, is_active=True, write_id=8),
             FAQ(id=5, category="결제",   question="어떤 결제 수단을 사용할 수 있나요?",                    answer="신용/체크카드, 카카오페이, 토스페이를 지원합니다.",                                             priority=1, is_active=True, write_id=8),
             FAQ(id=6, category="쇼핑",   question="배송은 얼마나 걸리나요?",                               answer="결제 완료 후 2~5 영업일 이내에 배송됩니다. 제주/도서산간 지역은 추가 1~2일이 소요될 수 있습니다.", priority=1, is_active=True, write_id=8),
@@ -825,8 +946,8 @@ async def seed_data():
         await db.flush()
 
         notices = [
-            Notice(id=1, title="yourFlace 서비스 오픈 안내",        message="yourFlace가 정식 오픈했습니다! 다양한 아티스트를 만나보세요.",                                    write_id=8, write_role="admin", target_type="all", is_active=True),
-            Notice(id=2, title="신규 아티스트 루나 합류",            message="인기 가수 루나가 yourFlace에 합류했습니다. 지금 바로 구독하세요!",                                write_id=8, write_role="admin", target_type="all", is_active=True),
+            Notice(id=1, title="yourFlace 서비스 오픈 안내",        message="yourFlace가 정식 오픈했습니다! 시인, 유튜버, 작가, 사진작가 등 다양한 크리에이터를 만나보세요.",   write_id=8, write_role="admin", target_type="all", is_active=True),
+            Notice(id=2, title="신규 크리에이터 합류 안내",          message="시인 김지수, 유튜버 박민지, 소설가 이승우 등 6명의 신규 크리에이터가 yourFlace에 합류했습니다!",      write_id=8, write_role="admin", target_type="all", is_active=True),
             Notice(id=3, title="앱 업데이트 안내 (v1.1.0)",          message="채팅 기능이 개선되고 다크모드가 추가되었습니다. 업데이트 후 이용해주세요.",                        write_id=8, write_role="admin", target_type="all", is_active=True),
         ]
         db.add_all(notices)
@@ -845,11 +966,11 @@ async def seed_data():
         # 15. MAGAZINE — magazines
         # ================================================================
         magazines = [
-            Magazine(id=1, title="루나, 첫 단독 콘서트 2만 관객 매진 성공",            slug=generate_slug("루나 첫 단독 콘서트 2만 관객 매진 성공"), content="지난 금요일 잠실 올림픽경기장에서 열린 루나의 첫 번째 단독 콘서트 '별빛 아래서'가 2만 관객을 가득 채우며 성공적으로 막을 내렸습니다. 데뷔 3년 만에 이룬 단독 콘서트는 루나의 성장을 보여주는 무대였습니다.", summary="루나의 첫 단독 콘서트가 2만 석 매진을 기록하며 성황리에 마무리되었습니다.", thumbnail_url="/placeholder/concert1.jpg", category="공연",      artist_id=1, write_id=8, tags=["콘서트", "루나", "매진"], is_active=True, view_count=1520),
-            Magazine(id=2, title="하루, 세계 댄스 대회 금상 수상 쾌거",               slug=generate_slug("하루 세계 댄스 대회 금상 수상 쾌거"), content="하루가 세계적인 댄스 대회 'World Dance Championship 2026'에서 현대무용 부문 금상을 수상했습니다. 한국 댄서 최초로 해당 부문에서 금상을 차지하며 큰 주목을 받고 있습니다.", summary="하루가 WDC 2026 현대무용 부문 금상을 수상했습니다.", thumbnail_url="/placeholder/dance1.jpg", category="수상",      artist_id=2, write_id=8, tags=["하루", "수상", "댄스대회"], is_active=True, view_count=980),
-            Magazine(id=3, title="소율, 첫 개인전 '꿈의 색채' 3월 개최",              slug=generate_slug("소율 첫 개인전 꿈의 색채 3월 개최"), content="일러스트레이터 소율의 첫 개인전 '꿈의 색채'가 서울 성수동 갤러리에서 오는 3월 1일부터 31일까지 한 달간 개최됩니다. 이번 전시에서는 '도시의 밤' 시리즈를 포함한 30여 점의 신작이 공개될 예정입니다.", summary="소율 작가의 첫 개인전이 성수동 갤러리에서 열립니다.", thumbnail_url="/placeholder/art1.jpg", category="전시",      artist_id=3, write_id=8, tags=["소율", "개인전", "갤러리"], is_active=True, view_count=650),
-            Magazine(id=4, title="yourFlace, 아티스트와 팬을 잇는 새로운 플랫폼 정식 오픈", slug=generate_slug("yourflace 아티스트와 팬을 잇는 새로운 플랫폼 정식 오픈"), content="팬과 아티스트를 더 가깝게 연결하는 플랫폼 yourFlace가 정식 오픈했습니다. 구독 기반의 독점 콘텐츠, 실시간 채팅, 굿즈 쇼핑 등 다양한 기능을 통해 팬과 아티스트 간의 소통을 지원합니다.", summary="yourFlace 플랫폼이 정식 오픈했습니다.", thumbnail_url="/placeholder/banner1.jpg", category="플랫폼",    artist_id=None, write_id=8, tags=["yourFlace", "오픈", "플랫폼"], is_active=True, view_count=2100),
-            Magazine(id=5, title="제이, 새 믹스테이프 '야간비행' 발매 예고",            slug=generate_slug("제이 새 믹스테이프 야간비행 발매 예고"), content="래퍼 제이가 새 믹스테이프 '야간비행'의 발매를 예고했습니다. 총 8트랙으로 구성되며 다양한 프로듀서와의 협업이 포함되어 있어 팬들의 기대를 모으고 있습니다.", summary="제이의 새 믹스테이프 '야간비행'이 곧 발매됩니다.", thumbnail_url="/placeholder/concert2.jpg", category="음악",      artist_id=5, write_id=8, tags=["제이", "믹스테이프", "신보"], is_active=True, view_count=430),
+            Magazine(id=1, title="루나, 첫 단독 콘서트 2만 관객 매진 성공",            slug=generate_slug("루나 첫 단독 콘서트 2만 관객 매진 성공"), content="지난 금요일 잠실 올림픽경기장에서 열린 루나의 첫 번째 단독 콘서트 '별빛 아래서'가 2만 관객을 가득 채우며 성공적으로 막을 내렸습니다. 데뷔 3년 만에 이룬 단독 콘서트는 루나의 성장을 보여주는 무대였습니다.", summary="루나의 첫 단독 콘서트가 2만 석 매진을 기록하며 성황리에 마무리되었습니다.", thumbnail_url="/placeholder/concert1.jpg", category="공연",      creator_id=1, write_id=8, tags=["콘서트", "루나", "매진"], is_active=True, view_count=1520),
+            Magazine(id=2, title="하루, 세계 댄스 대회 금상 수상 쾌거",               slug=generate_slug("하루 세계 댄스 대회 금상 수상 쾌거"), content="하루가 세계적인 댄스 대회 'World Dance Championship 2026'에서 현대무용 부문 금상을 수상했습니다. 한국 댄서 최초로 해당 부문에서 금상을 차지하며 큰 주목을 받고 있습니다.", summary="하루가 WDC 2026 현대무용 부문 금상을 수상했습니다.", thumbnail_url="/placeholder/dance1.jpg", category="수상",      creator_id=2, write_id=8, tags=["하루", "수상", "댄스대회"], is_active=True, view_count=980),
+            Magazine(id=3, title="소율, 첫 개인전 '꿈의 색채' 3월 개최",              slug=generate_slug("소율 첫 개인전 꿈의 색채 3월 개최"), content="일러스트레이터 소율의 첫 개인전 '꿈의 색채'가 서울 성수동 갤러리에서 오는 3월 1일부터 31일까지 한 달간 개최됩니다. 이번 전시에서는 '도시의 밤' 시리즈를 포함한 30여 점의 신작이 공개될 예정입니다.", summary="소율 작가의 첫 개인전이 성수동 갤러리에서 열립니다.", thumbnail_url="/placeholder/art1.jpg", category="전시",      creator_id=3, write_id=8, tags=["소율", "개인전", "갤러리"], is_active=True, view_count=650),
+            Magazine(id=4, title="yourFlace, 크리에이터와 팬을 잇는 새로운 플랫폼 정식 오픈", slug=generate_slug("yourflace 크리에이터와 팬을 잇는 새로운 플랫폼 정식 오픈"), content="팬과 크리에이터를 더 가깝게 연결하는 플랫폼 yourFlace가 정식 오픈했습니다. 가수, 댄서, 시인, 유튜버, 작가, 사진작가 등 다양한 분야의 크리에이터들이 함께합니다. 구독 기반의 독점 콘텐츠, 실시간 채팅, 굿즈 쇼핑 등 다양한 기능을 통해 팬과 크리에이터 간의 소통을 지원합니다.", summary="yourFlace 플랫폼이 정식 오픈했습니다. 다양한 분야의 크리에이터를 만나보세요.", thumbnail_url="/placeholder/banner1.jpg", category="플랫폼",    creator_id=None, write_id=8, tags=["yourFlace", "오픈", "플랫폼", "크리에이터"], is_active=True, view_count=2100),
+            Magazine(id=5, title="제이, 새 믹스테이프 '야간비행' 발매 예고",            slug=generate_slug("제이 새 믹스테이프 야간비행 발매 예고"), content="래퍼 제이가 새 믹스테이프 '야간비행'의 발매를 예고했습니다. 총 8트랙으로 구성되며 다양한 프로듀서와의 협업이 포함되어 있어 팬들의 기대를 모으고 있습니다.", summary="제이의 새 믹스테이프 '야간비행'이 곧 발매됩니다.", thumbnail_url="/placeholder/concert2.jpg", category="음악",      creator_id=5, write_id=8, tags=["제이", "믹스테이프", "신보"], is_active=True, view_count=430),
             Magazine(
                 id=6,
                 title="루나의 콘서트 비하인드 — 무대 뒤 24시간",
@@ -890,7 +1011,7 @@ async def seed_data():
                 summary="루나 첫 단독 콘서트의 비하인드 스토리를 공개합니다.",
                 thumbnail_url="/placeholder/concert1.jpg",
                 category="비하인드",
-                artist_id=1,
+                creator_id=1,
                 write_id=8,
                 tags=["루나", "비하인드", "콘서트", "HTML테스트"],
                 is_active=True,
@@ -931,15 +1052,16 @@ async def seed_data():
         print("  팬 계정(구독 없음): guest@test.com / test1234")
         print("  관리자 계정:        admin@test.com / test1234")
         print()
-        print("  Users           9명 (팬2 + 아티스트6 + 관리자1)")
-        print("  Artists         6명 (루나, 하루, 소율, 민서, 제이, 유리)")
-        print("  Subscriptions   6건 (fan@test.com → 전체 아티스트 구독)")
-        print("  Sub Plans      12건 (아티스트별 베이직+프리미엄)")
-        print("  Posts          11건 (아티스트5 + 팬3 + 기사3)")
-        print("  Images         12건 / Artist Images 6건 / Videos 5건")
-        print("  Chat Rooms      3개 / Messages 10건")
-        print("  Events          4건 (활성3 + 완료1)")
-        print("  Products        5건 / Orders 3건")
+        print("  Users          15명 (팬2 + 크리에이터12 + 관리자1)")
+        print("  Creators       12명 (루나, 하루, 소율, 민서, 제이, 유리 + 시인, 유튜버, 소설가, 사진작가, 웹툰작가, 요리연구가)")
+        print("  Categories     10개 (가수, 댄서, 일러스트레이터, 배우 + 시인, 유튜버, 소설가, 사진작가, 웹툰작가, 요리연구가)")
+        print("  Subscriptions  12건 (fan@test.com → 전체 크리에이터 구독)")
+        print("  Sub Plans      24건 (크리에이터별 베이직+프리미엄)")
+        print("  Posts          23건 (크리에이터11 + 팬3 + 기사3 + 신규6×2)")
+        print("  Images         12건 / Creator Images 6건 / Videos 5건")
+        print("  Chat Rooms      6개 / Messages 19건")
+        print("  Events          8건 (활성6 + 완료1 + 마감1)")
+        print("  Products       12건 / Orders 3건")
         print("  Payments        3건 / Refunds 1건")
         print("  Notifications  27건 / Templates 14건")
         print("  Fan Likes       8건 / Recommendations 3건")
@@ -953,32 +1075,32 @@ async def reset_sequences():
     """auto-increment 시퀀스를 시드 데이터 이후부터 시작하도록 리셋"""
     async with AsyncSessionLocal() as db:
         tables = [
-            ("users", 20), ("profile", 20), ("user_settings", 20),
+            ("users", 30), ("profile", 30), ("user_settings", 30),
             ("user_addresses", 10), ("user_devices", 10), ("login_logs", 10),
-            ("artist_categories", 10), ("artists", 10),
-            ("artist_category_map", 10), ("artist_social_links", 20),
+            ("creator_categories", 20), ("creators", 20),
+            ("creator_category_map", 20), ("creator_social_links", 30),
             ("managers", 10),
-            ("subscription_plans", 20), ("subscriptions", 10),
+            ("subscription_plans", 30), ("subscriptions", 20),
             ("subscription_cancellations", 10),
-            ("images", 20), ("posts", 20), ("post_images", 10),
-            ("post_comments", 10), ("post_stats", 20),
-            ("artist_images", 10), ("artist_image_comments", 10), ("artist_image_stats", 10),
-            ("artist_videos", 10), ("artist_video_comments", 10), ("artist_video_stats", 10),
-            ("chat_rooms", 10), ("chat_messages", 20),
+            ("images", 20), ("posts", 30), ("post_images", 10),
+            ("post_comments", 10), ("post_stats", 30),
+            ("creator_images", 10), ("creator_image_comments", 10), ("creator_image_stats", 10),
+            ("creator_videos", 10), ("creator_video_comments", 10), ("creator_video_stats", 10),
+            ("chat_rooms", 10), ("chat_messages", 30),
             ("chat_images", 10), ("chat_videos", 10),
             ("chat_read_receipts", 10), ("chat_pins", 10), ("chat_reports", 10),
             ("calendar_searches", 10), ("saved_search_filters", 10),
             ("payment_methods", 10), ("payments", 10), ("payment_refunds", 10),
-            ("events", 10), ("event_participants", 10), ("event_attendance", 10),
-            ("products", 10), ("product_images", 10),
+            ("events", 20), ("event_participants", 10), ("event_attendance", 10),
+            ("products", 20), ("product_images", 20),
             ("orders", 10), ("order_items", 10),
             ("notification_templates", 20), ("notifications", 30),
             ("notification_settings", 10), ("scheduled_notifications", 10),
             ("system_logs", 10),
             ("fan_likes", 20), ("fan_recommendations", 10),
-            ("artist_post_likes", 10), ("artist_post_recommendations", 10),
-            ("artist_content_stats", 10), ("artist_chat_stats", 10),
-            ("subscriber_content_stats", 10), ("subscriber_chat_stats", 10),
+            ("creator_post_likes", 10), ("creator_post_recommendations", 10),
+            ("creator_content_stats", 20), ("creator_chat_stats", 10),
+            ("subscriber_content_stats", 20), ("subscriber_chat_stats", 20),
             ("moderation_models", 10), ("content_moderation", 10),
             ("faq", 10), ("banners", 10), ("system_messages", 10),
             ("notices", 10), ("error_logs", 10),

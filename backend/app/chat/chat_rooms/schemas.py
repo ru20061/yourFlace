@@ -3,8 +3,8 @@ from typing import Optional, Literal
 from datetime import datetime
 
 class ChatRoomBase(BaseModel):
-    room_type: Literal["fan", "artist", "group", "direct", "subscription"]
-    artist_id: Optional[int] = None
+    room_type: Literal["fan", "creator", "group", "direct", "subscription"]
+    creator_id: Optional[int] = None
     room_name: Optional[str] = None
     room_image: Optional[str] = None
     status: Optional[Literal["active", "inactive", "archived"]] = "active"
@@ -13,8 +13,8 @@ class ChatRoomCreate(ChatRoomBase):
     pass
 
 class ChatRoomUpdate(BaseModel):
-    room_type: Optional[Literal["fan", "artist", "group", "direct", "subscription"]] = None
-    artist_id: Optional[int] = None
+    room_type: Optional[Literal["fan", "creator", "group", "direct", "subscription"]] = None
+    creator_id: Optional[int] = None
     room_name: Optional[str] = None
     room_image: Optional[str] = None
     last_message_at: Optional[datetime] = None

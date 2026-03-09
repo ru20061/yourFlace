@@ -13,7 +13,7 @@ class Magazine(Base):
     summary = Column(String(500), nullable=True)
     thumbnail_url = Column(String(255), nullable=True)
     category = Column(String(50), nullable=True)
-    artist_id = Column(BigInteger, ForeignKey('artists.id'), nullable=True)
+    creator_id = Column(BigInteger, ForeignKey('creators.id'), nullable=True)
     write_id = Column(BigInteger, ForeignKey('users.id'), nullable=False)
     tags = Column(JSON, nullable=True)
     is_active = Column(Boolean, default=True)

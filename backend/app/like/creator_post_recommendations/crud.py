@@ -1,0 +1,8 @@
+from app.common.base_crud import BaseCRUD
+from app.like.creator_post_recommendations.models import CreatorPostRecommendation
+from app.like.creator_post_recommendations.schemas import CreatorPostRecommendationCreate, CreatorPostRecommendationUpdate
+
+class CRUDCreatorPostRecommendation(BaseCRUD[CreatorPostRecommendation, CreatorPostRecommendationCreate, CreatorPostRecommendationUpdate]):
+    pass
+
+creator_post_recommendation_crud = CRUDCreatorPostRecommendation(CreatorPostRecommendation)

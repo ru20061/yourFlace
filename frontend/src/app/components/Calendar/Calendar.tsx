@@ -21,7 +21,7 @@ const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
 
 const TYPE_CONFIG: Record<CalendarItem["type"], { label: string; cls: string }> = {
   fanPost:    { label: "유저",   cls: "tag-fan-post" },
-  artistPost: { label: "아티스트", cls: "tag-artist-post" },
+  artistPost: { label: "크리에이터", cls: "tag-artist-post" },
   image:      { label: "이미지", cls: "tag-image" },
   video:      { label: "동영상", cls: "tag-video" },
   event:      { label: "이벤트", cls: "tag-event" },

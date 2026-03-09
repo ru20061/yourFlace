@@ -7,7 +7,7 @@ class SubscriptionPlan(Base):
     __tablename__ = "subscription_plans"
     
     id = Column(BigInteger, primary_key=True, autoincrement=True)
-    artist_id = Column(BigInteger, ForeignKey('artists.id'), nullable=False)
+    creator_id = Column(BigInteger, ForeignKey('creators.id'), nullable=False)
     name = Column(String(100), nullable=False)
     price = Column(Numeric(10, 2), default=0)
     currency = Column(String(10), default='KRW')

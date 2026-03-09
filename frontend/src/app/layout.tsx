@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "yourFlace",
-  description: "아티스트와 팬을 연결하는 팬 플랫폼",
+  description: "크리에이터와 팬을 연결하는 팬 플랫폼",
 };
 
 export default function RootLayout({

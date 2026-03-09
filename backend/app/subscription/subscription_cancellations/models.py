@@ -9,7 +9,7 @@ class SubscriptionCancellation(Base):
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     subscription_id = Column(BigInteger, ForeignKey('subscriptions.id'), nullable=False)
     user_id = Column(BigInteger, ForeignKey('users.id'), nullable=False)
-    artist_id = Column(BigInteger, ForeignKey('artists.id'), nullable=False)
+    creator_id = Column(BigInteger, ForeignKey('creators.id'), nullable=False)
     reason_code = Column(String(50), nullable=True)
     reason_detail = Column(Text, nullable=True)
     cancelled_at = Column(TIMESTAMP, server_default=func.now())

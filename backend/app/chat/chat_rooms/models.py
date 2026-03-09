@@ -8,7 +8,7 @@ class ChatRoom(Base):
     
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     room_type = Column(String(20), nullable=False)
-    artist_id = Column(BigInteger, ForeignKey('artists.id'), nullable=True)
+    creator_id = Column(BigInteger, ForeignKey('creators.id'), nullable=True)
     room_name = Column(String(255), nullable=True)
     room_image = Column(String(512), nullable=True)
     last_message_at = Column(TIMESTAMP, nullable=True)
