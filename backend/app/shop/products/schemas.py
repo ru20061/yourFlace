@@ -14,6 +14,7 @@ class ProductBase(BaseModel):
     sale_start: Optional[datetime] = None
     sale_end: Optional[datetime] = None
     status: Optional[Literal["active", "inactive", "sold_out", "discontinued"]] = "active"
+    subscription_plan_id: Optional[int] = None
 
 class ProductCreate(ProductBase):
     pass

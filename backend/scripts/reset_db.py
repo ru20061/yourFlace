@@ -1,5 +1,5 @@
 """
-DB 전체 삭제 후 모델 기반으로 재생성 + 시드 데이터 삽입
+DB 전체 삭제 후 모델 기반으로 재생성 (시드 데이터 삽입 없음)
 사용법 (프로젝트 루트에서): python -m backend.scripts.reset_db
 """
 import sys
@@ -10,7 +10,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from sqlalchemy import text
 from app.database import engine, Base
-from scripts.seed import seed_data, reset_sequences
 
 # 모든 모델 임포트 (Base.metadata에 등록)
 from app.auth.users.models import User
@@ -44,6 +43,7 @@ from app.content.celeb_image_stats.models import CelebImageStat
 from app.content.celeb_videos.models import CelebVideo
 from app.content.celeb_video_comments.models import CelebVideoComment
 from app.content.celeb_video_stats.models import CelebVideoStat
+from app.content.diary.models import Diary
 
 from app.chat.chat_rooms.models import ChatRoom
 from app.chat.chat_messages.models import ChatMessage
@@ -169,23 +169,17 @@ async def main():
         return
 
     print()
-    print("[1/5] 기존 테이블 전체 삭제...")
+    print("[1/3] 기존 테이블 전체 삭제...")
     await drop_all_tables()
 
-    print("[2/5] 모델 기반 테이블·컬럼 생성...")
+    print("[2/3] 모델 기반 테이블·컬럼 생성...")
     await create_all_tables()
 
-    print("[3/5] 테이블·컬럼 검증...")
+    print("[3/3] 테이블·컬럼 검증...")
     await verify_tables()
 
-    print("[4/5] 시드 데이터 삽입...")
-    await seed_data()
-
-    print("[5/5] 시퀀스 리셋...")
-    await reset_sequences()
-
     print()
-    print("=== 리셋 완료 ===")
+    print("=== 리셋 완료 (시드 데이터 삽입 없음) ===")
     await engine.dispose()
 
 

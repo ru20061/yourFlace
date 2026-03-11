@@ -17,10 +17,20 @@ async def get_public_magazines(
     limit: int = Query(10, ge=1, le=50),
     db: AsyncSession = Depends(get_db),
 ):
-    """공개 매거진 목록 조회 (is_active=True, 인증 불필요)"""
-    filters = {"is_active": True}
-    items = await crud.magazine_crud.get_multi(db, skip=skip, limit=limit, filters=filters)
-    total = await crud.magazine_crud.count(db, filters=filters)
+    """공개 매거진 목록 조회 (is_active=True, 인증 불필요) — id 오름차순 고정"""
+    from sqlalchemy import func as sa_func
+    stmt = (
+        select(Magazine)
+        .where(Magazine.is_active == True)
+        .order_by(Magazine.id.asc())
+        .offset(skip)
+        .limit(limit)
+    )
+    result = await db.execute(stmt)
+    items = result.scalars().all()
+    total_stmt = select(sa_func.count()).select_from(Magazine).where(Magazine.is_active == True)
+    total_result = await db.execute(total_stmt)
+    total = total_result.scalar()
     return schemas.MagazineList(items=items, total=total, skip=skip, limit=limit)
 
 @router.get("/public/by-slug/{slug}", response_model=schemas.MagazineDetailResponse)

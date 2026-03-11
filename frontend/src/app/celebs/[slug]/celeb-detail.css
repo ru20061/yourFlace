@@ -2,6 +2,78 @@
   padding: 0;
 }
 
+/* 소속 그룹 배지 (개인 → 그룹 링크) */
+.celeb-parent-group-badge {
+  display: inline-block;
+  margin-bottom: 8px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: var(--color-main-light, #f0eaff);
+  color: var(--color-main);
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+}
+.celeb-parent-group-badge:hover {
+  opacity: 0.8;
+}
+
+/* 그룹 멤버 섹션 */
+.celeb-members-section {
+  padding: 16px;
+  border-bottom: 1px solid var(--border-color);
+}
+.celeb-members-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+}
+.celeb-members-list {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+.celeb-member-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+.celeb-member-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--color-main-light, #f0eaff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 2px solid var(--border-color);
+}
+.celeb-member-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.celeb-member-avatar span {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-main);
+}
+.celeb-member-name {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-primary);
+  text-align: center;
+}
+.celeb-member-card:hover .celeb-member-avatar {
+  border-color: var(--color-main);
+}
+
 /* 아티스트 프로필 헤더 */
 .artist-profile-header {
   position: relative;
@@ -81,6 +153,27 @@
   color: white;
   background: rgba(143, 0, 255, 0.85);
   border-color: transparent;
+}
+
+.artist-unsubscribe-btn {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  background: transparent;
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+
+.artist-unsubscribe-btn:hover {
+  color: #e74c3c;
+  border-color: #e74c3c;
+  background: rgba(231, 76, 60, 0.06);
 }
 
 /* 소셜 링크 */
@@ -282,12 +375,13 @@
   background: #ffffff;
   border-radius: 16px;
   width: 100%;
-  max-width: 520px;
+  max-width: 560px;
   max-height: 90vh;
   overflow-y: auto;
-  overflow: hidden;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
   border: none;
+  display: flex;
+  flex-direction: column;
 }
 
 .write-modal-header {
@@ -567,4 +661,78 @@
 .write-btn-submit:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* 다이어리 탭 */
+.diary-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.diary-editor-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.diary-date-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0 4px;
+  border-bottom: 2px solid var(--color-main);
+}
+
+.diary-date-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-main);
+}
+
+.diary-saved-badge {
+  font-size: 11px;
+  font-weight: 600;
+  color: white;
+  background: var(--color-main);
+  border-radius: 10px;
+  padding: 2px 8px;
+}
+
+.diary-editor-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  padding-top: 4px;
+}
+
+.diary-notice {
+  font-size: 13px;
+  color: var(--color-main);
+  font-weight: 600;
+}
+
+.diary-save-btn {
+  padding: 9px 28px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--color-main), var(--color-point));
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s;
+}
+
+.diary-save-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.diary-save-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
 }

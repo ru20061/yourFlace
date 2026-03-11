@@ -93,8 +93,11 @@ export default function ChatBubble({ subscribedCelebs }: ChatBubbleProps) {
                 (m) => m.chat_room_id === room.id && m.status === "active"
               );
               if (roomMsgs.length > 0) {
-                lastMessage = roomMsgs[0].content;
-                lastMessageAt = roomMsgs[0].created_at;
+                const m = roomMsgs[0];
+                lastMessage = m.content
+                  || (m.message_type === "image" ? "📷 이미지"
+                  : m.message_type === "video" ? "🎥 동영상" : null);
+                lastMessageAt = m.created_at;
               }
             } catch {
               // ignore
@@ -180,6 +183,7 @@ export default function ChatBubble({ subscribedCelebs }: ChatBubbleProps) {
     try {
       const newMsg = await api.post<ChatMessage>("/chat-messages", {
         chat_room_id: activeRoom.id,
+        sender_id: user?.id,
         sender_type: "fan",
         message_type: "text",
         content: msgInput.trim(),
@@ -344,7 +348,11 @@ export default function ChatBubble({ subscribedCelebs }: ChatBubbleProps) {
                           </div>
                         )}
                         <div className="chat-bubble-msg-bubble">
-                          {msg.content}
+                          {msg.message_type === "image"
+                            ? "📷 이미지"
+                            : msg.message_type === "video"
+                            ? "🎥 동영상"
+                            : msg.content || ""}
                         </div>
                         <span className="chat-bubble-msg-time">
                           {formatMsgTime(msg.created_at)}

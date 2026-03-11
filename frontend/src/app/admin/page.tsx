@@ -15,7 +15,7 @@ export default function AdminPage() {
           <div className="admin-stat-value">0</div>
         </div>
         <div className="admin-stat-card">
-          <div className="admin-stat-label">총 아티스트</div>
+          <div className="admin-stat-label">총 셀럽</div>
           <div className="admin-stat-value">0</div>
         </div>
         <div className="admin-stat-card">

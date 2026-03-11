@@ -265,9 +265,6 @@ export default function SubscriptionProfilesPage() {
 
               {/* 구독 정보 */}
               <div className="sub-meta">
-                <span className={`sub-badge ${sub.payments_type}`}>
-                  {sub.payments_type === "paid" ? "유료" : "무료"}
-                </span>
                 <span className="sub-meta-date">
                   {formatDate(sub.start_date)} ~
                   {sub.end_date ? ` ${formatDate(sub.end_date)}` : " 구독 중"}

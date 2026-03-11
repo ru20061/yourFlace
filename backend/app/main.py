@@ -1,6 +1,8 @@
+import os
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
+from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
 
 from app.config import settings
@@ -42,6 +44,7 @@ from app.content.celeb_image_stats.router import router as celeb_image_stats_rou
 from app.content.celeb_videos.router import router as celeb_videos_router
 from app.content.celeb_video_comments.router import router as celeb_video_comments_router
 from app.content.celeb_video_stats.router import router as celeb_video_stats_router
+from app.content.diary.router import router as diary_router
 
 from app.search.calendar_searches.router import router as calendar_searches_router
 from app.search.saved_search_filters.router import router as saved_search_filters_router
@@ -140,6 +143,11 @@ app.add_middleware(
 )
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 
+# 로컬 정적 파일 서빙 (개발용 — S3/MinIO 대체)
+_static_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "static")
+os.makedirs(os.path.join(_static_dir, "uploads"), exist_ok=True)
+app.mount("/static", StaticFiles(directory=_static_dir), name="static")
+
 # API Routes
 API_V1_PREFIX = "/yourflace"
 
@@ -181,6 +189,7 @@ app.include_router(celeb_image_stats_router, prefix=f"{API_V1_PREFIX}/celeb-imag
 app.include_router(celeb_videos_router, prefix=f"{API_V1_PREFIX}/celeb-videos", tags=["celeb-videos"])
 app.include_router(celeb_video_comments_router, prefix=f"{API_V1_PREFIX}/celeb-video-comments", tags=["celeb-video-comments"])
 app.include_router(celeb_video_stats_router, prefix=f"{API_V1_PREFIX}/celeb-video-stats", tags=["celeb-video-stats"])
+app.include_router(diary_router, prefix=f"{API_V1_PREFIX}/diaries", tags=["diaries"])
 
 # Search
 app.include_router(calendar_searches_router, prefix=f"{API_V1_PREFIX}/calendar-searches", tags=["calendar-searches"])

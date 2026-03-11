@@ -6,7 +6,7 @@ class CelebImageBase(BaseModel):
     celeb_id: int
     image_id: int
     write_id: int
-    write_role: Literal["celeb", "manager"]
+    write_role: Literal["celeb", "manager", "artist"]
     image_purpose: Optional[str] = None
     published_date: Optional[date] = None
     tags: Optional[Any] = None
@@ -21,7 +21,7 @@ class CelebImageUpdate(BaseModel):
     celeb_id: Optional[int] = None
     image_id: Optional[int] = None
     write_id: Optional[int] = None
-    write_role: Optional[Literal["celeb", "manager"]] = None
+    write_role: Optional[Literal["celeb", "manager", "artist"]] = None
     image_purpose: Optional[str] = None
     published_date: Optional[date] = None
     tags: Optional[Any] = None

@@ -10,6 +10,8 @@ class Celeb(Base):
     user_id = Column(BigInteger, ForeignKey('users.id'), unique=True, nullable=False)
     stage_name = Column(String(100), nullable=False)
     slug = Column(String(120), unique=True, nullable=True, index=True)
+    celeb_type = Column(String(20), default='individual', nullable=False)
+    parent_id = Column(BigInteger, ForeignKey('celebs.id'), nullable=True)
     notes = Column(Text, nullable=True)
     profile_image = Column(String(255), nullable=True)
     cover_image = Column(String(255), nullable=True)

@@ -6,6 +6,8 @@ import "./post-card.css";
 
 interface PostCardProps {
   post: Post;
+  currentUserId?: number;
+  onDelete?: (id: number) => void;
 }
 
 /** 블록 배열 또는 문자열 콘텐츠를 렌더링 */
@@ -46,8 +48,9 @@ function renderContent(content: ContentBlock[] | string | null) {
   return null;
 }
 
-export default function PostCard({ post }: PostCardProps) {
+export default function PostCard({ post, currentUserId, onDelete }: PostCardProps) {
   const isArticle = !!post.title_field;
+  const isMine = currentUserId !== undefined && post.write_id === currentUserId;
 
   return (
     <div className={`post-card ${isArticle ? "post-card-article" : ""}`}>
@@ -59,6 +62,20 @@ export default function PostCard({ post }: PostCardProps) {
         </div>
         {post.visibility === "subscribers" && (
           <span className="post-badge subscribers">구독자 전용</span>
+        )}
+        {isMine && onDelete && (
+          <button
+            className="post-delete-btn"
+            onClick={() => onDelete(post.id)}
+            title="삭제"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <polyline points="3 6 5 6 21 6" />
+              <path d="M19 6l-1 14H6L5 6" />
+              <path d="M10 11v6M14 11v6" />
+              <path d="M9 6V4h6v2" />
+            </svg>
+          </button>
         )}
       </div>
 

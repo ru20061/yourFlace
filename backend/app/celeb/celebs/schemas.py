@@ -4,6 +4,8 @@ from datetime import datetime
 
 class CelebBase(BaseModel):
     stage_name: str
+    celeb_type: Literal["group", "individual"] = "individual"
+    parent_id: Optional[int] = None
     notes: Optional[str] = None
     profile_image: Optional[str] = None
     cover_image: Optional[str] = None
@@ -14,6 +16,8 @@ class CelebCreate(CelebBase):
 
 class CelebUpdate(BaseModel):
     stage_name: Optional[str] = None
+    celeb_type: Optional[Literal["group", "individual"]] = None
+    parent_id: Optional[int] = None
     notes: Optional[str] = None
     profile_image: Optional[str] = None
     cover_image: Optional[str] = None

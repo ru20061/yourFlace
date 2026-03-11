@@ -1,5 +1,15 @@
 // 백엔드 스키마 기반 TypeScript 인터페이스
 
+export interface Diary {
+  id: number;
+  user_id: number;
+  celeb_id: number;
+  entry_date: string;   // YYYY-MM-DD
+  content_html: string;
+  created_at: string;
+  updated_at: string;
+}
+
 /** 백엔드 페이지네이션 응답 공통 형식 */
 export interface PaginatedResponse<T> {
   items: T[];
@@ -13,6 +23,8 @@ export interface Celeb {
   user_id: number;
   stage_name: string;
   slug: string | null;
+  celeb_type: "group" | "individual";
+  parent_id: number | null;
   notes: string | null;
   profile_image: string | null;
   cover_image: string | null;
@@ -304,6 +316,40 @@ export interface Payment {
   transaction_id: string | null;
   payment_method_id: number | null;
   paid_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Notification {
+  id: number;
+  subscription_id: number | null;
+  user_id: number;
+  noti_type: string;
+  source_id: number | null;
+  source_type: string | null;
+  event_type: string | null;
+  target_id: number | null;
+  title: string | null;
+  message: string | null;
+  is_read: boolean;
+  is_pushed: boolean;
+  search_text: string | null;
+  created_at: string;
+}
+
+export interface Product {
+  id: number;
+  celeb_id: number;
+  name: string;
+  description: string | null;
+  price: number;
+  currency: string;
+  stock: number;
+  category: string | null;
+  sale_start: string | null;
+  sale_end: string | null;
+  status: "active" | "inactive" | "sold_out" | "discontinued";
+  subscription_plan_id: number | null;
   created_at: string;
   updated_at: string;
 }

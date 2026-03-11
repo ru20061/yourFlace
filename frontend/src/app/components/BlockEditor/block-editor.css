@@ -1,0 +1,203 @@
+.block-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fff;
+}
+
+/* 블록 공통 */
+.block-item {
+  position: relative;
+  border-bottom: 1px solid var(--border-color);
+  transition: background 0.15s;
+}
+
+.block-item:last-child {
+  border-bottom: none;
+}
+
+.block-item.drag-over {
+  outline: 2px solid var(--color-main);
+  outline-offset: -2px;
+  background: rgba(143, 0, 255, 0.04);
+}
+
+.block-item.dragging {
+  opacity: 0.4;
+}
+
+/* 블록 헤더 (드래그 핸들 + 삭제) */
+.block-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 8px 0;
+}
+
+.block-drag-handle {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: grab;
+  color: var(--text-tertiary);
+  padding: 4px;
+  border-radius: 4px;
+  user-select: none;
+  touch-action: none;
+}
+
+.block-drag-handle:active {
+  cursor: grabbing;
+}
+
+.block-drag-handle svg {
+  width: 16px;
+  height: 16px;
+}
+
+.block-delete-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: none;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  border-radius: 4px;
+  transition: color 0.15s, background 0.15s;
+}
+
+.block-delete-btn:hover {
+  color: #e74c3c;
+  background: rgba(231, 76, 60, 0.08);
+}
+
+.block-delete-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* 텍스트 블록 */
+.block-textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 6px 12px 12px;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 14px;
+  line-height: 1.7;
+  resize: none;
+  font-family: inherit;
+  display: block;
+}
+
+.block-textarea:focus {
+  outline: none;
+}
+
+.block-textarea::placeholder {
+  color: var(--text-tertiary);
+}
+
+/* 이미지 블록 */
+.block-image-wrap {
+  padding: 6px 12px 12px;
+}
+
+.block-image-preview {
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--background-secondary);
+  max-height: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.block-image-preview img {
+  width: 100%;
+  max-height: 320px;
+  object-fit: contain;
+  display: block;
+}
+
+/* 블록 사이 삽입 버튼 */
+.block-insert-row {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--background-secondary);
+}
+
+.block-insert-row:last-of-type {
+  border-bottom: none;
+}
+
+.block-insert-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-tertiary);
+  font-size: 12px;
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+}
+
+.block-insert-btn:hover {
+  color: var(--color-main);
+  background: rgba(143, 0, 255, 0.07);
+}
+
+.block-insert-btn svg {
+  width: 12px;
+  height: 12px;
+}
+
+/* 하단 추가 툴바 */
+.block-editor-toolbar {
+  display: flex;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid var(--border-color);
+  border-top: none;
+  border-radius: 0 0 10px 10px;
+  background: var(--background-secondary);
+}
+
+.block-toolbar-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.block-toolbar-btn:hover {
+  color: var(--color-main);
+  border-color: var(--color-main);
+}
+
+.block-toolbar-btn svg {
+  width: 15px;
+  height: 15px;
+}

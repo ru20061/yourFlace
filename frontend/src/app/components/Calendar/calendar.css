@@ -23,10 +23,45 @@
 
 .calendar-nav {
   display: flex;
+  align-items: center;
   gap: 4px;
 }
 
-.calendar-nav button {
+/* 캘린더 헤더 내 FlaceDatePicker 크기 조정 */
+.calendar-nav .fdp-wrapper {
+  width: auto;
+}
+
+.calendar-nav .fdp-input {
+  width: auto;
+  padding: 6px 10px;
+  font-size: 12px;
+  border-radius: 10px;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.calendar-nav .fdp-input .fdp-icon {
+  width: 14px;
+  height: 14px;
+}
+
+.calendar-nav .fdp-dropdown {
+  left: auto;
+  right: 0;
+  min-width: 280px;
+}
+
+.calendar-nav .fdp-header-center {
+  gap: 12px;
+}
+
+.calendar-nav .fdp-header-btn,
+.calendar-nav .fdp-header-title {
+  white-space: nowrap;
+}
+
+.calendar-nav > button {
   width: 32px;
   height: 32px;
   display: flex;
@@ -39,7 +74,7 @@
   transition: background 0.2s, color 0.2s;
 }
 
-.calendar-nav button:hover {
+.calendar-nav > button:hover {
   background: rgba(143, 0, 255, 0.1);
   color: var(--color-deep);
 }
@@ -206,6 +241,11 @@
   color: #d97706;
 }
 
+.calendar-tag.tag-diary {
+  background: rgba(99, 102, 241, 0.15);
+  color: #6366f1;
+}
+
 .calendar-tag.tag-more {
   background: rgba(107, 114, 128, 0.12);
   color: var(--text-tertiary);
@@ -225,6 +265,9 @@
   background: rgba(255, 255, 255, 0.25);
 }
 .calendar-day.selected .calendar-tag.tag-event {
+  background: rgba(255, 255, 255, 0.25);
+}
+.calendar-day.selected .calendar-tag.tag-diary {
   background: rgba(255, 255, 255, 0.25);
 }
 .calendar-day.selected .calendar-tag.tag-more {
@@ -317,6 +360,10 @@
 .calendar-day.selected .calendar-tooltip-items .calendar-tag.tag-event {
   background: rgba(245, 158, 11, 0.15);
   color: #d97706;
+}
+.calendar-day.selected .calendar-tooltip-items .calendar-tag.tag-diary {
+  background: rgba(99, 102, 241, 0.15);
+  color: #6366f1;
 }
 
 @keyframes tooltipFadeIn {

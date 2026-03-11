@@ -17,6 +17,7 @@ class Product(Base):
     sale_start = Column(TIMESTAMP, nullable=True)
     sale_end = Column(TIMESTAMP, nullable=True)
     status = Column(String(20), default='active', nullable=False)
+    subscription_plan_id = Column(BigInteger, ForeignKey('subscription_plans.id'), nullable=True)
     search_text = Column(Text, nullable=True)
     created_at = Column(TIMESTAMP, server_default=func.now(), nullable=False)
     updated_at = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now(), nullable=False)

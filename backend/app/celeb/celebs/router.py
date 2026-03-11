@@ -52,6 +52,23 @@ async def get_celeb_by_slug(
         )
     return obj
 
+@router.get("/{id}/members", response_model=schemas.CelebList)
+async def get_celeb_members(
+    id: int,
+    db: AsyncSession = Depends(get_db),
+):
+    """그룹 멤버 목록 조회"""
+    result = await db.execute(
+        select(Celeb).where(Celeb.parent_id == id, Celeb.status != "D")
+    )
+    items = result.scalars().all()
+    return schemas.CelebList(
+        items=list(items),
+        total=len(items),
+        skip=0,
+        limit=len(items),
+    )
+
 @router.get("/{id}", response_model=schemas.CelebResponse)
 async def get_celebs(
     id: int,

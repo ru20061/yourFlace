@@ -5,7 +5,7 @@ from datetime import datetime, date
 class CelebVideoBase(BaseModel):
     celeb_id: int
     write_id: int
-    write_role: Literal["celeb", "manager"]
+    write_role: Literal["celeb", "manager", "artist"]
     url: str
     thumbnail_url: Optional[str] = None
     title: Optional[str] = None
@@ -25,7 +25,7 @@ class CelebVideoCreate(CelebVideoBase):
 class CelebVideoUpdate(BaseModel):
     celeb_id: Optional[int] = None
     write_id: Optional[int] = None
-    write_role: Optional[Literal["celeb", "manager"]] = None
+    write_role: Optional[Literal["celeb", "manager", "artist"]] = None
     url: Optional[str] = None
     thumbnail_url: Optional[str] = None
     title: Optional[str] = None

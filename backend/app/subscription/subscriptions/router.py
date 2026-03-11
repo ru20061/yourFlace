@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.ext.asyncio import AsyncSession
+from typing import Optional
 from app.database import get_db
 from app.subscription.subscriptions import crud, schemas
 from app.dependencies import get_current_user
@@ -34,14 +35,22 @@ async def get_subscriptions(
 @router.get("", response_model=schemas.SubscriptionList)
 async def get_subscriptions_list(
     skip: int = Query(0, ge=0),
-    limit: int = Query(100, ge=1, le=100),
+    limit: int = Query(100, ge=1, le=1000),
+    fan_id: Optional[int] = Query(None),
+    celeb_id: Optional[int] = Query(None),
     db: AsyncSession = Depends(get_db),
     current_user = Depends(get_current_user)
 ):
     """목록 조회"""
-    items = await crud.subscription_crud.get_multi(db, skip=skip, limit=limit)
-    total = await crud.subscription_crud.count(db)
-    
+    filters = {}
+    if fan_id is not None:
+        filters["fan_id"] = fan_id
+    if celeb_id is not None:
+        filters["celeb_id"] = celeb_id
+
+    items = await crud.subscription_crud.get_multi(db, skip=skip, limit=limit, filters=filters or None)
+    total = await crud.subscription_crud.count(db, filters=filters or None)
+
     return schemas.SubscriptionList(
         items=items,
         total=total,

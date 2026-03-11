@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import FlaceDatePicker from "../FlaceDatePicker/FlaceDatePicker";
 import "./calendar.css";
 
 export interface CalendarItem {
-  type: "fanPost" | "artistPost" | "image" | "video" | "event";
+  type: "fanPost" | "artistPost" | "image" | "video" | "event" | "diary";
   label: string;
 }
 
@@ -25,6 +26,7 @@ const TYPE_CONFIG: Record<CalendarItem["type"], { label: string; cls: string }> 
   image:      { label: "이미지", cls: "tag-image" },
   video:      { label: "동영상", cls: "tag-video" },
   event:      { label: "이벤트", cls: "tag-event" },
+  diary:      { label: "다이어리", cls: "tag-diary" },
 };
 
 const MAX_TAGS = 2;
@@ -37,6 +39,29 @@ export default function Calendar({ selectedDate, onDateSelect, dateItems = {}, e
   const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
   const firstDayOfWeek = new Date(currentYear, currentMonth, 1).getDay();
   const daysInPrevMonth = new Date(currentYear, currentMonth, 0).getDate();
+
+  const [jumpDate, setJumpDate] = useState("");
+
+  // 외부에서 selectedDate가 변경되면 달력과 jumpDate 동기화
+  useEffect(() => {
+    if (selectedDate) {
+      setCurrentYear(selectedDate.getFullYear());
+      setCurrentMonth(selectedDate.getMonth());
+      const y = selectedDate.getFullYear();
+      const m = String(selectedDate.getMonth() + 1).padStart(2, "0");
+      const d = String(selectedDate.getDate()).padStart(2, "0");
+      setJumpDate(`${y}-${m}-${d}`);
+    }
+  }, [selectedDate]);
+
+  const handleJumpDate = (val: string) => {
+    setJumpDate(val);
+    if (!val) return;
+    const [y, m, d] = val.split("-").map(Number);
+    setCurrentYear(y);
+    setCurrentMonth(m - 1);
+    onDateSelect(new Date(y, m - 1, d));
+  };
 
   const prevMonth = () => {
     if (currentMonth === 0) {
@@ -120,8 +145,13 @@ export default function Calendar({ selectedDate, onDateSelect, dateItems = {}, e
       <div className="calendar-header">
         <span className="calendar-month">{currentYear}년 {currentMonth + 1}월</span>
         <div className="calendar-nav">
-          <button type="button" onClick={prevMonth}>&lt;</button>
-          <button type="button" onClick={nextMonth}>&gt;</button>
+          <FlaceDatePicker
+            value={jumpDate}
+            onChange={handleJumpDate}
+            placeholder="날짜 이동"
+          />
+          <button type="button" onClick={prevMonth} title="이전 월">&lt;</button>
+          <button type="button" onClick={nextMonth} title="다음 월">&gt;</button>
         </div>
       </div>
       <div className="calendar-weekdays">
@@ -147,7 +177,10 @@ export default function Calendar({ selectedDate, onDateSelect, dateItems = {}, e
                 isSelected(cell.date) && "selected",
                 hasContent && "has-content",
               ].filter(Boolean).join(" ")}
-              onClick={() => onDateSelect(cell.date)}
+              onClick={() => {
+                setJumpDate(toKey(cell.date));
+                onDateSelect(cell.date);
+              }}
               onMouseEnter={() => handleMouseEnter(idx, hasContent)}
               onMouseLeave={handleMouseLeave}
             >
