@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi import APIRouter, Depends, HTTPException, status, Query, Response, Cookie
 from pydantic import BaseModel, EmailStr
 from typing import Optional, Literal
 from datetime import date
@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
 from app.database import get_db
+from app.config import settings
 from app.core.security import (
     get_password_hash,
     verify_password,
@@ -18,6 +19,30 @@ from app.auth.profile.models import Profile
 from app.dependencies import get_current_user
 
 router = APIRouter()
+
+ACCESS_MAX_AGE  = settings.JWT_ACCESS_TOKEN_EXPIRE_MINUTES * 60
+REFRESH_MAX_AGE = settings.JWT_REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60
+
+def _set_auth_cookies(response: Response, access_token: str, refresh_token: str) -> None:
+    """액세스/리프레시 토큰을 HttpOnly 쿠키로 설정"""
+    response.set_cookie(
+        key="access_token",
+        value=access_token,
+        httponly=True,
+        samesite="lax",
+        secure=False,   # 운영 환경에서는 True (HTTPS)
+        max_age=ACCESS_MAX_AGE,
+        path="/",
+    )
+    response.set_cookie(
+        key="refresh_token",
+        value=refresh_token,
+        httponly=True,
+        samesite="lax",
+        secure=False,
+        max_age=REFRESH_MAX_AGE,
+        path="/",
+    )
 
 
 # ── Schemas ──
@@ -75,9 +100,9 @@ async def check_email(
     return CheckEmailResponse(available=True, message="사용 가능한 이메일입니다")
 
 
-@router.post("/register", response_model=TokenResponse)
-async def register(body: RegisterRequest, db: AsyncSession = Depends(get_db)):
-    """회원가입: 유저 + 프로필 생성 → JWT 토큰 반환"""
+@router.post("/register", status_code=status.HTTP_200_OK)
+async def register(body: RegisterRequest, response: Response, db: AsyncSession = Depends(get_db)):
+    """회원가입: 유저 + 프로필 생성 → HttpOnly 쿠키로 JWT 발급"""
     # 이메일 중복 확인
     existing = await db.execute(
         select(User).where(User.email == body.email)
@@ -110,17 +135,19 @@ async def register(body: RegisterRequest, db: AsyncSession = Depends(get_db)):
     db.add(profile)
     await db.flush()
 
-    # 토큰 발급
+    # HttpOnly 쿠키로 토큰 발급
     token_data = {"sub": str(user.id)}
-    return TokenResponse(
-        access_token=create_access_token(token_data),
-        refresh_token=create_refresh_token(token_data),
+    _set_auth_cookies(
+        response,
+        create_access_token(token_data),
+        create_refresh_token(token_data),
     )
+    return {"message": "회원가입 성공"}
 
 
-@router.post("/login", response_model=TokenResponse)
-async def login(body: LoginRequest, db: AsyncSession = Depends(get_db)):
-    """로그인: 이메일/비밀번호 검증 → JWT 토큰 반환"""
+@router.post("/login", status_code=status.HTTP_200_OK)
+async def login(body: LoginRequest, response: Response, db: AsyncSession = Depends(get_db)):
+    """로그인: 이메일/비밀번호 검증 → HttpOnly 쿠키로 JWT 발급"""
     result = await db.execute(
         select(User).where(User.email == body.email, User.status != "D")
     )
@@ -139,16 +166,28 @@ async def login(body: LoginRequest, db: AsyncSession = Depends(get_db)):
         )
 
     token_data = {"sub": str(user.id)}
-    return TokenResponse(
-        access_token=create_access_token(token_data),
-        refresh_token=create_refresh_token(token_data),
+    _set_auth_cookies(
+        response,
+        create_access_token(token_data),
+        create_refresh_token(token_data),
     )
+    return {"message": "로그인 성공"}
 
 
-@router.post("/refresh", response_model=TokenResponse)
-async def refresh(body: RefreshRequest, db: AsyncSession = Depends(get_db)):
-    """토큰 갱신: refresh_token → 새 access_token + refresh_token"""
-    payload = verify_token(body.refresh_token, token_type="refresh")
+@router.post("/refresh", status_code=status.HTTP_200_OK)
+async def refresh(
+    response: Response,
+    refresh_token: Optional[str] = Cookie(default=None),
+    db: AsyncSession = Depends(get_db),
+):
+    """토큰 갱신: refresh_token 쿠키 → 새 access_token + refresh_token 쿠키"""
+    if not refresh_token:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="리프레시 토큰이 없습니다",
+        )
+
+    payload = verify_token(refresh_token, token_type="refresh")
 
     user_id = payload.get("sub")
     if not user_id:
@@ -168,10 +207,20 @@ async def refresh(body: RefreshRequest, db: AsyncSession = Depends(get_db)):
         )
 
     token_data = {"sub": user_id}
-    return TokenResponse(
-        access_token=create_access_token(token_data),
-        refresh_token=create_refresh_token(token_data),
+    _set_auth_cookies(
+        response,
+        create_access_token(token_data),
+        create_refresh_token(token_data),
     )
+    return {"message": "토큰 갱신 성공"}
+
+
+@router.post("/logout", status_code=status.HTTP_200_OK)
+async def logout(response: Response):
+    """로그아웃: 쿠키 삭제"""
+    response.delete_cookie("access_token", path="/")
+    response.delete_cookie("refresh_token", path="/")
+    return {"message": "로그아웃 성공"}
 
 
 @router.get("/me", response_model=MeResponse)

@@ -5,7 +5,7 @@ from decimal import Decimal
 
 class SubscriptionBase(BaseModel):
     fan_id: int
-    creator_id: int
+    celeb_id: int
     fan_nickname: Optional[str] = None
     fan_profile_image: Optional[str] = None
     status: Literal["subscribed", "cancelled", "expired"] = "subscribed"

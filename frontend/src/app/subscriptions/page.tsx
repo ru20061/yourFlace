@@ -6,22 +6,22 @@ import { useAuth } from "../../lib/auth-context";
 import { api } from "../../lib/api";
 import type {
   Subscription,
-  Creator,
-  CreatorCategoryMap,
-  CreatorCategory,
+  Celeb,
+  CelebCategoryMap,
+  CelebCategory,
   PaginatedResponse,
 } from "../data/types";
 import "./subscriptions.css";
 
-interface SubscribedCreator {
+interface SubscribedCeleb {
   subscription: Subscription;
-  creator: Creator;
+  celeb: Celeb;
   categoryName?: string;
 }
 
 export default function SubscriptionsPage() {
   const { user, isLoggedIn, isLoading: authLoading } = useAuth();
-  const [items, setItems] = useState<SubscribedCreator[]>([]);
+  const [items, setItems] = useState<SubscribedCeleb[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -45,28 +45,28 @@ export default function SubscriptionsPage() {
           return;
         }
 
-        const [creatorsRes, catMapRes, catsRes] = await Promise.all([
-          api.get<PaginatedResponse<Creator>>("/creators?skip=0&limit=200"),
-          api.get<PaginatedResponse<CreatorCategoryMap>>("/creator-category-map?skip=0&limit=200"),
-          api.get<PaginatedResponse<CreatorCategory>>("/creator-categories?skip=0&limit=100"),
+        const [celebsRes, catMapRes, catsRes] = await Promise.all([
+          api.get<PaginatedResponse<Celeb>>("/celebs?skip=0&limit=200"),
+          api.get<PaginatedResponse<CelebCategoryMap>>("/celeb-category-map?skip=0&limit=200"),
+          api.get<PaginatedResponse<CelebCategory>>("/celeb-categories?skip=0&limit=100"),
         ]);
 
-        const creatorMap = new Map(creatorsRes.items.map((a) => [a.id, a]));
-        const catMapByCreator = new Map(catMapRes.items.map((m) => [m.creator_id, m.category_id]));
+        const celebMap = new Map(celebsRes.items.map((a) => [a.id, a]));
+        const catMapByCeleb = new Map(catMapRes.items.map((m) => [m.celeb_id, m.category_id]));
         const catById = new Map(catsRes.items.map((c) => [c.id, c.name]));
 
-        const result: SubscribedCreator[] = mySubs
+        const result: SubscribedCeleb[] = mySubs
           .map((sub) => {
-            const creator = creatorMap.get(sub.creator_id);
-            if (!creator) return null;
-            const catId = catMapByCreator.get(creator.id);
+            const celeb = celebMap.get(sub.celeb_id);
+            if (!celeb) return null;
+            const catId = catMapByCeleb.get(celeb.id);
             return {
               subscription: sub,
-              creator,
+              celeb,
               categoryName: catId ? catById.get(catId) : undefined,
             };
           })
-          .filter(Boolean) as SubscribedCreator[];
+          .filter(Boolean) as SubscribedCeleb[];
 
         setItems(result);
       } catch {
@@ -100,19 +100,19 @@ export default function SubscriptionsPage() {
       <h1 className="subscriptions-title">내 구독</h1>
       <div className="subscription-list">
         {items.length > 0 ? (
-          items.map(({ subscription, creator, categoryName }) => (
+          items.map(({ subscription, celeb, categoryName }) => (
             <Link
-              href={`/creators/${creator.slug}`}
+              href={`/celebs/${celeb.slug}`}
               key={subscription.id}
               className="subscription-card"
             >
               <div className="subscription-avatar">
-                {creator.profile_image && (
-                  <img src={creator.profile_image} alt={creator.stage_name} />
+                {celeb.profile_image && (
+                  <img src={celeb.profile_image} alt={celeb.stage_name} />
                 )}
               </div>
               <div className="subscription-info">
-                <div className="subscription-artist-name">{creator.stage_name}</div>
+                <div className="subscription-artist-name">{celeb.stage_name}</div>
                 {categoryName && (
                   <div className="subscription-plan">{categoryName}</div>
                 )}
@@ -124,7 +124,7 @@ export default function SubscriptionsPage() {
             </Link>
           ))
         ) : (
-          <div className="feed-empty">구독 중인 크리에이터가 없습니다</div>
+          <div className="feed-empty">구독 중인 셀럽이 없습니다</div>
         )}
       </div>
     </div>

@@ -5,14 +5,14 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "../lib/auth-context";
 import { api, apiFetch } from "../lib/api";
 import { getRelativeTime } from "../lib/utils";
-import type { Creator, Subscription, CreatorCategory, CreatorCategoryMap, Magazine, PaginatedResponse } from "./data/types";
+import type { Celeb, Subscription, CelebCategory, CelebCategoryMap, Magazine, PaginatedResponse } from "./data/types";
 import "./home.css";
 
 export default function HomePage() {
   const router = useRouter();
   const { user, isLoggedIn } = useAuth();
 
-  const [allCreators, setAllCreators] = useState<Creator[]>([]);
+  const [allCelebs, setAllCelebs] = useState<Celeb[]>([]);
   const [subscribedIds, setSubscribedIds] = useState<Set<number>>(new Set());
   const [categoryMap, setCategoryMap] = useState<Map<number, string>>(new Map());
   const [subCounts, setSubCounts] = useState<Map<number, number>>(new Map());
@@ -22,46 +22,46 @@ export default function HomePage() {
   useEffect(() => {
     (async () => {
       try {
-        // 크리에이터, 구독, 카테고리 맵, 카테고리, 뉴스 병렬 조회
-        const [creatorsRes, subsRes, catMapRes, catsRes, newsRes] = await Promise.all([
-          api.get<PaginatedResponse<Creator>>("/creators/?skip=0&limit=100"),
+        // 셀럽, 구독, 카테고리 맵, 카테고리, 뉴스 병렬 조회
+        const [celebsRes, subsRes, catMapRes, catsRes, newsRes] = await Promise.all([
+          api.get<PaginatedResponse<Celeb>>("/celebs/?skip=0&limit=100"),
           isLoggedIn
             ? api.get<PaginatedResponse<Subscription>>("/subscriptions/?skip=0&limit=100")
             : Promise.resolve({ items: [], total: 0, skip: 0, limit: 0 } as PaginatedResponse<Subscription>),
-          api.get<PaginatedResponse<CreatorCategoryMap>>("/creator-category-map/?skip=0&limit=100"),
-          api.get<PaginatedResponse<CreatorCategory>>("/creator-categories/?skip=0&limit=100"),
+          api.get<PaginatedResponse<CelebCategoryMap>>("/celeb-category-map/?skip=0&limit=100"),
+          api.get<PaginatedResponse<CelebCategory>>("/celeb-categories/?skip=0&limit=100"),
           apiFetch<PaginatedResponse<Magazine>>("/magazines/public?skip=0&limit=10")
             .catch(() => ({ items: [], total: 0, skip: 0, limit: 0 } as PaginatedResponse<Magazine>)),
         ]);
 
-        // 전체 크리에이터 (active만)
-        setAllCreators(creatorsRes.items.filter((a) => a.status === "active"));
+        // 전체 셀럽 (active만)
+        setAllCelebs(celebsRes.items.filter((a) => a.status === "active"));
 
-        // 내가 구독한 크리에이터 ID
+        // 내가 구독한 셀럽 ID
         if (user) {
           const mySubIds = new Set(
             subsRes.items
               .filter((s) => s.fan_id === user.id && s.status === "subscribed")
-              .map((s) => s.creator_id)
+              .map((s) => s.celeb_id)
           );
           setSubscribedIds(mySubIds);
         }
 
-        // 카테고리 맵 (creator_id → category_name)
+        // 카테고리 맵 (celeb_id → category_name)
         const catById = new Map(catsRes.items.map((c) => [c.id, c.name]));
         const artCatMap = new Map<number, string>();
         catMapRes.items.forEach((m) => {
           const catName = catById.get(m.category_id);
-          if (catName) artCatMap.set(m.creator_id, catName);
+          if (catName) artCatMap.set(m.celeb_id, catName);
         });
         setCategoryMap(artCatMap);
 
-        // 크리에이터별 구독자 수 계산
+        // 셀럽별 구독자 수 계산
         const counts = new Map<number, number>();
         subsRes.items
           .filter((s) => s.status === "subscribed")
           .forEach((s) => {
-            counts.set(s.creator_id, (counts.get(s.creator_id) || 0) + 1);
+            counts.set(s.celeb_id, (counts.get(s.celeb_id) || 0) + 1);
           });
         setSubCounts(counts);
 
@@ -85,34 +85,34 @@ export default function HomePage() {
 
   return (
     <div className="home-page">
-      {/* 전체 크리에이터 */}
+      {/* 전체 셀럽 */}
       <div className="home-section">
-        <h1 className="home-title">전체 크리에이터</h1>
-        <p className="home-subtitle">좋아하는 크리에이터를 만나보세요</p>
+        <h1 className="home-title">전체 셀럽</h1>
+        <p className="home-subtitle">좋아하는 셀럽을 만나보세요</p>
       </div>
 
-      {allCreators.length > 0 ? (
+      {allCelebs.length > 0 ? (
         <div className="artist-selection-grid">
-          {allCreators.map((creator) => {
-            const isSubscribed = subscribedIds.has(creator.id);
+          {allCelebs.map((celeb) => {
+            const isSubscribed = subscribedIds.has(celeb.id);
             return (
               <button
-                key={creator.id}
+                key={celeb.id}
                 className="artist-selection-card"
-                onClick={() => router.push(`/creators/${creator.slug}`)}
+                onClick={() => router.push(`/celebs/${celeb.slug}`)}
               >
                 <div className={`artist-selection-cover${isSubscribed ? "" : " other"}`} />
                 <div className={`artist-selection-avatar${isSubscribed ? "" : " other"}`}>
                   <span className="artist-selection-avatar-text">
-                    {creator.stage_name[0]}
+                    {celeb.stage_name[0]}
                   </span>
                 </div>
                 <div className="artist-selection-info">
-                  <div className="artist-selection-name">{creator.stage_name}</div>
-                  {categoryMap.get(creator.id) && (
-                    <div className="artist-selection-category">{categoryMap.get(creator.id)}</div>
+                  <div className="artist-selection-name">{celeb.stage_name}</div>
+                  {categoryMap.get(celeb.id) && (
+                    <div className="artist-selection-category">{categoryMap.get(celeb.id)}</div>
                   )}
-                  <div className="artist-selection-subs">구독자 {subCounts.get(creator.id) || 0}명</div>
+                  <div className="artist-selection-subs">구독자 {subCounts.get(celeb.id) || 0}명</div>
                 </div>
                 {isSubscribed && (
                   <div className="artist-selection-badge subscribed">구독중</div>
@@ -122,7 +122,7 @@ export default function HomePage() {
           })}
         </div>
       ) : (
-        <div className="feed-empty">등록된 크리에이터가 없습니다.</div>
+        <div className="feed-empty">등록된 셀럽이 없습니다.</div>
       )}
 
       {/* Flace News */}

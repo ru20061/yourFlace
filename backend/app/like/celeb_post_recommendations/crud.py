@@ -1,0 +1,8 @@
+from app.common.base_crud import BaseCRUD
+from app.like.celeb_post_recommendations.models import CelebPostRecommendation
+from app.like.celeb_post_recommendations.schemas import CelebPostRecommendationCreate, CelebPostRecommendationUpdate
+
+class CRUDCelebPostRecommendation(BaseCRUD[CelebPostRecommendation, CelebPostRecommendationCreate, CelebPostRecommendationUpdate]):
+    pass
+
+celeb_post_recommendation_crud = CRUDCelebPostRecommendation(CelebPostRecommendation)

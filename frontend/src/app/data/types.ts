@@ -8,7 +8,7 @@ export interface PaginatedResponse<T> {
   limit: number;
 }
 
-export interface Creator {
+export interface Celeb {
   id: number;
   user_id: number;
   stage_name: string;
@@ -24,16 +24,16 @@ export interface Creator {
   updated_at: string;
 }
 
-export interface CreatorCategory {
+export interface CelebCategory {
   id: number;
   name: string;
   description: string | null;
   is_active: boolean;
 }
 
-export interface CreatorSocialLink {
+export interface CelebSocialLink {
   id: number;
-  creator_id: number;
+  celeb_id: number;
   platform_name: string;
   url: string;
   display_name: string | null;
@@ -45,7 +45,7 @@ export interface CreatorSocialLink {
 export interface Subscription {
   id: number;
   fan_id: number;
-  creator_id: number;
+  celeb_id: number;
   fan_nickname: string | null;
   fan_profile_image: string | null;
   status: "subscribed" | "cancelled" | "expired";
@@ -100,9 +100,9 @@ export interface PostImage {
   height?: number;
 }
 
-export interface CreatorImage {
+export interface CelebImage {
   id: number;
-  creator_id: number;
+  celeb_id: number;
   image_id: number;
   image_purpose: string | null;
   published_date: string | null;
@@ -116,9 +116,9 @@ export interface CreatorImage {
   thumbnail_url: string;
 }
 
-export interface CreatorVideo {
+export interface CelebVideo {
   id: number;
-  creator_id: number;
+  celeb_id: number;
   url: string;
   thumbnail_url: string | null;
   title: string | null;
@@ -132,16 +132,16 @@ export interface CreatorVideo {
   updated_at: string;
 }
 
-export interface CreatorCategoryMap {
+export interface CelebCategoryMap {
   id: number;
-  creator_id: number;
+  celeb_id: number;
   category_id: number;
   created_at: string;
 }
 
 export interface Event {
   id: number;
-  creator_id: number;
+  celeb_id: number;
   title: string;
   description: string | null;
   event_type: string | null;
@@ -179,7 +179,7 @@ export interface SearchFilterState {
   query: string;
 }
 
-export interface SidebarCreator {
+export interface SidebarCeleb {
   id: number;
   name: string;
   slug: string | null;
@@ -206,7 +206,7 @@ export interface Notice {
 export interface ChatRoom {
   id: number;
   room_type: string;
-  creator_id: number | null;
+  celeb_id: number | null;
   room_name: string | null;
   room_image: string | null;
   last_message_at: string | null;
@@ -223,7 +223,7 @@ export interface Magazine {
   summary: string | null;
   thumbnail_url: string | null;
   category: string | null;
-  creator_id: number | null;
+  celeb_id: number | null;
   write_id: number;
   tags: string[] | null;
   is_active: boolean;
@@ -280,7 +280,7 @@ export interface NotificationSetting {
 
 export interface SubscriptionPlan {
   id: number;
-  creator_id: number;
+  celeb_id: number;
   name: string;
   price: number;
   currency: string;

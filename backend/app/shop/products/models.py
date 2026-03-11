@@ -7,7 +7,7 @@ class Product(Base):
     __tablename__ = "products"
     
     id = Column(BigInteger, primary_key=True, autoincrement=True)
-    creator_id = Column(BigInteger, ForeignKey('creators.id'), nullable=False)
+    celeb_id = Column(BigInteger, ForeignKey('celebs.id'), nullable=False)
     name = Column(String(255), nullable=False)
     description = Column(Text, nullable=True)
     price = Column(Numeric(10, 2), nullable=False)

@@ -1,10 +1,10 @@
 "use client";
 
-import type { CreatorImage } from "../../data/types";
+import type { CelebImage } from "../../data/types";
 import "./image-grid.css";
 
 interface ImageGridProps {
-  images: CreatorImage[];
+  images: CelebImage[];
 }
 
 export default function ImageGrid({ images }: ImageGridProps) {

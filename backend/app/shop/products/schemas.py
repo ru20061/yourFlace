@@ -4,7 +4,7 @@ from datetime import datetime
 from decimal import Decimal
 
 class ProductBase(BaseModel):
-    creator_id: int
+    celeb_id: int
     name: str
     description: Optional[str] = None
     price: Decimal

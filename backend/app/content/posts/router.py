@@ -5,7 +5,7 @@ from app.database import get_db
 from app.content.posts import crud, schemas
 from app.content.posts.models import Post
 from app.subscription.subscriptions.models import Subscription
-from app.creator.creators.models import Creator
+from app.celeb.celebs.models import Celeb
 from app.auth.profile.models import Profile
 from app.dependencies import get_current_user
 
@@ -50,7 +50,7 @@ async def _resolve_author(db: AsyncSession, post) -> tuple:
             .where(
                 and_(
                     Subscription.fan_id == post.write_id,
-                    Subscription.creator_id == post.author_id,
+                    Subscription.celeb_id == post.author_id,
                     Subscription.status == 'subscribed',
                 )
             )
@@ -73,13 +73,13 @@ async def _resolve_author(db: AsyncSession, post) -> tuple:
             return name, image
         return None, None
     else:
-        # 크리에이터/매니저 → Creator.stage_name
-        stmt = select(Creator.stage_name, Creator.profile_image).where(
-            Creator.user_id == post.write_id
+        # 셀럽/매니저 → Celeb.stage_name
+        stmt = select(Celeb.stage_name, Celeb.profile_image).where(
+            Celeb.user_id == post.write_id
         )
-        creator_row = (await db.execute(stmt)).first()
-        if creator_row:
-            return creator_row.stage_name, creator_row.profile_image
+        celeb_row = (await db.execute(stmt)).first()
+        if celeb_row:
+            return celeb_row.stage_name, celeb_row.profile_image
         return None, None
 
 

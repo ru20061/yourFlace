@@ -3,15 +3,15 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { api } from "../../../lib/api";
 import { useAuth } from "../../../lib/auth-context";
-import type { SidebarCreator, ChatRoom, ChatMessage, PaginatedResponse } from "../../data/types";
+import type { SidebarCeleb, ChatRoom, ChatMessage, PaginatedResponse } from "../../data/types";
 import "./chatbubble.css";
 
 interface ChatBubbleProps {
-  subscribedCreators: SidebarCreator[];
+  subscribedCelebs: SidebarCeleb[];
 }
 
-interface ChatCreatorItem {
-  creator: SidebarCreator;
+interface ChatCelebItem {
+  celeb: SidebarCeleb;
   chatRoom: ChatRoom | null;
   lastMessage: string | null;
   lastMessageAt: string | null;
@@ -19,16 +19,16 @@ interface ChatCreatorItem {
 
 type View = "list" | "chat";
 
-export default function ChatBubble({ subscribedCreators }: ChatBubbleProps) {
+export default function ChatBubble({ subscribedCelebs }: ChatBubbleProps) {
   const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [view, setView] = useState<View>("list");
-  const [chatList, setChatList] = useState<ChatCreatorItem[]>([]);
+  const [chatList, setChatList] = useState<ChatCelebItem[]>([]);
   const [loading, setLoading] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
 
   // 채팅방 상태
-  const [activeItem, setActiveItem] = useState<ChatCreatorItem | null>(null);
+  const [activeItem, setActiveItem] = useState<ChatCelebItem | null>(null);
   const [activeRoom, setActiveRoom] = useState<ChatRoom | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [msgLoading, setMsgLoading] = useState(false);
@@ -62,7 +62,7 @@ export default function ChatBubble({ subscribedCreators }: ChatBubbleProps) {
 
   // 패널 열 때 채팅방 목록 조회
   useEffect(() => {
-    if (!isOpen || subscribedCreators.length === 0) return;
+    if (!isOpen || subscribedCelebs.length === 0) return;
 
     (async () => {
       setLoading(true);
@@ -71,16 +71,16 @@ export default function ChatBubble({ subscribedCreators }: ChatBubbleProps) {
           "/chat-rooms/?skip=0&limit=100"
         );
 
-        const roomByCreator = new Map<number, ChatRoom>();
+        const roomByCeleb = new Map<number, ChatRoom>();
         for (const room of roomsRes.items) {
-          if (room.creator_id && room.status === "active") {
-            roomByCreator.set(room.creator_id, room);
+          if (room.celeb_id && room.status === "active") {
+            roomByCeleb.set(room.celeb_id, room);
           }
         }
 
-        const items: ChatCreatorItem[] = [];
-        for (const creator of subscribedCreators) {
-          const room = roomByCreator.get(creator.id) || null;
+        const items: ChatCelebItem[] = [];
+        for (const celeb of subscribedCelebs) {
+          const room = roomByCeleb.get(celeb.id) || null;
           let lastMessage: string | null = null;
           let lastMessageAt: string | null = null;
 
@@ -102,14 +102,14 @@ export default function ChatBubble({ subscribedCreators }: ChatBubbleProps) {
             lastMessageAt = lastMessageAt || room.last_message_at;
           }
 
-          items.push({ creator, chatRoom: room, lastMessage, lastMessageAt });
+          items.push({ celeb, chatRoom: room, lastMessage, lastMessageAt });
         }
 
         setChatList(items);
       } catch {
         setChatList(
-          subscribedCreators.map((creator) => ({
-            creator,
+          subscribedCelebs.map((celeb) => ({
+            celeb,
             chatRoom: null,
             lastMessage: null,
             lastMessageAt: null,
@@ -119,7 +119,7 @@ export default function ChatBubble({ subscribedCreators }: ChatBubbleProps) {
         setLoading(false);
       }
     })();
-  }, [isOpen, subscribedCreators]);
+  }, [isOpen, subscribedCelebs]);
 
   // 메시지 목록 불러오기
   const loadMessages = useCallback(async (roomId: number) => {
@@ -144,8 +144,8 @@ export default function ChatBubble({ subscribedCreators }: ChatBubbleProps) {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // 크리에이터 클릭 → 채팅방 진입
-  const handleChatClick = async (item: ChatCreatorItem) => {
+  // 셀럽 클릭 → 채팅방 진입
+  const handleChatClick = async (item: ChatCelebItem) => {
     setActiveItem(item);
 
     if (item.chatRoom) {
@@ -157,8 +157,8 @@ export default function ChatBubble({ subscribedCreators }: ChatBubbleProps) {
       try {
         const newRoom = await api.post<ChatRoom>("/chat-rooms", {
           room_type: "subscription",
-          creator_id: item.creator.id,
-          room_name: item.creator.name,
+          celeb_id: item.celeb.id,
+          room_name: item.celeb.name,
           status: "active",
         });
         setActiveRoom(newRoom);
@@ -230,7 +230,7 @@ export default function ChatBubble({ subscribedCreators }: ChatBubbleProps) {
     return date.toLocaleTimeString("ko-KR", { hour: "numeric", minute: "2-digit" });
   };
 
-  if (subscribedCreators.length === 0) return null;
+  if (subscribedCelebs.length === 0) return null;
 
   return (
     <div className="chat-bubble-container" ref={panelRef}>
@@ -249,33 +249,33 @@ export default function ChatBubble({ subscribedCreators }: ChatBubbleProps) {
                 </button>
               </div>
 
-              {/* 크리에이터 목록 */}
+              {/* 셀럽 목록 */}
               <div className="chat-bubble-panel-list">
                 {loading ? (
                   <div className="chat-bubble-empty">불러오는 중...</div>
                 ) : chatList.length === 0 ? (
-                  <div className="chat-bubble-empty">구독한 크리에이터가 없습니다</div>
+                  <div className="chat-bubble-empty">구독한 셀럽이 없습니다</div>
                 ) : (
                   chatList.map((item) => (
                     <button
-                      key={item.creator.id}
+                      key={item.celeb.id}
                       className="chat-bubble-item"
                       onClick={() => handleChatClick(item)}
                     >
                       <div className="chat-bubble-avatar">
-                        {item.creator.profileImage ? (
+                        {item.celeb.profileImage ? (
                           <img
-                            src={item.creator.profileImage}
-                            alt={item.creator.name}
+                            src={item.celeb.profileImage}
+                            alt={item.celeb.name}
                           />
                         ) : (
                           <span className="chat-bubble-avatar-text">
-                            {item.creator.name[0]}
+                            {item.celeb.name[0]}
                           </span>
                         )}
                       </div>
                       <div className="chat-bubble-info">
-                        <div className="chat-bubble-name">{item.creator.name}</div>
+                        <div className="chat-bubble-name">{item.celeb.name}</div>
                         <div className="chat-bubble-last-msg">
                           {item.lastMessage || "대화를 시작해보세요"}
                         </div>
@@ -300,14 +300,14 @@ export default function ChatBubble({ subscribedCreators }: ChatBubbleProps) {
                   </svg>
                 </button>
                 <div className="chat-bubble-room-avatar">
-                  {activeItem?.creator.profileImage ? (
-                    <img src={activeItem.creator.profileImage} alt="" />
+                  {activeItem?.celeb.profileImage ? (
+                    <img src={activeItem.celeb.profileImage} alt="" />
                   ) : (
-                    <span>{activeItem?.creator.name[0]}</span>
+                    <span>{activeItem?.celeb.name[0]}</span>
                   )}
                 </div>
                 <span className="chat-bubble-panel-title">
-                  {activeItem?.creator.name}
+                  {activeItem?.celeb.name}
                 </span>
                 <button
                   className="chat-bubble-panel-close"
@@ -336,10 +336,10 @@ export default function ChatBubble({ subscribedCreators }: ChatBubbleProps) {
                       >
                         {!isMine && (
                           <div className="chat-bubble-msg-avatar">
-                            {activeItem?.creator.profileImage ? (
-                              <img src={activeItem.creator.profileImage} alt="" />
+                            {activeItem?.celeb.profileImage ? (
+                              <img src={activeItem.celeb.profileImage} alt="" />
                             ) : (
-                              <span>{activeItem?.creator.name[0]}</span>
+                              <span>{activeItem?.celeb.name[0]}</span>
                             )}
                           </div>
                         )}

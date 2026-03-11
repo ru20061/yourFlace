@@ -3,7 +3,7 @@
 import Link from "next/link";
 import "./sidebar.css";
 
-interface Creator {
+interface Celeb {
   id: number;
   name: string;
   slug: string | null;
@@ -15,10 +15,10 @@ interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
   isAdmin?: boolean;
-  subscribedCreators?: Creator[];
+  subscribedCelebs?: Celeb[];
 }
 
-export default function Sidebar({ isOpen, onClose, isAdmin = false, subscribedCreators = [] }: SidebarProps) {
+export default function Sidebar({ isOpen, onClose, isAdmin = false, subscribedCelebs = [] }: SidebarProps) {
   return (
     <>
       {/* 오버레이 */}
@@ -28,7 +28,7 @@ export default function Sidebar({ isOpen, onClose, isAdmin = false, subscribedCr
       <aside className={`sidebar ${isOpen ? "open" : ""}`}>
         <div className="sidebar-header">
           <span className="sidebar-title">
-            {isAdmin ? "관리 카테고리" : "구독 크리에이터"}
+            {isAdmin ? "관리 카테고리" : "구독 셀럽"}
           </span>
           <button className="sidebar-close" onClick={onClose} aria-label="닫기">
             ✕
@@ -52,28 +52,28 @@ export default function Sidebar({ isOpen, onClose, isAdmin = false, subscribedCr
             <Link href="/admin/faq" className="sidebar-category-item" onClick={onClose}>FAQ</Link>
           </nav>
         ) : (
-          /* 일반 유저: 구독한 크리에이터 목록 */
+          /* 일반 유저: 구독한 셀럽 목록 */
           <div className="sidebar-artist-list">
-            {subscribedCreators.length > 0 ? (
-              subscribedCreators.map((creator) => (
+            {subscribedCelebs.length > 0 ? (
+              subscribedCelebs.map((celeb) => (
                 <Link
-                  href={`/creators/${creator.slug}`}
-                  key={creator.id}
+                  href={`/celebs/${celeb.slug}`}
+                  key={celeb.id}
                   className="sidebar-artist-item"
                   onClick={onClose}
                 >
                   <div className="sidebar-artist-avatar">
-                    {creator.profileImage && <img src={creator.profileImage} alt={creator.name} />}
+                    {celeb.profileImage && <img src={celeb.profileImage} alt={celeb.name} />}
                   </div>
                   <div>
-                    <div className="sidebar-artist-name">{creator.name}</div>
-                    {creator.category && <div className="sidebar-artist-category">{creator.category}</div>}
+                    <div className="sidebar-artist-name">{celeb.name}</div>
+                    {celeb.category && <div className="sidebar-artist-category">{celeb.category}</div>}
                   </div>
                 </Link>
               ))
             ) : (
               <p style={{ padding: "24px 16px", color: "var(--text-tertiary)", fontSize: "14px", textAlign: "center" }}>
-                구독한 크리에이터가 없습니다
+                구독한 셀럽이 없습니다
               </p>
             )}
           </div>

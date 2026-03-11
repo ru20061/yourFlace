@@ -5,8 +5,8 @@ from datetime import datetime
 class ContentModerationBase(BaseModel):
     content_type: str
     content_id: int
-    creator_ref_type: Optional[str] = None
-    creator_ref_id: Optional[int] = None
+    celeb_ref_type: Optional[str] = None
+    celeb_ref_id: Optional[int] = None
     model_id: Optional[int] = None
     result: Optional[dict[str, Any]] = None
     is_flagged: Optional[bool] = False

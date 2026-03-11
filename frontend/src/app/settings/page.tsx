@@ -85,7 +85,7 @@ export default function SettingsPage() {
   const confirmDelete = async () => {
     // TODO: API 연동 후 실제 회원 탈퇴 처리
     setShowDeleteConfirm(false);
-    logout();
+    await logout();
     router.push("/login");
   };
 

@@ -6,7 +6,7 @@ import Calendar from "../components/Calendar/Calendar";
 import PostCard from "../components/PostCard/PostCard";
 import SearchFilters from "../components/SearchFilters/SearchFilters";
 import { api } from "../../lib/api";
-import type { Creator, Post, Event, PaginatedResponse, SearchFilterState } from "../data/types";
+import type { Celeb, Post, Event, PaginatedResponse, SearchFilterState } from "../data/types";
 import "./search.css";
 
 const CATEGORIES = ["전체", "크리에이터", "게시글", "이벤트", "상품"] as const;
@@ -29,7 +29,7 @@ export default function SearchPage() {
   const [showAdvanced, setShowAdvanced] = useState(false);
 
   const [allPosts, setAllPosts] = useState<Post[]>([]);
-  const [allCreators, setAllCreators] = useState<Creator[]>([]);
+  const [allCelebs, setAllCelebs] = useState<Celeb[]>([]);
   const [allEvents, setAllEvents] = useState<Event[]>([]);
   const [allTags, setAllTags] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
@@ -37,14 +37,14 @@ export default function SearchPage() {
   useEffect(() => {
     const load = async () => {
       try {
-        const [postsRes, creatorsRes, eventsRes, tagsRes] = await Promise.all([
+        const [postsRes, celebsRes, eventsRes, tagsRes] = await Promise.all([
           api.get<PaginatedResponse<Post>>("/posts/?limit=200"),
-          api.get<PaginatedResponse<Creator>>("/creators/?limit=200"),
+          api.get<PaginatedResponse<Celeb>>("/celebs/?limit=200"),
           api.get<PaginatedResponse<Event>>("/events/?limit=200"),
           api.get<string[]>("/tags"),
         ]);
         setAllPosts(postsRes.items);
-        setAllCreators(creatorsRes.items);
+        setAllCelebs(celebsRes.items);
         setAllEvents(eventsRes.items);
         setAllTags(tagsRes);
       } catch {
@@ -117,7 +117,7 @@ export default function SearchPage() {
     const q = query.toLowerCase();
 
     let posts = [...allPosts];
-    let creators = [...allCreators];
+    let celebs = [...allCelebs];
     let events = [...allEvents];
 
     // 텍스트 검색
@@ -128,7 +128,7 @@ export default function SearchPage() {
           p.tags?.some((t) => t.toLowerCase().includes(q)) ||
           p.author_name?.toLowerCase().includes(q)
       );
-      creators = creators.filter(
+      celebs = celebs.filter(
         (a) =>
           a.stage_name.toLowerCase().includes(q) ||
           a.notes?.toLowerCase().includes(q)
@@ -177,11 +177,11 @@ export default function SearchPage() {
       posts.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
     }
 
-    return { posts, creators, events };
-  }, [query, selectedDate, filters, allPosts, allCreators, allEvents]);
+    return { posts, celebs, events };
+  }, [query, selectedDate, filters, allPosts, allCelebs, allEvents]);
 
   const hasQuery = query || selectedDate || filters.tags.length > 0 || filters.dateRange.start || filters.dateRange.end || filters.visibility !== "all";
-  const totalResults = filteredResults.posts.length + filteredResults.creators.length + filteredResults.events.length;
+  const totalResults = filteredResults.posts.length + filteredResults.celebs.length + filteredResults.events.length;
 
   if (loading) {
     return <div className="search-page"><div className="feed-empty">로딩 중...</div></div>;
@@ -280,23 +280,23 @@ export default function SearchPage() {
           <div className="search-result-count">검색 결과 {totalResults}건</div>
         )}
 
-        {/* 크리에이터 결과 */}
+        {/* 셀럽 결과 */}
         {(filters.category === "전체" || filters.category === "크리에이터") &&
-          filteredResults.creators.length > 0 && (
+          filteredResults.celebs.length > 0 && (
             <div className="search-result-section">
               <div className="search-result-section-title">크리에이터</div>
-              {filteredResults.creators.map((creator) => (
+              {filteredResults.celebs.map((celeb) => (
                 <Link
-                  key={creator.id}
-                  href={`/creators/${creator.slug}`}
+                  key={celeb.id}
+                  href={`/celebs/${celeb.slug}`}
                   className="search-artist-card"
                 >
                   <div className="search-artist-avatar">
-                    {creator.stage_name[0]}
+                    {celeb.stage_name[0]}
                   </div>
                   <div className="search-artist-info">
-                    <div className="search-artist-name">{creator.stage_name}</div>
-                    <div className="search-artist-bio">{creator.notes}</div>
+                    <div className="search-artist-name">{celeb.stage_name}</div>
+                    <div className="search-artist-bio">{celeb.notes}</div>
                   </div>
                 </Link>
               ))}

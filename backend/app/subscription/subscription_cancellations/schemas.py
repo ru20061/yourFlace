@@ -6,7 +6,7 @@ from decimal import Decimal
 class SubscriptionCancellationBase(BaseModel):
     subscription_id: int
     user_id: int
-    creator_id: int
+    celeb_id: int
     reason_code: Optional[str] = None
     reason_detail: Optional[str] = None
     subscription_started_at: Optional[datetime] = None

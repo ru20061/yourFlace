@@ -23,11 +23,11 @@ from app.auth.deleted_users.models import DeletedUser
 from app.auth.global_blacklist.models import GlobalBlacklist
 from app.auth.subscription_blacklist.models import SubscriptionBlacklist
 
-from app.creator.creators.models import Creator
-from app.creator.creator_categories.models import CreatorCategory
-from app.creator.creator_category_map.models import CreatorCategoryMap
-from app.creator.creator_social_links.models import CreatorSocialLink
-from app.creator.managers.models import Manager
+from app.celeb.celebs.models import Celeb
+from app.celeb.celeb_categories.models import CelebCategory
+from app.celeb.celeb_category_map.models import CelebCategoryMap
+from app.celeb.celeb_social_links.models import CelebSocialLink
+from app.celeb.managers.models import Manager
 
 from app.subscription.subscriptions.models import Subscription
 from app.subscription.subscription_plans.models import SubscriptionPlan
@@ -38,12 +38,12 @@ from app.content.post_images.models import PostImage
 from app.content.post_comments.models import PostComment
 from app.content.post_stats.models import PostStat
 from app.content.images.models import Image
-from app.content.creator_images.models import CreatorImage
-from app.content.creator_image_comments.models import CreatorImageComment
-from app.content.creator_image_stats.models import CreatorImageStat
-from app.content.creator_videos.models import CreatorVideo
-from app.content.creator_video_comments.models import CreatorVideoComment
-from app.content.creator_video_stats.models import CreatorVideoStat
+from app.content.celeb_images.models import CelebImage
+from app.content.celeb_image_comments.models import CelebImageComment
+from app.content.celeb_image_stats.models import CelebImageStat
+from app.content.celeb_videos.models import CelebVideo
+from app.content.celeb_video_comments.models import CelebVideoComment
+from app.content.celeb_video_stats.models import CelebVideoStat
 
 from app.chat.chat_rooms.models import ChatRoom
 from app.chat.chat_messages.models import ChatMessage
@@ -77,11 +77,11 @@ from app.notification.system_logs.models import SystemLog
 
 from app.like.fan_likes.models import FanLike
 from app.like.fan_recommendations.models import FanRecommendation
-from app.like.creator_post_likes.models import CreatorPostLike
-from app.like.creator_post_recommendations.models import CreatorPostRecommendation
+from app.like.celeb_post_likes.models import CelebPostLike
+from app.like.celeb_post_recommendations.models import CelebPostRecommendation
 
-from app.stats.creator_content_stats.models import CreatorContentStat
-from app.stats.creator_chat_stats.models import CreatorChatStat
+from app.stats.celeb_content_stats.models import CelebContentStat
+from app.stats.celeb_chat_stats.models import CelebChatStat
 from app.stats.subscriber_content_stats.models import SubscriberContentStat
 from app.stats.subscriber_chat_stats.models import SubscriberChatStat
 

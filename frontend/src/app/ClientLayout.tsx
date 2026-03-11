@@ -7,16 +7,16 @@ import Sidebar from "./components/Sidebar/Sidebar";
 import ChatBubble from "./components/ChatBubble/ChatBubble";
 import { useAuth } from "../lib/auth-context";
 import { api } from "../lib/api";
-import type { Subscription, Creator, CreatorCategoryMap, CreatorCategory, PaginatedResponse, SidebarCreator } from "./data/types";
+import type { Subscription, Celeb, CelebCategoryMap, CelebCategory, PaginatedResponse, SidebarCeleb } from "./data/types";
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { user, isLoggedIn, isLoading, logout } = useAuth();
-  const [sidebarCreators, setSidebarCreators] = useState<SidebarCreator[]>([]);
+  const [sidebarCelebs, setSidebarCelebs] = useState<SidebarCeleb[]>([]);
 
   useEffect(() => {
     if (!user) {
-      setSidebarCreators([]);
+      setSidebarCelebs([]);
       return;
     }
 
@@ -31,39 +31,39 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
         );
 
         if (subscribedSubs.length === 0) {
-          setSidebarCreators([]);
+          setSidebarCelebs([]);
           return;
         }
 
-        // 크리에이터 목록 + 카테고리 맵 + 카테고리 병렬 조회
-        const [creatorsRes, catMapRes, catsRes] = await Promise.all([
-          api.get<PaginatedResponse<Creator>>("/creators/?skip=0&limit=100"),
-          api.get<PaginatedResponse<CreatorCategoryMap>>("/creator-category-map/?skip=0&limit=100"),
-          api.get<PaginatedResponse<CreatorCategory>>("/creator-categories/?skip=0&limit=100"),
+        // 셀럽 목록 + 카테고리 맵 + 카테고리 병렬 조회
+        const [celebsRes, catMapRes, catsRes] = await Promise.all([
+          api.get<PaginatedResponse<Celeb>>("/celebs/?skip=0&limit=100"),
+          api.get<PaginatedResponse<CelebCategoryMap>>("/celeb-category-map/?skip=0&limit=100"),
+          api.get<PaginatedResponse<CelebCategory>>("/celeb-categories/?skip=0&limit=100"),
         ]);
 
-        const creatorMap = new Map(creatorsRes.items.map((a) => [a.id, a]));
-        const catMapByCreator = new Map(catMapRes.items.map((m) => [m.creator_id, m.category_id]));
+        const celebMap = new Map(celebsRes.items.map((a) => [a.id, a]));
+        const catMapByCeleb = new Map(catMapRes.items.map((m) => [m.celeb_id, m.category_id]));
         const catById = new Map(catsRes.items.map((c) => [c.id, c.name]));
 
-        const sidebar: SidebarCreator[] = subscribedSubs
+        const sidebar: SidebarCeleb[] = subscribedSubs
           .map((sub) => {
-            const creator = creatorMap.get(sub.creator_id);
-            if (!creator) return null;
-            const catId = catMapByCreator.get(creator.id);
+            const celeb = celebMap.get(sub.celeb_id);
+            if (!celeb) return null;
+            const catId = catMapByCeleb.get(celeb.id);
             return {
-              id: creator.id,
-              name: creator.stage_name,
-              slug: creator.slug,
+              id: celeb.id,
+              name: celeb.stage_name,
+              slug: celeb.slug,
               category: catId ? catById.get(catId) : undefined,
-              profileImage: creator.profile_image ?? undefined,
+              profileImage: celeb.profile_image ?? undefined,
             };
           })
-          .filter(Boolean) as SidebarCreator[];
+          .filter(Boolean) as SidebarCeleb[];
 
-        setSidebarCreators(sidebar);
+        setSidebarCelebs(sidebar);
       } catch {
-        setSidebarCreators([]);
+        setSidebarCelebs([]);
       }
     })();
   }, [user]);
@@ -90,13 +90,13 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
         isAdmin={false}
-        subscribedCreators={sidebarCreators}
+        subscribedCelebs={sidebarCelebs}
       />
       <main className="app-main">
         {children}
       </main>
       <Footer isLoggedIn={isLoggedIn} isAdmin={false} />
-      {isLoggedIn && <ChatBubble subscribedCreators={sidebarCreators} />}
+      {isLoggedIn && <ChatBubble subscribedCelebs={sidebarCelebs} />}
     </div>
   );
 }

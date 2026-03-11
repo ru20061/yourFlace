@@ -21,11 +21,11 @@ from app.auth.deleted_users.router import router as deleted_users_router
 from app.auth.global_blacklist.router import router as global_blacklist_router
 from app.auth.subscription_blacklist.router import router as subscription_blacklist_router
 
-from app.creator.creators.router import router as creators_router
-from app.creator.creator_categories.router import router as creator_categories_router
-from app.creator.creator_category_map.router import router as creator_category_map_router
-from app.creator.creator_social_links.router import router as creator_social_links_router
-from app.creator.managers.router import router as managers_router
+from app.celeb.celebs.router import router as celebs_router
+from app.celeb.celeb_categories.router import router as celeb_categories_router
+from app.celeb.celeb_category_map.router import router as celeb_category_map_router
+from app.celeb.celeb_social_links.router import router as celeb_social_links_router
+from app.celeb.managers.router import router as managers_router
 
 from app.subscription.subscriptions.router import router as subscriptions_router
 from app.subscription.subscription_plans.router import router as subscription_plans_router
@@ -36,12 +36,12 @@ from app.content.post_images.router import router as post_images_router
 from app.content.post_comments.router import router as post_comments_router
 from app.content.post_stats.router import router as post_stats_router
 from app.content.images.router import router as images_router
-from app.content.creator_images.router import router as creator_images_router
-from app.content.creator_image_comments.router import router as creator_image_comments_router
-from app.content.creator_image_stats.router import router as creator_image_stats_router
-from app.content.creator_videos.router import router as creator_videos_router
-from app.content.creator_video_comments.router import router as creator_video_comments_router
-from app.content.creator_video_stats.router import router as creator_video_stats_router
+from app.content.celeb_images.router import router as celeb_images_router
+from app.content.celeb_image_comments.router import router as celeb_image_comments_router
+from app.content.celeb_image_stats.router import router as celeb_image_stats_router
+from app.content.celeb_videos.router import router as celeb_videos_router
+from app.content.celeb_video_comments.router import router as celeb_video_comments_router
+from app.content.celeb_video_stats.router import router as celeb_video_stats_router
 
 from app.search.calendar_searches.router import router as calendar_searches_router
 from app.search.saved_search_filters.router import router as saved_search_filters_router
@@ -76,11 +76,11 @@ from app.notification.system_logs.router import router as system_logs_router
 
 from app.like.fan_likes.router import router as fan_likes_router
 from app.like.fan_recommendations.router import router as fan_recommendations_router
-from app.like.creator_post_likes.router import router as creator_post_likes_router
-from app.like.creator_post_recommendations.router import router as creator_post_recommendations_router
+from app.like.celeb_post_likes.router import router as celeb_post_likes_router
+from app.like.celeb_post_recommendations.router import router as celeb_post_recommendations_router
 
-from app.stats.creator_content_stats.router import router as creator_content_stats_router
-from app.stats.creator_chat_stats.router import router as creator_chat_stats_router
+from app.stats.celeb_content_stats.router import router as celeb_content_stats_router
+from app.stats.celeb_chat_stats.router import router as celeb_chat_stats_router
 from app.stats.subscriber_content_stats.router import router as subscriber_content_stats_router
 from app.stats.subscriber_chat_stats.router import router as subscriber_chat_stats_router
 
@@ -157,11 +157,11 @@ app.include_router(deleted_users_router, prefix=f"{API_V1_PREFIX}/deleted-users"
 app.include_router(global_blacklist_router, prefix=f"{API_V1_PREFIX}/global-blacklist", tags=["global-blacklist"])
 app.include_router(subscription_blacklist_router, prefix=f"{API_V1_PREFIX}/subscription-blacklist", tags=["subscription-blacklist"])
 
-# Creator
-app.include_router(creators_router, prefix=f"{API_V1_PREFIX}/creators", tags=["creators"])
-app.include_router(creator_categories_router, prefix=f"{API_V1_PREFIX}/creator-categories", tags=["creator-categories"])
-app.include_router(creator_category_map_router, prefix=f"{API_V1_PREFIX}/creator-category-map", tags=["creator-category-map"])
-app.include_router(creator_social_links_router, prefix=f"{API_V1_PREFIX}/creator-social-links", tags=["creator-social-links"])
+# Celeb
+app.include_router(celebs_router, prefix=f"{API_V1_PREFIX}/celebs", tags=["celebs"])
+app.include_router(celeb_categories_router, prefix=f"{API_V1_PREFIX}/celeb-categories", tags=["celeb-categories"])
+app.include_router(celeb_category_map_router, prefix=f"{API_V1_PREFIX}/celeb-category-map", tags=["celeb-category-map"])
+app.include_router(celeb_social_links_router, prefix=f"{API_V1_PREFIX}/celeb-social-links", tags=["celeb-social-links"])
 app.include_router(managers_router, prefix=f"{API_V1_PREFIX}/managers", tags=["managers"])
 
 # Subscription
@@ -175,12 +175,12 @@ app.include_router(post_images_router, prefix=f"{API_V1_PREFIX}/post-images", ta
 app.include_router(post_comments_router, prefix=f"{API_V1_PREFIX}/post-comments", tags=["post-comments"])
 app.include_router(post_stats_router, prefix=f"{API_V1_PREFIX}/post-stats", tags=["post-stats"])
 app.include_router(images_router, prefix=f"{API_V1_PREFIX}/images", tags=["images"])
-app.include_router(creator_images_router, prefix=f"{API_V1_PREFIX}/creator-images", tags=["creator-images"])
-app.include_router(creator_image_comments_router, prefix=f"{API_V1_PREFIX}/creator-image-comments", tags=["creator-image-comments"])
-app.include_router(creator_image_stats_router, prefix=f"{API_V1_PREFIX}/creator-image-stats", tags=["creator-image-stats"])
-app.include_router(creator_videos_router, prefix=f"{API_V1_PREFIX}/creator-videos", tags=["creator-videos"])
-app.include_router(creator_video_comments_router, prefix=f"{API_V1_PREFIX}/creator-video-comments", tags=["creator-video-comments"])
-app.include_router(creator_video_stats_router, prefix=f"{API_V1_PREFIX}/creator-video-stats", tags=["creator-video-stats"])
+app.include_router(celeb_images_router, prefix=f"{API_V1_PREFIX}/celeb-images", tags=["celeb-images"])
+app.include_router(celeb_image_comments_router, prefix=f"{API_V1_PREFIX}/celeb-image-comments", tags=["celeb-image-comments"])
+app.include_router(celeb_image_stats_router, prefix=f"{API_V1_PREFIX}/celeb-image-stats", tags=["celeb-image-stats"])
+app.include_router(celeb_videos_router, prefix=f"{API_V1_PREFIX}/celeb-videos", tags=["celeb-videos"])
+app.include_router(celeb_video_comments_router, prefix=f"{API_V1_PREFIX}/celeb-video-comments", tags=["celeb-video-comments"])
+app.include_router(celeb_video_stats_router, prefix=f"{API_V1_PREFIX}/celeb-video-stats", tags=["celeb-video-stats"])
 
 # Search
 app.include_router(calendar_searches_router, prefix=f"{API_V1_PREFIX}/calendar-searches", tags=["calendar-searches"])
@@ -222,12 +222,12 @@ app.include_router(system_logs_router, prefix=f"{API_V1_PREFIX}/system-logs", ta
 # Like
 app.include_router(fan_likes_router, prefix=f"{API_V1_PREFIX}/fan-likes", tags=["fan-likes"])
 app.include_router(fan_recommendations_router, prefix=f"{API_V1_PREFIX}/fan-recommendations", tags=["fan-recommendations"])
-app.include_router(creator_post_likes_router, prefix=f"{API_V1_PREFIX}/creator-post-likes", tags=["creator-post-likes"])
-app.include_router(creator_post_recommendations_router, prefix=f"{API_V1_PREFIX}/creator-post-recommendations", tags=["creator-post-recommendations"])
+app.include_router(celeb_post_likes_router, prefix=f"{API_V1_PREFIX}/celeb-post-likes", tags=["celeb-post-likes"])
+app.include_router(celeb_post_recommendations_router, prefix=f"{API_V1_PREFIX}/celeb-post-recommendations", tags=["celeb-post-recommendations"])
 
 # Stats
-app.include_router(creator_content_stats_router, prefix=f"{API_V1_PREFIX}/creator-content-stats", tags=["creator-content-stats"])
-app.include_router(creator_chat_stats_router, prefix=f"{API_V1_PREFIX}/creator-chat-stats", tags=["creator-chat-stats"])
+app.include_router(celeb_content_stats_router, prefix=f"{API_V1_PREFIX}/celeb-content-stats", tags=["celeb-content-stats"])
+app.include_router(celeb_chat_stats_router, prefix=f"{API_V1_PREFIX}/celeb-chat-stats", tags=["celeb-chat-stats"])
 app.include_router(subscriber_content_stats_router, prefix=f"{API_V1_PREFIX}/subscriber-content-stats", tags=["subscriber-content-stats"])
 app.include_router(subscriber_chat_stats_router, prefix=f"{API_V1_PREFIX}/subscriber-chat-stats", tags=["subscriber-chat-stats"])
 
@@ -246,16 +246,16 @@ app.include_router(magazine_images_router, prefix=f"{API_V1_PREFIX}/magazine-ima
 
 @app.get(f"{API_V1_PREFIX}/tags", tags=["tags"])
 async def get_all_tags(db=Depends(get_db)):
-    """posts, creator_images, creator_videos 테이블에서 고유 태그 목록을 반환"""
+    """posts, celeb_images, celeb_videos 테이블에서 고유 태그 목록을 반환"""
     from sqlalchemy import text
     query = text("""
         SELECT DISTINCT tag
         FROM (
             SELECT jsonb_array_elements_text(tags::jsonb) AS tag FROM posts WHERE tags IS NOT NULL
             UNION
-            SELECT jsonb_array_elements_text(tags::jsonb) AS tag FROM creator_images WHERE tags IS NOT NULL
+            SELECT jsonb_array_elements_text(tags::jsonb) AS tag FROM celeb_images WHERE tags IS NOT NULL
             UNION
-            SELECT jsonb_array_elements_text(tags::jsonb) AS tag FROM creator_videos WHERE tags IS NOT NULL
+            SELECT jsonb_array_elements_text(tags::jsonb) AS tag FROM celeb_videos WHERE tags IS NOT NULL
         ) t
         ORDER BY tag
     """)
