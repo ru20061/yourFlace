@@ -46,9 +46,18 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
         const catMapByCeleb = new Map(catMapRes.items.map((m) => [m.celeb_id, m.category_id]));
         const catById = new Map(catsRes.items.map((c) => [c.id, c.name]));
 
-        const sidebar: SidebarCeleb[] = subscribedSubs
-          .map((sub) => {
-            const celeb = celebMap.get(sub.celeb_id);
+        // 직접 구독한 셀럽 ID
+        const directSubIds = new Set(subscribedSubs.map((s) => s.celeb_id));
+
+        // 구독된 그룹의 멤버도 포함
+        const allSubscribedIds = new Set(directSubIds);
+        celebsRes.items
+          .filter((c) => c.parent_id != null && directSubIds.has(c.parent_id))
+          .forEach((c) => allSubscribedIds.add(c.id));
+
+        const sidebar: SidebarCeleb[] = Array.from(allSubscribedIds)
+          .map((celebId) => {
+            const celeb = celebMap.get(celebId);
             if (!celeb) return null;
             const catId = catMapByCeleb.get(celeb.id);
             return {
@@ -57,6 +66,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
               slug: celeb.slug,
               category: catId ? catById.get(catId) : undefined,
               profileImage: celeb.profile_image ?? undefined,
+              celeb_type: celeb.celeb_type,
             };
           })
           .filter(Boolean) as SidebarCeleb[];
