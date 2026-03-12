@@ -17,6 +17,18 @@ async def create_subscriptions(
     obj = await crud.subscription_crud.create(db, obj_in)
     return obj
 
+@router.get("/check", response_model=None)
+async def check_subscription(
+    fan_id: int = Query(...),
+    celeb_id: int = Query(...),
+    db: AsyncSession = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    """그룹 구독 포함 구독 여부 확인 (개인 멤버는 소속 그룹 구독도 인정)"""
+    subscribed = await crud.subscription_crud.is_subscribed(db, fan_id=fan_id, celeb_id=celeb_id)
+    return {"is_subscribed": subscribed}
+
+
 @router.get("/{id}", response_model=schemas.SubscriptionResponse)
 async def get_subscriptions(
     id: int,

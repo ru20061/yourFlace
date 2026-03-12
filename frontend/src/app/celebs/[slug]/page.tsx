@@ -121,11 +121,16 @@ export default function ArtistDetailPage() {
           setSubscriberCount(activeCelebSubs.length);
 
           if (user) {
+            // 그룹 구독 포함 구독 여부 확인 (개인 멤버는 소속 그룹 구독도 인정)
+            const checkRes = await api.get<{ is_subscribed: boolean }>(
+              `/subscriptions/check?fan_id=${user.id}&celeb_id=${celebId}`
+            );
+            setIsSubscribed(checkRes.is_subscribed);
+            // 직접 구독 레코드 조회 (팬 닉네임/프로필 이미지용)
             const mySubRes = await api.get<PaginatedResponse<Subscription>>(
               `/subscriptions/?fan_id=${user.id}&celeb_id=${celebId}&skip=0&limit=10`
             );
             const mySub = mySubRes.items.find((s) => s.status === "subscribed");
-            setIsSubscribed(!!mySub);
             setMySubId(mySub?.id ?? null);
             setMyFanNickname(mySub?.fan_nickname ?? null);
             setMyFanProfileImage(mySub?.fan_profile_image ?? null);

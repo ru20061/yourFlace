@@ -197,6 +197,7 @@ export interface SidebarCeleb {
   slug: string | null;
   category?: string;
   profileImage?: string;
+  celeb_type?: "group" | "individual";
 }
 
 export interface Notice {

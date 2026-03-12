@@ -18,6 +18,10 @@ interface SubWithCeleb extends Subscription {
   celeb_slug: string | null;
   celeb_image: string | null;
   notifSetting: NotificationSetting | null;
+  // 그룹 구독으로 포함된 멤버 항목
+  is_via_group?: boolean;
+  group_sub_id?: number;   // 편집/알림 토글 시 실제로 사용할 그룹 구독 ID
+  group_celeb_name?: string;
 }
 
 export default function SubscriptionProfilesPage() {
@@ -59,7 +63,7 @@ export default function SubscriptionProfilesPage() {
           (s) => s.fan_id === user.id && s.status === "subscribed"
         );
         const celebMap = new Map(
-          celebsRes.items.map((a) => [a.id, { name: a.stage_name, slug: a.slug, image: a.profile_image }])
+          celebsRes.items.map((a) => [a.id, a])
         );
         const notifBySubId = new Map(
           notifItems
@@ -67,15 +71,37 @@ export default function SubscriptionProfilesPage() {
             .map((n) => [n.subscription_id!, n])
         );
 
-        setSubs(
-          mySubs.map((s) => ({
+        const result: SubWithCeleb[] = [];
+
+        for (const s of mySubs) {
+          const celeb = celebMap.get(s.celeb_id);
+          result.push({
             ...s,
-            celeb_name: celebMap.get(s.celeb_id)?.name ?? `셀럽 #${s.celeb_id}`,
-            celeb_slug: celebMap.get(s.celeb_id)?.slug ?? null,
-            celeb_image: celebMap.get(s.celeb_id)?.image ?? null,
+            celeb_name: celeb?.stage_name ?? `셀럽 #${s.celeb_id}`,
+            celeb_slug: celeb?.slug ?? null,
+            celeb_image: celeb?.profile_image ?? null,
             notifSetting: notifBySubId.get(s.id) ?? null,
-          }))
-        );
+          });
+
+          // 그룹 구독이면 소속 멤버도 항목에 추가
+          if (celeb?.celeb_type === "group") {
+            const members = celebsRes.items.filter((c) => c.parent_id === celeb.id);
+            for (const member of members) {
+              result.push({
+                ...s,
+                celeb_name: member.stage_name,
+                celeb_slug: member.slug ?? null,
+                celeb_image: member.profile_image ?? null,
+                notifSetting: notifBySubId.get(s.id) ?? null,
+                is_via_group: true,
+                group_sub_id: s.id,
+                group_celeb_name: celeb.stage_name,
+              });
+            }
+          }
+        }
+
+        setSubs(result);
       } catch {
         // 필수 API 실패 시 무시
       } finally {
@@ -236,8 +262,14 @@ export default function SubscriptionProfilesPage() {
         <div className="feed-empty">구독 중인 셀럽이 없습니다</div>
       ) : (
         <div className="profile-sub-list">
-          {subs.map((sub) => (
-            <div key={sub.id} className="profile-sub-item">
+          {subs.map((sub, idx) => {
+            // 그룹 포함 멤버는 그룹 구독 ID 기준으로 편집/알림 처리
+            const effectiveSubId = sub.group_sub_id ?? sub.id;
+            const effectiveSub = sub.group_sub_id
+              ? (subs.find((s) => s.id === sub.group_sub_id) ?? sub)
+              : sub;
+            return (
+            <div key={`${sub.celeb_id}-${idx}`} className="profile-sub-item">
               {/* 셀럽 정보 + 편집 버튼 */}
               <div className="profile-sub-header">
                 <div className="profile-sub-avatar">
@@ -248,33 +280,44 @@ export default function SubscriptionProfilesPage() {
                   )}
                 </div>
                 <div className="profile-sub-info">
-                  <div className="profile-sub-artist">{sub.celeb_name}</div>
+                  <div className="profile-sub-artist">
+                    {sub.celeb_name}
+                    {sub.is_via_group && (
+                      <span className="profile-sub-group-badge">
+                        {sub.group_celeb_name} 그룹 구독 포함
+                      </span>
+                    )}
+                  </div>
                   <div className="profile-sub-nickname">
-                    {sub.fan_nickname ? `닉네임: ${sub.fan_nickname}` : "기본 닉네임 사용 중"}
+                    {effectiveSub.fan_nickname ? `닉네임: ${effectiveSub.fan_nickname}` : "기본 닉네임 사용 중"}
                   </div>
                 </div>
                 <button
                   className="profile-sub-edit-btn"
                   onClick={() =>
-                    editingSubId === sub.id ? cancelEditing() : startEditing(sub)
+                    editingSubId === effectiveSubId ? cancelEditing() : startEditing(effectiveSub)
                   }
                 >
-                  {editingSubId === sub.id ? "취소" : "편집"}
+                  {editingSubId === effectiveSubId ? "취소" : "편집"}
                 </button>
               </div>
 
               {/* 구독 정보 */}
               <div className="sub-meta">
                 <span className="sub-meta-date">
-                  {formatDate(sub.start_date)} ~
-                  {sub.end_date ? ` ${formatDate(sub.end_date)}` : " 구독 중"}
+                  {formatDate(effectiveSub.start_date)} ~
+                  {effectiveSub.end_date ? ` ${formatDate(effectiveSub.end_date)}` : " 구독 중"}
                 </span>
               </div>
 
               {/* 프로필 편집 폼 */}
-              {editingSubId === sub.id && (
+              {editingSubId === effectiveSubId && (
                 <div className="profile-sub-form">
-                  {/* 이미지 미리보기 */}
+                  {sub.is_via_group && (
+                    <p className="profile-sub-group-note">
+                      {sub.group_celeb_name} 그룹 구독 프로필을 수정합니다. 그룹 전체 멤버에 적용됩니다.
+                    </p>
+                  )}
                   {subForm.fan_profile_image && (
                     <div className="sub-image-preview">
                       <img
@@ -309,7 +352,7 @@ export default function SubscriptionProfilesPage() {
                   </div>
                   <button
                     className="profile-save-btn"
-                    onClick={() => saveProfile(sub.id)}
+                    onClick={() => saveProfile(effectiveSubId)}
                     disabled={savingSub}
                   >
                     {savingSub ? "저장 중..." : "저장"}
@@ -322,15 +365,15 @@ export default function SubscriptionProfilesPage() {
                 <div className="sub-notif-row">
                   <span className="sub-notif-label">알림 전체</span>
                   <button
-                    className={`sub-toggle ${sub.notifSetting?.notify_all ? "on" : "off"}`}
-                    onClick={() => toggleNotification(sub)}
-                    disabled={togglingNotif === sub.id}
+                    className={`sub-toggle ${effectiveSub.notifSetting?.notify_all ? "on" : "off"}`}
+                    onClick={() => toggleNotification(effectiveSub)}
+                    disabled={togglingNotif === effectiveSubId}
                   >
                     <span className="sub-toggle-thumb" />
                   </button>
                 </div>
 
-                {sub.notifSetting?.notify_all && (
+                {effectiveSub.notifSetting?.notify_all && (
                   <>
                     {([
                       ["notify_post", "새 게시글"],
@@ -341,9 +384,9 @@ export default function SubscriptionProfilesPage() {
                       <div key={field} className="sub-notif-row sub-notif-detail">
                         <span className="sub-notif-label">{label}</span>
                         <button
-                          className={`sub-toggle small ${sub.notifSetting?.[field] ? "on" : "off"}`}
-                          onClick={() => toggleNotifField(sub, field)}
-                          disabled={togglingNotif === sub.id}
+                          className={`sub-toggle small ${effectiveSub.notifSetting?.[field] ? "on" : "off"}`}
+                          onClick={() => toggleNotifField(effectiveSub, field)}
+                          disabled={togglingNotif === effectiveSubId}
                         >
                           <span className="sub-toggle-thumb" />
                         </button>
@@ -353,15 +396,18 @@ export default function SubscriptionProfilesPage() {
                 )}
               </div>
 
-              {/* 구독 해지 */}
-              <button
-                className="sub-cancel-btn"
-                onClick={() => handleCancelSub(sub)}
-              >
-                구독 해지
-              </button>
+              {/* 구독 해지: 그룹 포함 멤버는 해지 버튼 미표시 */}
+              {!sub.is_via_group && (
+                <button
+                  className="sub-cancel-btn"
+                  onClick={() => handleCancelSub(sub)}
+                >
+                  구독 해지
+                </button>
+              )}
             </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

@@ -294,6 +294,8 @@ async def seed_data():
             Subscription(id=1, fan_id=1, celeb_id=1, fan_nickname="테스트팬", status="subscribed", payments_type="paid", start_date=today - timedelta(days=30), end_date=today + timedelta(days=0)),
             # 하루 구독 — end_date 설정으로 환불 정보 표시 가능
             Subscription(id=2, fan_id=1, celeb_id=2, fan_nickname="테스트팬", status="subscribed", payments_type="paid", start_date=today - timedelta(days=5),  end_date=today + timedelta(days=25)),
+            # NOVA 그룹 구독 → 멤버(지연/민호/소라)도 구독된 것으로 판단 (개별 구독 레코드 없음)
+            Subscription(id=3, fan_id=1, celeb_id=3, fan_nickname="테스트팬", status="subscribed", payments_type="paid", start_date=today - timedelta(days=10), end_date=today + timedelta(days=20)),
         ]
         db.add_all(subscriptions)
         await db.flush()

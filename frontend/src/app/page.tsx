@@ -37,14 +37,18 @@ export default function HomePage() {
         // 전체 셀럽 (active만)
         setAllCelebs(celebsRes.items.filter((a) => a.status === "active"));
 
-        // 내가 구독한 셀럽 ID
+        // 내가 구독한 셀럽 ID (그룹 구독 시 소속 멤버도 구독된 것으로 처리)
         if (user) {
-          const mySubIds = new Set(
+          const directSubIds = new Set(
             subsRes.items
               .filter((s) => s.fan_id === user.id && s.status === "subscribed")
               .map((s) => s.celeb_id)
           );
-          setSubscribedIds(mySubIds);
+          const expandedSubIds = new Set(directSubIds);
+          celebsRes.items
+            .filter((c) => c.parent_id != null && directSubIds.has(c.parent_id))
+            .forEach((c) => expandedSubIds.add(c.id));
+          setSubscribedIds(expandedSubIds);
         }
 
         // 카테고리 맵 (celeb_id → category_name)

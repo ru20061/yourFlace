@@ -79,7 +79,8 @@ export default function ChatBubble({ subscribedCelebs }: ChatBubbleProps) {
         }
 
         const items: ChatCelebItem[] = [];
-        for (const celeb of subscribedCelebs) {
+        // 그룹은 채팅 없음 — 개인 멤버만 채팅 목록에 표시
+        for (const celeb of subscribedCelebs.filter((c) => c.celeb_type !== "group")) {
           const room = roomByCeleb.get(celeb.id) || null;
           let lastMessage: string | null = null;
           let lastMessageAt: string | null = null;

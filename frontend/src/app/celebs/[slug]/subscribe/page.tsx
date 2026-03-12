@@ -50,14 +50,15 @@ export default function SubscribePage() {
         const celebRes = await api.get<Celeb>(`/celebs/by-slug/${encodeURIComponent(slug)}`);
         setCeleb(celebRes);
 
-        // 이미 구독 중인지 확인
-        const subsRes = await api.get<PaginatedResponse<Subscription>>("/subscriptions?skip=0&limit=100");
-        const alreadySubscribed = subsRes.items.some(
-          (s) => s.celeb_id === celebRes.id && s.fan_id === user?.id && s.status === "subscribed"
-        );
-        if (alreadySubscribed) {
-          router.replace(`/celebs/${slug}`);
-          return;
+        // 이미 구독 중인지 확인 (그룹 구독 시 멤버도 구독된 것으로 판단)
+        if (user) {
+          const checkRes = await api.get<{ is_subscribed: boolean }>(
+            `/subscriptions/check?fan_id=${user.id}&celeb_id=${celebRes.id}`
+          );
+          if (checkRes.is_subscribed) {
+            router.replace(`/celebs/${slug}`);
+            return;
+          }
         }
 
         // 셀럽 플랜 조회
