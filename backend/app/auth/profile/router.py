@@ -1,8 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+import uuid
+from fastapi import APIRouter, Depends, HTTPException, status, Query, UploadFile, File
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import get_db
 from app.auth.profile import crud, schemas
 from app.dependencies import get_current_user
+from app.core.storage import storage
 
 router = APIRouter()
 
@@ -64,6 +66,23 @@ async def update_profile(
             detail="Profile not found"
         )
     return obj
+
+@router.post("/{id}/upload-image", response_model=schemas.ProfileResponse)
+async def upload_profile_image(
+    id: int,
+    file: UploadFile = File(...),
+    db: AsyncSession = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    """프로필 이미지 업로드"""
+    object_name = f"profiles/{id}/{uuid.uuid4().hex}_{file.filename}"
+    url = await storage.upload_file(file.file, object_name, content_type=file.content_type)
+
+    obj = await crud.profile_crud.update(db, id, schemas.ProfileUpdate(profile_image=url))
+    if not obj:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Profile not found")
+    return obj
+
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_profile(

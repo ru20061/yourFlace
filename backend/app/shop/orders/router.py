@@ -38,10 +38,11 @@ async def get_orders_list(
     db: AsyncSession = Depends(get_db),
     current_user = Depends(get_current_user)
 ):
-    """목록 조회"""
-    items = await crud.order_crud.get_multi(db, skip=skip, limit=limit)
-    total = await crud.order_crud.count(db)
-    
+    """목록 조회 (현재 로그인 유저의 주문만)"""
+    filters = {"user_id": current_user.id}
+    items = await crud.order_crud.get_multi(db, skip=skip, limit=limit, filters=filters)
+    total = await crud.order_crud.count(db, filters=filters)
+
     return schemas.OrderList(
         items=items,
         total=total,

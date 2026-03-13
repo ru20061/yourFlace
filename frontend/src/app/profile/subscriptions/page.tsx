@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../../../lib/auth-context";
@@ -35,6 +35,11 @@ export default function SubscriptionProfilesPage() {
   const [editingSubId, setEditingSubId] = useState<number | null>(null);
   const [subForm, setSubForm] = useState({ fan_nickname: "", fan_profile_image: "" });
   const [savingSub, setSavingSub] = useState(false);
+
+  // 이미지 업로드
+  const [uploadingImageSubId, setUploadingImageSubId] = useState<number | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const uploadTargetSubId = useRef<number | null>(null);
 
   // 알림 토글 로딩
   const [togglingNotif, setTogglingNotif] = useState<number | null>(null);
@@ -120,6 +125,36 @@ export default function SubscriptionProfilesPage() {
   };
 
   const cancelEditing = () => setEditingSubId(null);
+
+  const handleImageFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    const subId = uploadTargetSubId.current;
+    if (!file || !subId) return;
+
+    setUploadingImageSubId(subId);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const updated = await api.upload<Subscription>(`/subscriptions/${subId}/upload-image`, formData);
+      setSubs((prev) =>
+        prev.map((s) =>
+          s.id === subId ? { ...s, fan_profile_image: updated.fan_profile_image } : s
+        )
+      );
+      setSubForm((f) => ({ ...f, fan_profile_image: updated.fan_profile_image ?? "" }));
+    } catch {
+      alert("이미지 업로드에 실패했습니다.");
+    } finally {
+      setUploadingImageSubId(null);
+      uploadTargetSubId.current = null;
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
+  const openImagePicker = (subId: number) => {
+    uploadTargetSubId.current = subId;
+    fileInputRef.current?.click();
+  };
 
   const saveProfile = async (subId: number) => {
     setSavingSub(true);
@@ -257,6 +292,13 @@ export default function SubscriptionProfilesPage() {
       <p className="profile-sub-desc">
         셀럽별로 다른 닉네임, 프로필 이미지, 알림을 설정할 수 있습니다
       </p>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        style={{ display: "none" }}
+        onChange={handleImageFileChange}
+      />
 
       {subs.length === 0 ? (
         <div className="feed-empty">구독 중인 셀럽이 없습니다</div>
@@ -318,15 +360,29 @@ export default function SubscriptionProfilesPage() {
                       {sub.group_celeb_name} 그룹 구독 프로필을 수정합니다. 그룹 전체 멤버에 적용됩니다.
                     </p>
                   )}
-                  {subForm.fan_profile_image && (
-                    <div className="sub-image-preview">
-                      <img
-                        src={subForm.fan_profile_image}
-                        alt="미리보기"
-                        onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
-                      />
+                  {/* 프로필 이미지 수정 영역 */}
+                  <div className="profile-image-edit-row">
+                    <div className="profile-image-edit-avatar">
+                      {subForm.fan_profile_image ? (
+                        <img src={subForm.fan_profile_image} alt="프로필 미리보기" />
+                      ) : (
+                        <span className="profile-avatar-text" style={{ fontSize: "18px" }}>
+                          {sub.celeb_name[0]}
+                        </span>
+                      )}
                     </div>
-                  )}
+                    <div className="profile-image-edit-info">
+                      <span className="profile-image-edit-label">프로필 이미지</span>
+                      <button
+                        type="button"
+                        className="profile-image-edit-btn"
+                        onClick={() => openImagePicker(effectiveSubId)}
+                        disabled={uploadingImageSubId === effectiveSubId}
+                      >
+                        {uploadingImageSubId === effectiveSubId ? "업로드 중..." : "이미지 변경"}
+                      </button>
+                    </div>
+                  </div>
                   <div className="profile-form-group">
                     <label className="profile-form-label">팬 닉네임</label>
                     <input
@@ -337,17 +393,6 @@ export default function SubscriptionProfilesPage() {
                       }
                       placeholder="이 셀럽에서 사용할 닉네임"
                       maxLength={50}
-                    />
-                  </div>
-                  <div className="profile-form-group">
-                    <label className="profile-form-label">팬 프로필 이미지 URL</label>
-                    <input
-                      className="profile-form-input"
-                      value={subForm.fan_profile_image}
-                      onChange={(e) =>
-                        setSubForm((f) => ({ ...f, fan_profile_image: e.target.value }))
-                      }
-                      placeholder="https://example.com/image.jpg"
                     />
                   </div>
                   <button

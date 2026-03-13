@@ -3,7 +3,14 @@ import aiofiles
 import os
 from typing import Optional, BinaryIO
 import mimetypes
+from botocore.config import Config
 from app.config import settings
+
+_BOTO_CONFIG = Config(
+    connect_timeout=3,
+    read_timeout=5,
+    retries={"max_attempts": 1},
+)
 
 # 로컬 저장소 경로 (S3/MinIO 미사용 시 fallback)
 LOCAL_UPLOAD_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "static", "uploads")
@@ -47,6 +54,7 @@ class CloudflareR2Storage:
             async with self.session.client(
                 's3',
                 endpoint_url=self.endpoint,
+                config=_BOTO_CONFIG,
             ) as s3_client:
                 await s3_client.upload_fileobj(
                     file_obj,
@@ -65,6 +73,7 @@ class CloudflareR2Storage:
         async with self.session.client(
             's3',
             endpoint_url=self.endpoint,
+            config=_BOTO_CONFIG,
         ) as s3_client:
             response = await s3_client.get_object(
                 Bucket=self.bucket,
@@ -77,6 +86,7 @@ class CloudflareR2Storage:
         async with self.session.client(
             's3',
             endpoint_url=self.endpoint,
+            config=_BOTO_CONFIG,
         ) as s3_client:
             await s3_client.delete_object(
                 Bucket=self.bucket,
@@ -89,6 +99,7 @@ class CloudflareR2Storage:
         async with self.session.client(
             's3',
             endpoint_url=self.endpoint,
+            config=_BOTO_CONFIG,
         ) as s3_client:
             response = await s3_client.list_objects_v2(
                 Bucket=self.bucket,
@@ -102,6 +113,7 @@ class CloudflareR2Storage:
             async with self.session.client(
                 's3',
                 endpoint_url=self.endpoint,
+                config=_BOTO_CONFIG,
             ) as s3_client:
                 await s3_client.head_object(
                     Bucket=self.bucket,

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useAuth } from "../../lib/auth-context";
 import { api } from "../../lib/api";
@@ -25,6 +25,8 @@ export default function ProfilePage() {
     profile_image: "",
   });
   const [saving, setSaving] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!user) return;
@@ -57,6 +59,27 @@ export default function ProfilePage() {
 
   const cancelEditing = () => {
     setEditing(false);
+  };
+
+  const handleImageFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !profile) return;
+
+    setUploadingImage(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const updated = await api.upload<Profile>(`/profiles/${profile.id}/upload-image`, formData);
+      setProfile(updated);
+      setForm((f) => ({ ...f, profile_image: updated.profile_image ?? "" }));
+      await refreshUser();
+    } catch {
+      alert("이미지 업로드에 실패했습니다.");
+    } finally {
+      setUploadingImage(false);
+      // input 초기화 (같은 파일 재선택 가능하도록)
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
   };
 
   const saveProfile = async () => {
@@ -120,6 +143,37 @@ export default function ProfilePage() {
       {/* 프로필 수정 폼 */}
       {editing && (
         <div className="profile-form">
+          {/* 프로필 이미지 수정 영역 */}
+          <div className="profile-image-edit-row">
+            <div className="profile-image-edit-avatar">
+              {form.profile_image ? (
+                <img src={form.profile_image} alt="프로필 미리보기" />
+              ) : (
+                <span className="profile-avatar-text" style={{ fontSize: "22px" }}>
+                  {(user.nickname ?? user.email)[0].toUpperCase()}
+                </span>
+              )}
+            </div>
+            <div className="profile-image-edit-info">
+              <span className="profile-image-edit-label">프로필 이미지</span>
+              <button
+                type="button"
+                className="profile-image-edit-btn"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploadingImage}
+              >
+                {uploadingImage ? "업로드 중..." : "이미지 변경"}
+              </button>
+            </div>
+          </div>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            style={{ display: "none" }}
+            onChange={handleImageFileChange}
+          />
+
           <div className="profile-form-group">
             <label className="profile-form-label">닉네임</label>
             <input
@@ -168,15 +222,6 @@ export default function ProfilePage() {
               value={form.birth_date}
               onChange={(val) => setForm((f) => ({ ...f, birth_date: val }))}
               placeholder="생년월일 선택"
-            />
-          </div>
-          <div className="profile-form-group">
-            <label className="profile-form-label">프로필 이미지 URL</label>
-            <input
-              className="profile-form-input"
-              value={form.profile_image}
-              onChange={(e) => setForm((f) => ({ ...f, profile_image: e.target.value }))}
-              placeholder="https://example.com/image.jpg"
             />
           </div>
           <button className="profile-save-btn" onClick={saveProfile} disabled={saving}>

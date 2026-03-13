@@ -55,7 +55,13 @@ export default function PostCard({ post, currentUserId, onDelete }: PostCardProp
   return (
     <div className={`post-card ${isArticle ? "post-card-article" : ""}`}>
       <div className="post-header">
-        <div className="post-avatar" />
+        <div className="post-avatar">
+          {post.author_profile_image ? (
+            <img src={post.author_profile_image} alt="프로필" />
+          ) : (
+            <span>{(post.author_name ?? "?")[0].toUpperCase()}</span>
+          )}
+        </div>
         <div>
           <div className="post-author-name">{post.author_name ?? "익명"}</div>
           <div className="post-time">{getRelativeTime(post.created_at)}</div>

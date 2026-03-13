@@ -1,9 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+import uuid
+from fastapi import APIRouter, Depends, HTTPException, status, Query, UploadFile, File
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Optional
 from app.database import get_db
 from app.subscription.subscriptions import crud, schemas
 from app.dependencies import get_current_user
+from app.core.storage import storage
 
 router = APIRouter()
 
@@ -85,6 +87,23 @@ async def update_subscriptions(
             detail="Subscription not found"
         )
     return obj
+
+@router.post("/{id}/upload-image", response_model=schemas.SubscriptionResponse)
+async def upload_subscription_image(
+    id: int,
+    file: UploadFile = File(...),
+    db: AsyncSession = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    """구독별 팬 프로필 이미지 업로드"""
+    object_name = f"subscriptions/{id}/{uuid.uuid4().hex}_{file.filename}"
+    url = await storage.upload_file(file.file, object_name, content_type=file.content_type)
+
+    obj = await crud.subscription_crud.update(db, id, schemas.SubscriptionUpdate(fan_profile_image=url))
+    if not obj:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Subscription not found")
+    return obj
+
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_subscriptions(

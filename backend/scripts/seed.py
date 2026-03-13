@@ -533,6 +533,9 @@ async def seed_data():
             Payment(id=3, user_id=1, payment_type="shop",         related_id=2, related_type="order",        amount=Decimal("25000"), currency="KRW", status="refunded",  transaction_id="TXN-TEST-003", payment_method_id=2, paid_at=now - timedelta(days=3)),
             # 하루(subscription_id=2) 구독 결제 — 구독 해지 시 환불 정보 표시용
             Payment(id=4, user_id=1, payment_type="subscription", related_id=2, related_type="subscription", amount=Decimal("7900"),  currency="KRW", status="completed", transaction_id="TXN-TEST-004", payment_method_id=1, paid_at=now - timedelta(days=5)),
+            Payment(id=5, user_id=1, payment_type="shop",         related_id=4, related_type="order",        amount=Decimal("50000"), currency="KRW", status="completed", transaction_id="TXN-TEST-005", payment_method_id=1, paid_at=now - timedelta(days=2)),
+            Payment(id=6, user_id=1, payment_type="shop",         related_id=5, related_type="order",        amount=Decimal("40000"), currency="KRW", status="completed", transaction_id="TXN-TEST-006", payment_method_id=2, paid_at=now - timedelta(days=1)),
+            Payment(id=7, user_id=1, payment_type="shop",         related_id=6, related_type="order",        amount=Decimal("25000"), currency="KRW", status="cancelled", transaction_id="TXN-TEST-007", payment_method_id=1, paid_at=now - timedelta(hours=12)),
         ]
         db.add_all(payments)
         await db.flush()
@@ -597,6 +600,10 @@ async def seed_data():
             Order(id=1, user_id=1, order_number="ORD-2026-0001", total_amount=Decimal("35000"), status="delivered",  payment_id=2, shipping_address_id=1, tracking_number="CJ1234567890", shipped_at=now - timedelta(days=4), delivered_at=now - timedelta(days=2)),
             Order(id=2, user_id=1, order_number="ORD-2026-0002", total_amount=Decimal("25000"), status="refunded",   payment_id=3, shipping_address_id=1),
             Order(id=3, user_id=1, order_number="ORD-2026-0003", total_amount=Decimal("15000"), status="pending",    shipping_address_id=2),
+            # 추가 주문 데이터
+            Order(id=4, user_id=1, order_number="ORD-2026-0004", total_amount=Decimal("50000"), status="shipped",    payment_id=5, shipping_address_id=1, tracking_number="CJ9876543210", shipped_at=now - timedelta(days=1)),
+            Order(id=5, user_id=1, order_number="ORD-2026-0005", total_amount=Decimal("40000"), status="confirmed",  payment_id=6, shipping_address_id=1),
+            Order(id=6, user_id=1, order_number="ORD-2026-0006", total_amount=Decimal("25000"), status="cancelled",  payment_id=7, shipping_address_id=2),
         ]
         db.add_all(orders)
         await db.flush()
@@ -605,6 +612,12 @@ async def seed_data():
             OrderItem(id=1, order_id=1, product_id=2, quantity=1, unit_price=Decimal("35000"), total_price=Decimal("35000")),
             OrderItem(id=2, order_id=2, product_id=3, quantity=1, unit_price=Decimal("25000"), total_price=Decimal("25000")),
             OrderItem(id=3, order_id=3, product_id=1, quantity=1, unit_price=Decimal("15000"), total_price=Decimal("15000")),
+            # 추가 주문 아이템
+            OrderItem(id=4, order_id=4, product_id=2, quantity=1, unit_price=Decimal("35000"), total_price=Decimal("35000")),
+            OrderItem(id=5, order_id=4, product_id=1, quantity=1, unit_price=Decimal("15000"), total_price=Decimal("15000")),
+            OrderItem(id=6, order_id=5, product_id=1, quantity=2, unit_price=Decimal("15000"), total_price=Decimal("30000")),
+            OrderItem(id=7, order_id=5, product_id=3, quantity=1, unit_price=Decimal("25000"), total_price=Decimal("25000")),
+            OrderItem(id=8, order_id=6, product_id=3, quantity=1, unit_price=Decimal("25000"), total_price=Decimal("25000")),
         ]
         db.add_all(order_items)
         await db.flush()
